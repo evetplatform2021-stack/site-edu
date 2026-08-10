@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Глава 4: AI Image Generation & Visual Assets</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #f8fafc;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            background: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: rgba(255,255,255,0.03);
+            color: var(--text-heading);
+            font-weight: 700;
+        }
+
+        .quiz-option {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI Design Studio
+        </a>
+
+        <nav class="module-nav">
+            <a href="ch01_intro.html" class="mod-link">М1: Фундаменти</a>
+            <a href="ch04_generation.html" class="mod-link active">М2: Визуали</a>
+            <a href="ch06_branding.html" class="mod-link">М3: Бранд & UX</a>
+            <a href="ch08_automation.html" class="mod-link">М4: Автоматизация</a>
+            <a href="ch10_capstone.html" class="mod-link">М5: Кариера & Проект</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Глава 4 Съдържание</div>
+            <ul class="nav-links">
+                <li><a href="#sub-4-1">4.1 Платформи за Генерация</a></li>
+                <li><a href="#sub-4-2">4.2 Контрол на Композицията</a></li>
+                <li><a href="#sub-4-3">4.3 Продуктова Снимачна Среда</a></li>
+                <li><a href="#sub-4-4">4.4 Референтни Модели & SREF</a></li>
+                <li><a href="#sub-4-5">4.5 Задача & Самопроверка</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 2 • Глава 4 от 13</span>
+                <h1>AI Image Generation & Visual Assets</h1>
+                <p>Техники за генериране на фотореалистични продуктови изображения, композиционен контрол и референтен стилов трансфер за комерсиални нужди.</p>
+            </div>
+
+            <!-- 4.1 -->
+            <section id="sub-4-1">
+                <h2>4.1. Сравнение на платформите: Midjourney, Flux, SDXL</h2>
+                <p>Изборът на правилния модел зависи от баланса между скорост, визуален естетизъм и прецизност на спазване на промпта (Prompt Adherence).</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Платформа</th>
+                            <th>Предимства</th>
+                            <th>Слаби Страни</th>
+                            <th>Идеален За</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Midjourney (v6+)</strong></td>
+                            <td>Изключителна фотографска естетика, висок детайл и художествен усет</td>
+                            <td>Затворена система, платен достъп, без директен локален контрол</td>
+                            <td>Moodboards, продуктови визии, рекламна фотография</td>
+                        </tr>
+                        <tr>
+                            <td><strong>FLUX.1 (Black Forest)</strong></td>
+                            <td>Невероятно точно рендиране на текст, човешки ръце и сложни позиции</td>
+                            <td>Изисква висок хардуерен ресурс за самостоятелно хостване</td>
+                            <td>Реални бранд концепции, типографски постери, опаковки</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Stable Diffusion (SDXL / Forge)</strong></td>
+                            <td>100% контрол чрез ControlNet, LoRA модели, пълна приватност</td>
+                            <td>Висока прагова летва за учене и техническа настройка</td>
+                            <td>Индустриален дизайн, прецизно спазване на 3D макети</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- 4.2 -->
+            <section id="sub-4-2">
+                <h2>4.2. Точен контрол на композицията и осветлението</h2>
+                <p>За да работи генерираният образ за рекламната композиция, дизайнерът трябва да владее кинематографичния терминологичен речник.</p>
+
+                <div class="card">
+                    <h3>Терминология за кинематографичен контрол:</h3>
+                    <ul>
+                        <li><strong>Ъгъл на заснемане:</strong> <code>Eye-level shot</code>, <code>Low-angle hero shot</code>, <code>Top-down flat lay</code>, <code>Macro close-up</code>.</li>
+                        <li><strong>Осветление:</strong> <code>Volumetric rim lighting</code>, <code>Softbox studio light</code>, <code>Chiaroscuro high-contrast</code>, <code>Golden hour backlight</code>.</li>
+                        <li><strong>Оптика и Дълбочина:</strong> <code>Shallow depth of field</code>, <code>f/1.4 aperture</code>, <code>Bokeh background blur</code>, <code>85mm portrait lens</code>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 4.3 -->
+            <section id="sub-4-3">
+                <h2>4.3. Продуктова фотография и дизайн на опаковки</h2>
+                <p>Създаването на търговски визии за електронна търговия изисква структуриране на изолирани обекти на контролиран фон (Clean Studio Shoot).</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>product_photography_prompt.txt</span></div>
+                    <pre><code>Commercial product photography of an organic glass dropper bottle for facial serum, resting on a wet smooth black basalt stone, water drops on the stone surface, minimalist background with soft green tropical leaf shadows, studio lighting, soft key light, professional advertising look, high-resolution 8k, photorealistic --ar 4:5 --v 6.0</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.4 -->
+            <section id="sub-4-4">
+                <h2>4.4. Използване на Style & Character References (SREF / CREF)</h2>
+                <p>Един от основните проблеми в AI генерацията е поддържането на единен визуален стил между различните кадри. Инструменти като Midjourney <code>--sref</code> и <code>--cref</code> решават този проблем.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>style_reference_syntax.txt</span></div>
+                    <pre><code>// Пренасяне на визуален стил от друго изображение (Style Reference):
+/imagine prompt: A wireless noise-canceling headphone on a oak desk --sref https://URL-to-reference-image.jpg --sw 100
+
+// Запазване на персонаж/обект (Character Reference):
+/imagine prompt: The same young woman running in a park in rainy morning --cref https://URL-to-character-face.jpg --cw 80</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.5 -->
+            <section id="sub-4-5">
+                <h2>4.5. Практическа Задача и Куиз</h2>
+                <div class="card">
+                    <h3>Практическо Упражнение</h3>
+                    <p>Създайте промпт за визия на луксозен часовник с ъгъл <code>Low-angle hero shot</code>, осветление <code>Volumetric rim lighting</code> и параметър за съотношение <code>--ar 16:9</code>. Тествайте го в Midjourney или FLUX.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Кой параметър в Midjourney ви позволява да пренесете цветовото излъчване и текстурата от референтна снимка към нов промпт?</p>
+                    <div class="quiz-card" id="q4">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q4')">A) --cref</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q4')">B) --sref</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q4')">C) --tile</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="ch03_prompt_engineering.html" class="btn">⬅️ Назад към Глава 3</a>
+                <a href="ch05_editing.html" class="btn">Към Глава 5: AI Editing & Refinement ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

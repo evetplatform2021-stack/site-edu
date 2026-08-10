@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 1: Дълбоки Основи на Python</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link active">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 1</div>
+            <ul class="nav-links">
+                <li><a href="#sub-1-1">1.1 PyObject Структура</a></li>
+                <li><a href="#sub-1-2">1.2 Mutability & Identity</a></li>
+                <li><a href="#sub-1-3">1.3 Small Integer Cache</a></li>
+                <li><a href="#sub-1-4">1.4 String Interning & PEP 393</a></li>
+                <li><a href="#sub-1-5">1.5 Compact Dictionaries</a></li>
+                <li><a href="#sub-1-6">1.6 Memory: Lists vs Tuples</a></li>
+                <li><a href="#sub-1-7">1.7 Shallow vs Deep Copy</a></li>
+                <li><a href="#sub-1-8">1.8 Reference Counting Basics</a></li>
+                <li><a href="#sub-1-9">1.9 Казус: Оптимизация</a></li>
+                <li><a href="#sub-1-10">1.10 Задача & Самопроверка</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 1 • Модул 1 от 12</span>
+                <h1>Дълбоки Основи на Python & CPython Обекти</h1>
+                <p>Подробен поглед върху вътрешната структура на обектите, оптимизациите на паметта и представянето на типовете данни в CPython.</p>
+            </div>
+
+            <!-- 1.1 -->
+            <section id="sub-1-1">
+                <h2>1.1. Всичко е Обект: CPython `PyObject` Структура</h2>
+                <p>В CPython абсолютно всяка променлива, функция, клас и тип данни е C структура, разположена в dynamic memory (heap). Базовата дефиниция за всеки обект в C изглежда така:</p>
+                <div class="code-container">
+                    <div class="code-header"><span>cpython/Include/object.h (C Source)</span></div>
+                    <pre><code>typedef struct _object {
+    _PyObject_HEAD_EXTRA  // Двойно свързан списък за GC дебъгинг
+    Py_ssize_t ob_refcnt;  // Брой референции към обекта
+    struct _typeobject *ob_type; // Указател към типа на обекта
+} PyObject;</code></pre>
+                </div>
+                <p>За обекти с променлив размер (като <code>list</code>, <code>str</code>, <code>tuple</code>) се използва <code>PyVarObject</code>, добавящ полето <code>ob_size</code>:</p>
+                <div class="code-container">
+                    <div class="code-header"><span>PyVarObject Layout</span></div>
+                    <pre><code>typedef struct {
+    PyObject ob_base;
+    Py_ssize_t ob_size; /* Брой елементи в контейнера */
+} PyVarObject;</code></pre>
+                </div>
+            </section>
+
+            <!-- 1.2 -->
+            <section id="sub-1-2">
+                <h2>1.2. Mutability (Променливост) и Идентичност (`id`)</h2>
+                <p>Идентичността на обекта се определя от неговата физическа адресна позиция в паметта. В CPython <code>id(obj)</code> връща именно числовия адрес на <code>PyObject</code> в RAM.</p>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Тип Данни</th>
+                                <th>Променливост (Mutable)</th>
+                                <th>Промяна на стойността</th>
+                                <th>Памет Адрес (`id`)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>int</code>, <code>float</code>, <code>str</code>, <code>tuple</code></td>
+                                <td><code style="color:var(--danger)">Immutable</code></td>
+                                <td>Създава нов обект в паметта</td>
+                                <td>Променя се</td>
+                            </tr>
+                            <tr>
+                                <td><code>list</code>, <code>dict</code>, <code>set</code>, <code>bytearray</code></td>
+                                <td><code style="color:var(--success)">Mutable</code></td>
+                                <td>Модифицира C структурата in-place</td>
+                                <td>Остава НЕпроменен</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 1.3 -->
+            <section id="sub-1-3">
+                <h2>1.3. Small Integer Caching & Arbitrary Precision Integers</h2>
+                <p>CPython алокира предварително при стартиране на процеса целите числа в диапазона от <code>-5</code> до <code>256</code> в статичен масив <code>small_ints</code>. Всички променливи с тези стойности сочат към един и същ адрес.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>integer_cache.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>a = 250
+b = 250
+print(a is b)  # True -> Сочат към един и същ PyObject в static memory
+
+x = 257
+y = 257
+print(x is y)  # False -> Два отделни PyObject-а в Heap-а</code></pre>
+                </div>
+                <p>За цели числа извън този диапазон CPython използва система за произволна точност (Arbitrary Precision Arithmetic), разделяйки числото на цифри в масив <code>ob_digit</code>.</p>
+            </section>
+
+            <!-- 1.4 -->
+            <section id="sub-1-4">
+                <h2>1.4. String Interning и PEP 393 (Compact Unicode)</h2>
+                <p>За да спести памет и да ускори сравняването на стрингове (напр. имена на променливи и речници), CPython прилага **String Interning**. Всички идентификатори се интернират автоматично.</p>
+                <p>От Python 3.3 (PEP 393) стринговете използват гъвкава вътрешна кодировка според най-големия Unicode символ:</p>
+                <ul>
+                    <li><strong>Latin-1 (PyASCIIObject):</strong> 1 байт на символ (ако съдържа само ASCII).</li>
+                    <li><strong>UCS-2:</strong> 2 байта на символ (ако съдържа кирилица или гръцки).</li>
+                    <li><strong>UCS-4:</strong> 4 байта на символ (ако съдържа Emoji или редки йероглифи).</li>
+                </ul>
+            </section>
+
+            <!-- 1.5 -->
+            <section id="sub-1-5">
+                <h2>1.5. Компактни Речници (Compact Dictionaries - PEP 468)</h2>
+                <p>От Python 3.6+ речниците запазват реда на вкарване и изразходват с 30–40% по-малко памет благодарение на разделянето на разпръснатия Hash Table от действителния масив с данни.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>Dict Layout Architecture</span></div>
+                    <pre><code># Стар модел (преди 3.6): 24 байта на празен слот
+entries = [
+    [hash0, key0, value0],
+    [None,  None, None],
+    [hash1, key1, value1]
+]
+
+# Компактен модел (3.6+):
+indices = [0, None, 1]  # Тънък масив от байтове
+entries = [             # Плътен масив само със записани елементи
+    [hash0, key0, value0],
+    [hash1, key1, value1]
+]</code></pre>
+                </div>
+            </section>
+
+            <!-- 1.6 -->
+            <section id="sub-1-6">
+                <h2>1.6. Оптимизация на Паметта: Lists vs Tuples</h2>
+                <p>Докато <code>list</code> е динамичен масив, който заделя допълнителен капацитет (over-allocation) за постигане на $O(1)$ при <code>append()</code>, <code>tuple</code> е статичен и фиксиран по размер.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>memory_footprint.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import sys
+
+t = (1, 2, 3, 4, 5)
+l = [1, 2, 3, 4, 5]
+
+print(f"Tuple размер: {sys.getsizeof(t)} bytes") # ~80 bytes
+print(f"List размер:  {sys.getsizeof(l)} bytes") # ~104 bytes (поради over-allocation)</code></pre>
+                </div>
+            </section>
+
+            <!-- 1.7 -->
+            <section id="sub-1-7">
+                <h2>1.7. Shallow vs Deep Copy: Механика в Паметта</h2>
+                <p>При плитка копираща операция (<code>copy.copy()</code>) се създава нов контейнерен обект, но вътрешните референции сочат към същите обекти в паметта. При дълбоко копиране (<code>copy.deepcopy()</code>) рекурсивно се копират всички съдържащи се обекти.</p>
+            </section>
+
+            <!-- 1.8 -->
+            <section id="sub-1-8">
+                <h2>1.8. Референтен Брояч (Reference Counting Basics)</h2>
+                <p>Всеки обект съдържа <code>ob_refcnt</code>. Всяко присвояване увеличава брояча, а всяко изтриване с <code>del</code> или излизане от scope го намалява. Когато <code>ob_refcnt == 0</code>, CPython незабавно освобождава паметта.</p>
+            </section>
+
+            <!-- 1.9 -->
+            <section id="sub-1-9">
+                <h2>1.9. Практически Казус: Оптимизация на 1 Милион Записа</h2>
+                <p><strong>Проблем:</strong> Зареждане на 1 000 000 координатни точки <code>{"x": int, "y": int}</code> изразходва над 180MB RAM поради накладните разходи на речниците.</p>
+                <p><strong>Решение:</strong> Използване на <code>__slots__</code> в персонализиран клас или <code>namedtuple</code> намалява разхода на памет с над 60%.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>case_study_slots.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import sys
+
+class PointDict:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+class PointSlots:
+    __slots__ = ('x', 'y')  # Премахва __dict__ от всеки екземпляр
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+p1 = PointDict(10, 20)
+p2 = PointSlots(10, 20)
+
+print(f"Обикновен обект (с dict): {sys.getsizeof(p1) + sys.getsizeof(p1.__dict__)} bytes")
+print(f"Оптимизиран обект (__slots__): {sys.getsizeof(p2)} bytes")</code></pre>
+                </div>
+            </section>
+
+            <!-- 1.10 -->
+            <section id="sub-1-10">
+                <h2>1.10. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете функция, която приема масив от стрингове и проверява дали два стринга сочат към един и същ адрес в паметта без да използвате оператора <code>==</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Какъв ще бъде резултатът от изпълнението на следния код?</p>
+                    <div class="code-container">
+                        <pre><code>a = [1, 2, 3]
+b = a
+b.append(4)
+print(len(a))</code></pre>
+                    </div>
+                    <div class="quiz-card" id="q1">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q1')">A) 3 (тъй като a и b са различни списъци)</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q1')">B) 4 (тъй като a и b сочат към един и същ PyObject в паметта)</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q1')">C) Хвърля AttributeError</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="#" class="btn" style="opacity: 0.5; cursor: not-allowed;">⬅️ Предишен Модул</a>
+                <a href="m02_memory.html" class="btn">Към Модул 2: Управление на Паметта ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

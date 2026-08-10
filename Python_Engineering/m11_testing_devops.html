@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 11: Разширено Тестване, QA и DevOps за Python</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link active">М11: Testing & DevOps</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 11</div>
+            <ul class="nav-links">
+                <li><a href="#sub-11-1">11.1 Pytest Fixtures Architecture</a></li>
+                <li><a href="#sub-11-2">11.2 Параметризация & Dynamic Tests</a></li>
+                <li><a href="#sub-11-3">11.3 Mocking & Isolation Strategies</a></li>
+                <li><a href="#sub-11-4">11.4 Property-Based Testing (`hypothesis`)</a></li>
+                <li><a href="#sub-11-5">11.5 Mutation Testing (`mutmut`)</a></li>
+                <li><a href="#sub-11-6">11.6 Модерно Пакетиране & Dependencies</a></li>
+                <li><a href="#sub-11-7">11.7 Dockerization & Multi-Stage Builds</a></li>
+                <li><a href="#sub-11-8">11.8 Казус: CI/CD Quality Gates</a></li>
+                <li><a href="#sub-11-9">11.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 3 • Модул 11 от 12</span>
+                <h1>Разширено Тестване, QA Инженерство и DevOps за Python</h1>
+                <p>Пълна автоматизация на качеството: от pytest архитектура, mocking и property-based тестване до мутационен анализ, пакетиране с uv/poetry и оптимизирани Docker среди.</p>
+            </div>
+
+            <!-- 11.1 -->
+            <section id="sub-11-1">
+                <h2>11.1. Pytest Архитектура: Fixtures, Scopes & Lifecycle</h2>
+                <p>За разлика от xUnit подхода (<code>setUp</code>/<code>tearDown</code>), <code>pytest</code> използва инжектиране на зависимости чрез **Fixtures**. Fixtures поддържат генератори за точно управление на ресурсите (Teardown phase) и изолационни обхвати (Scopes).</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Fixture Scope</th>
+                                <th>Жизнен цикъл (Lifecycle)</th>
+                                <th>Типично приложение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>function</code> (default)</td>
+                                <td>Създава се наново за всеки отделен тест.</td>
+                                <td>Изолирано състояние, mock обекти, транзакции.</td>
+                            </tr>
+                            <tr>
+                                <td><code>class</code></td>
+                                <td>Създава се веднъж за целия клас с тестове.</td>
+                                <td>Конфигурация на тестови клас.</td>
+                            </tr>
+                            <tr>
+                                <td><code>module</code></td>
+                                <td>Създава се веднъж за целия `.py` тестов файл.</td>
+                                <td>Тъжки ресурси, файлови симулации.</td>
+                            </tr>
+                            <tr>
+                                <td><code>session</code></td>
+                                <td>Създава се веднъж за цялата тестова сесия.</td>
+                                <td>Тестова база данни, Docker контейнери.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="code-container">
+                    <div class="code-header"><span>test_fixtures_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import pytest
+import sqlite3
+
+@pytest.fixture(scope="module")
+def db_connection():
+    # Setup Phase
+    conn = sqlite3.connect(":memory:")
+    conn.execute("CREATE TABLE users (id INT, name TEXT)")
+    yield conn  # Предаване на контрола към теста
+    # Teardown Phase
+    conn.close()
+
+@pytest.fixture
+def db_transaction(db_connection):
+    # Използва модулната база, но изолира теста в транзакция
+    cursor = db_connection.cursor()
+    cursor.execute("SAVEPOINT test_savepoint")
+    yield cursor
+    cursor.execute("ROLLBACK TO test_savepoint")
+
+def test_user_creation(db_transaction):
+    db_transaction.execute("INSERT INTO users VALUES (1, 'Alice')")
+    res = db_transaction.execute("SELECT COUNT(*) FROM users").fetchone()
+    assert res[0] == 1</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.2 -->
+            <section id="sub-11-2">
+                <h2>11.2. Параметризация & Dynamic Test Generation</h2>
+                <p>Декораторът <code>@pytest.mark.parametrize</code> позволява тестването на десетки гранични случаи с един и същ тестов метод без повторение на код (DRY principle).</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>test_parametrize.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import pytest
+
+def is_valid_email(email: str) -> bool:
+    return "@" in email and "." in email.split("@")[-1]
+
+@pytest.mark.parametrize("email, expected", [
+    ("user@example.com", True),
+    ("invalid-email", False),
+    ("user@sub.domain.org", True),
+    ("user@domain", False),
+    ("", False),
+])
+def test_email_validation(email, expected):
+    assert is_valid_email(email) == expected</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.3 -->
+            <section id="sub-11-3">
+                <h2>11.3. Мокинг и Изолация: `unittest.mock` vs `pytest-mock`</h2>
+                <p>Мокингът подменя външните зависимости (API, файлова система, бази данни) с контролирани фалшификати. Златната дума при мокинг е: <strong>"Mock where item is USED, not where it is DEFINED"</strong>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>test_mocking.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import requests
+
+def fetch_exchange_rate(base: str) -> float:
+    response = requests.get(f"https://api.exchangerate.com/{base}")
+    return response.json()["rate"]
+
+def test_fetch_exchange_rate(mocker):
+    # Подмяна на requests.get с помоща на pytest-mock (mocker)
+    mock_get = mocker.patch("requests.get")
+    mock_get.return_value.json.return_value = {"rate": 1.95583}
+
+    rate = fetch_exchange_rate("BGN")
+    
+    assert rate == 1.95583
+    mock_get.assert_called_once_with("https://api.exchangerate.com/BGN")</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.4 -->
+            <section id="sub-11-4">
+                <h2>11.4. Property-Based Testing с `hypothesis`</h2>
+                <p>Традиционните тестове тестват конкретни входни данни. <code>hypothesis</code> генерира стотици случайни, но структурирани входове, за да открие непредвидени бъгове и автоматично "свива" (shrinks) открития проблем до най-простия му възможен вариант.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>test_hypothesis.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from hypothesis import given, strategies as st
+
+def encode_decode(text: str) -> str:
+    # Симулация на двупосочна функция
+    return text
+
+@given(st.text())
+def test_encode_decode_property(s):
+    # Твърдение: Всеки стринг, преминал през обработката, трябва да е равен на себе си
+    assert encode_decode(s) == s
+
+@given(st.lists(st.integers()))
+def test_sort_property(l):
+    sorted_l = sorted(l)
+    assert len(sorted_l) == len(l)
+    assert all(sorted_l[i] <= sorted_l[i+1] for i in range(len(sorted_l)-1))</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.5 -->
+            <section id="sub-11-5">
+                <h2>11.5. Мутационен Анализ с `mutmut`</h2>
+                <p>Код покритието (Code Coverage 100%) не гарантира добри тестове. **Mutation Testing** инжектира изкуствени дефекти (мутации) в производствения код (напр. заменя <code>></code> с <code>>=</code>, или <code>True</code> с <code>False</code>) и проверява дали вашите тестове ще "застрелят" мутанта.</p>
+                <div class="card">
+                    <p><strong>Команда:</strong> <code>mutmut run --paths-to-mutate=src/</code></p>
+                    <p>Ако мутантът оцелее (Survived), това означава, че тестовият ви пакет няма валидация за конкретния логически оператор!</p>
+                </div>
+            </section>
+
+            <!-- 11.6 -->
+            <section id="sub-11-6">
+                <h2>11.6. Модерно Пакетиране: `pyproject.toml`, Poetry, Hatch и `uv`</h2>
+                <p>Инструментът <code>pip</code> и файлът <code>setup.py</code> са наследени системи. Стандартът <strong>PEP 621</strong> налага <code>pyproject.toml</code> за единна декларативна конфигурация.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>pyproject.toml</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "my-enterprise-app"
+version = "1.0.0"
+description = "High-performance Python service"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+    "httpx>=0.24",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "hypothesis>=6.0",
+    "mypy>=1.8",
+]</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.7 -->
+            <section id="sub-11-7">
+                <h2>11.7. Production Dockerization & Multi-Stage Builds</h2>
+                <p>Оптимизирането на Docker контейнери изисква минимален размер, липса на C компилатори в продакшън и стартиране от некоренов потребител (Non-root user) за сигурност.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>Dockerfile</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code># Stage 1: Build stage
+FROM python:3.12-slim AS builder
+
+WORKDIR /app
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential
+
+COPY requirements.txt .
+RUN pip install --user --no-cache-dir -r requirements.txt
+
+# Stage 2: Final Runtime
+FROM python:3.12-slim AS runner
+
+WORKDIR /app
+# Създаване на сигурен non-root потребител
+RUN useradd -m -u 1000 appuser
+
+# Копиране само на инсталираните пакети от Builder stage
+COPY --from=builder /root/.local /home/appuser/.local
+COPY . /app
+
+ENV PATH=/home/appuser/.local/bin:$PATH
+USER appuser
+
+EXPOSE 8000
+CMD ["python", "main.py"]</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.8 -->
+            <section id="sub-11-8">
+                <h2>11.8. Практически Казус: CI/CD Quality Gates с GitHub Actions</h2>
+                <p>Конфигуриране на конвейер за непрекъсната интеграция (CI), съдържащ проверка на типовете (Mypy), линтинг (Ruff), тестове и качване на метрики за покритие.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>.github/workflows/ci.yml</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>name: Quality Gate CI
+
+on: [push, pull_request]
+
+jobs:
+  quality-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install uv and dependencies
+        run: |
+          pip install uv
+          uv pip install --system .[dev]
+
+      - name: Run Ruff (Linter & Formatter)
+        run: ruff check .
+
+      - name: Run Mypy (Static Type Check)
+        run: mypy src/
+
+      - name: Run Pytest with Coverage
+        run: pytest --cov=src --cov-fail-under=90</code></pre>
+                </div>
+            </section>
+
+            <!-- 11.9 -->
+            <section id="sub-11-9">
+                <h2>11.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете pytest функция с параметризация, която изпробва функция за калкулатор на отстъпки с поне 5 различни гранични стойности (отрицателна цена, 0% отстъпка, 100% отстъпка, цена над 1,000,000 и невалиден тип данни, очакващ <code>ValueError</code>).</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Каква е целта на Mutation Testing инструмента `mutmut`?</p>
+                    <div class="quiz-card" id="q11">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q11')">A) Да генерира автоматично документация за Python API.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q11')">B) Да променя производствения код с малки дефекти, за да провери дали вашите тестове са достатъчно качествени и прихващат грешките.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q11')">C) Да конвертира Python код към C++ за по-бързо изпълнение.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m10_architecture.html" class="btn">⬅️ Към Модул 10: Архитектура</a>
+                <a href="m12_capstone.html" class="btn">Към Модул 12: Финален Проект ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 9: Оптимизация на Производителността, Profiling и JIT</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link active">М9: Performance</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 9</div>
+            <ul class="nav-links">
+                <li><a href="#sub-9-1">9.1 Профилиране на Време (cProfile)</a></li>
+                <li><a href="#sub-9-2">9.2 Анализ по Редове (`line_profiler`)</a></li>
+                <li><a href="#sub-9-3">9.3 Профилиране на Памет (`tracemalloc`)</a></li>
+                <li><a href="#sub-9-4">9.4 Векторизация с NumPy</a></li>
+                <li><a href="#sub-9-5">9.5 JIT Компилация с Numba</a></li>
+                <li><a href="#sub-9-6">9.6 Алтернативни Рънтайми (PyPy)</a></li>
+                <li><a href="#sub-9-7">9.7 Откриване на Memory Leaks</a></li>
+                <li><a href="#sub-9-8">9.8 Казус: Real-Time Pipeline Optimization</a></li>
+                <li><a href="#sub-9-9">9.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 3 • Модул 9 от 12</span>
+                <h1>Оптимизация на Производителността, Profiling & JIT Компилация</h1>
+                <p>Измерване и откриване на тесни места (Bottlenecks), профилиране на CPU и памет, векторизация, JIT компилация с Numba и ускорение чрез алтернативни среди.</p>
+            </div>
+
+            <!-- 9.1 -->
+            <section id="sub-9-1">
+                <h2>9.1. Профилиране на Изпълнението с `cProfile` и `pstats`</h2>
+                <p>Първата стъпка при оптимизация е измерването — <em>"Premature optimization is the root of all evil"</em>. Модулът <code>cProfile</code> мери общото време и броя извиквания за всяка функция с минимален overhead.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>profile_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import cProfile
+import pstats
+
+def heavy_function():
+    data = [x ** 2 for x in range(1_000_000)]
+    return sum(data)
+
+# Стартиране на профилера
+profiler = cProfile.Profile()
+profiler.enable()
+
+heavy_function()
+
+profiler.disable()
+
+# Сортиране и отпечатване на статистиката
+stats = pstats.Stats(profiler).sort_stats('cumulative')
+stats.print_stats(10)</code></pre>
+                </div>
+            </section>
+
+            <!-- 9.2 -->
+            <section id="sub-9-2">
+                <h2>9.2. Анализ Ред по Ред с `line_profiler`</h2>
+                <p>Когато <code>cProfile</code> покаже критичната функция, <code>line_profiler</code> позволява микро-анализ на точното време, изразходвано на всеки отделен ред от изходния код.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>line_profile_example.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code># Стартира се през терминала: kernprof -l -v script.py
+
+@profile
+def slow_matrix_operation():
+    matrix = [[i * j for j in range(1000)] for i in range(1000)]
+    total = 0
+    for row in matrix:
+        total += sum(row)  # Показва точно колко % от времето отива тук
+    return total</code></pre>
+                </div>
+            </section>
+
+            <!-- 9.3 -->
+            <section id="sub-9-3">
+                <h2>9.3. Профилиране на Заделената Памет с `tracemalloc`</h2>
+                <p>Стандартният модул <code>tracemalloc</code> проследява блоковете памет, заделени от CPython, и точното място в кода, където са били алокирани.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>memory_trace.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import tracemalloc
+
+tracemalloc.start()
+
+# Извършване на операции с паметта
+large_list = [dict(a=i, b=str(i)) for i in range(100_000)]
+
+snapshot = tracemalloc.take_snapshot()
+top_stats = snapshot.statistics('lineno')
+
+print("[ Top 3 Allocation Hotspots ]")
+for stat in top_stats[:3]:
+    print(stat)</code></pre>
+                </div>
+            </section>
+
+            <!-- 9.4 -->
+            <section id="sub-9-4">
+                <h2>9.4. Векторизация и SIMD Инструкции с NumPy</h2>
+                <p>Стандартните Python списъци съхраняват указатели към разпръснати в RAM обекти. NumPy съхранява данните в последователни C масиви, трансформирайки Python итерациите във векторизирани CPU SIMD (Single Instruction, Multiple Data) инструкции.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>vectorization_benchmark.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import numpy as np
+import time
+
+size = 10_000_000
+
+# 1. Традиционен Python списък (бавна итерация)
+py_list = list(range(size))
+t0 = time.time()
+py_result = [x * 2.5 for x in py_list]
+t1 = time.time()
+print(f"Python list: {t1 - t0:.4f} sec")
+
+# 2. NumPy векторизация (C скорост)
+np_arr = np.arange(size)
+t0 = time.time()
+np_result = np_arr * 2.5
+t1 = time.time()
+print(f"NumPy vector: {t1 - t0:.4f} sec")  # 50x - 100x по-бързо!</code></pre>
+                </div>
+            </section>
+
+            <!-- 9.5 -->
+            <section id="sub-9-5">
+                <h2>9.5. JIT Компилация с Numba (`@njit`)</h2>
+                <p>Numba трансформира чист Python и NumPy код в машинен код по време на изпълнение (Just-In-Time компилация) с помощта на компилаторната инфраструктура LLVM.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>numba_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from numba import njit
+import numpy as np
+
+# @njit (nopython mode) форсира Numba да компилира без намесата на CPython interpreter
+@njit
+def monte_carlo_pi(nsamples: int) -> float:
+    acc = 0
+    for i in range(nsamples):
+        x = np.random.random()
+        y = np.random.random()
+        if (x**2 + y**2) < 1.0:
+            acc += 1
+    return 4.0 * acc / nsamples
+
+# Първото извикване тригерира JIT компилация, следващите са с C-скорост!
+pi = monte_carlo_pi(10_000_000)
+print("Pi:", pi)</code></pre>
+                </div>
+            </section>
+
+            <!-- 9.6 -->
+            <section id="sub-9-6">
+                <h2>9.6. Алтернативни Рънтайми: PyPy</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Имплементация</th>
+                                <th>JIT Компилатор</th>
+                                <th>C-API Съвместимост</th>
+                                <th>Най-добро Приложение</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>CPython</strong></td>
+                                <td>Не (Само Байткод + PEP 659)</td>
+                                <td>100% (Нативна)</td>
+                                <td>Универсално, ML, C Extensions</td>
+                            </tr>
+                            <tr>
+                                <td><strong>PyPy</strong></td>
+                                <td>Да (Tracing JIT)</td>
+                                <td>Ограничена / По-бавна (cpyext)</td>
+                                <td>Чист Python код, дълго работещи сървъри</td>
+                            </tr>
+                            <tr>
+                                <td><strong>GraalPy</strong></td>
+                                <td>Да (GraalVM JIT)</td>
+                                <td>Частична</td>
+                                <td>Интеграция в Java/JVM екосистеми</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 9.7 -->
+            <section id="sub-9-7">
+                <h2>9.7. Откриване на Memory Leaks (Изтичане на Памет)</h2>
+                <p>Изтичането на памет в Python най-често се дължи на глобални речници, които пазят референции към неизползвани обекти, циклично цитиране с custom <code>__del__</code> събития, или C extensions без `Py_DECREF`.</p>
+            </section>
+
+            <!-- 9.8 -->
+            <section id="sub-9-8">
+                <h2>9.8. Практически Казус: Оптимизиране на Real-Time Pipeline ($100\times$ Ускорение)</h2>
+                <p>Трансформиране на бавна обработка на финансови данни от чист Python до оптимизиран Numba/NumPy стрийм.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>pipeline_optimization.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import numpy as np
+from numba import njit
+
+# Неоптимизиран подход: O(N) Python итерация
+def python_ema(prices, alpha=0.1):
+    ema = [prices[0]]
+    for p in prices[1:]:
+        ema.append(alpha * p + (1 - alpha) * ema[-1])
+    return ema
+
+# Оптимизиран JIT подход: Без заделяне на излишни Python обекти
+@njit
+def fast_ema(prices, alpha=0.1):
+    n = len(prices)
+    out = np.empty(n, dtype=np.float64)
+    out[0] = prices[0]
+    for i in range(1, n):
+        out[i] = alpha * prices[i] + (1 - alpha) * out[i-1]
+    return out</code></pre>
+                </div>
+            </section>
+
+            <!-- 9.9 -->
+            <section id="sub-9-9">
+                <h2>9.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Използвайте <code>cProfile</code>, за да профилирате скрипт, който изчислява първите 40 числа на Фибоначи по наивния рекурсивен начин. Намерете колко пъти се извиква функцията и оптимизирайте кода чрез <code>functools.lru_cache</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Защо декораторът `@njit` на Numba постига значително по-висока скорост от стандартния `@jit` режим?</p>
+                    <div class="quiz-card" id="q9">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q9')">A) Защото използва GPU автоматично за всички изчисления.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q9')">B) Защото премахва изцяло зависимостта от CPython ретайма (nopython mode) и компилира до чист машинен код.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q9')">C) Защото автоматично превръща кода в асинхронен.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m08_concurrency.html" class="btn">⬅️ Към Модул 8: Concurrency</a>
+                <a href="m10_architecture.html" class="btn">Към Модул 10: Архитектура & Шаблони ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Design Studio — Пълен Интерактивен Курс</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 3rem;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.8rem;
+            color: var(--text-heading);
+            margin: 0 0 1rem 0;
+            font-weight: 800;
+        }
+
+        .hero-banner p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 700px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .module-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-card h3 {
+            font-size: 1.3rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+        }
+
+        .chapter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .chapter-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-list a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .chapter-list a:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI Design Studio
+        </a>
+        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+    </header>
+
+    <div class="container">
+        <div class="hero-banner">
+            <h1>AI в Дизайна & Визуалните Композиции</h1>
+            <p>Цялостен практически курс за усвояване на генеративни модели, брандинг системи, UI/UX прототипиране, автоматизация и етични рамки.</p>
+            <a href="ch01_intro.html" class="btn btn-primary">🚀 Започни Курса (Глава 1)</a>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">5</div>
+                <div class="stat-label">Модула</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">13</div>
+                <div class="stat-label">Интерактивни Глави</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Практическа насоченост</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2026</div>
+                <div class="stat-label">Актуалност & Стандарти</div>
+            </div>
+        </div>
+
+        <div class="modules-grid">
+            <!-- Module 1 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 1</div>
+                    <h3>Фундаменти на AI в Дизайна</h3>
+                    <ul class="chapter-list">
+                        <li><a href="ch01_intro.html">Глава 1: Въведение & Дифузионни Модели <span>➡️</span></a></li>
+                        <li><a href="ch02_design_thinking.html">Глава 2: Design Thinking в ерата на AI <span>➡️</span></a></li>
+                        <li><a href="ch03_prompt_engineering.html">Глава 3: Prompt Engineering за Дизайнери <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="ch01_intro.html" class="btn">Към Модул 1</a>
+            </div>
+
+            <!-- Module 2 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 2</div>
+                    <h3>Генерация & Редакция на Визуалии</h3>
+                    <ul class="chapter-list">
+                        <li><a href="ch04_generation.html">Глава 4: AI Image Generation & Visual Assets <span>➡️</span></a></li>
+                        <li><a href="ch05_editing.html">Глава 5: AI Редактиране, Векторизиране & Upscaling <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="ch04_generation.html" class="btn">Към Модул 2</a>
+            </div>
+
+            <!-- Module 3 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 3</div>
+                    <h3>Брандинг, UI/UX & Прототипиране</h3>
+                    <ul class="chapter-list">
+                        <li><a href="ch06_branding.html">Глава 6: AI Бранд Идентичност & Дизайн Системи <span>➡️</span></a></li>
+                        <li><a href="ch07_ui_ux.html">Глава 7: UI/UX Прототипиране с v0 & Figma <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="ch06_branding.html" class="btn">Към Модул 3</a>
+            </div>
+
+            <!-- Module 4 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 4</div>
+                    <h3>Автоматизация & Работни Процеси</h3>
+                    <ul class="chapter-list">
+                        <li><a href="ch08_automation.html">Глава 8: Автоматизация с Make & ComfyUI <span>➡️</span></a></li>
+                        <li><a href="ch09_motion.html">Глава 9: Генеративно Видео & Motion Design <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="ch08_automation.html" class="btn">Към Модул 4</a>
+            </div>
+
+            <!-- Module 5 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 5</div>
+                    <h3>Кариера, Правна Рамка & Финал</h3>
+                    <ul class="chapter-list">
+                        <li><a href="ch10_capstone.html">Глава 10: Практически Capstone Проект <span>➡️</span></a></li>
+                        <li><a href="ch11_ethics.html">Глава 11: Етика, Авторско Право & EU AI Act <span>➡️</span></a></li>
+                        <li><a href="ch12_future.html">Глава 12: Бъдещето на Дизайна & AI Трендове <span>➡️</span></a></li>
+                        <li><a href="ch13_resources.html">Глава 13: Речник, Ресурси & Сертификат <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="ch10_capstone.html" class="btn">Към Модул 5</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 AI Design Studio. Всички права запазени. Изградено с интерактивен HTML5 & CSS3 за съвременни дизайнери.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+    </script>
+</body>
+</html>

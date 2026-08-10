@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 8: Concurrency, Parallelism и AsyncIO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link active">М8: Concurrency</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 8</div>
+            <ul class="nav-links">
+                <li><a href="#sub-8-1">8.1 Threads vs Processes vs Async</a></li>
+                <li><a href="#sub-8-2">8.2 GIL & Thread Safety</a></li>
+                <li><a href="#sub-8-3">8.3 `threading` & Синхронизация</a></li>
+                <li><a href="#sub-8-4">8.4 `multiprocessing` & Shared Memory</a></li>
+                <li><a href="#sub-8-5">8.5 `concurrent.futures` Executors</a></li>
+                <li><a href="#sub-8-6">8.6 `asyncio` Event Loop Mechanics</a></li>
+                <li><a href="#sub-8-7">8.7 Tasks, Futures & Coroutines</a></li>
+                <li><a href="#sub-8-8">8.8 Казус: High-Concurrency Crawler</a></li>
+                <li><a href="#sub-8-9">8.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 2 • Модул 8 от 12</span>
+                <h1>Concurrency, Parallelism и AsyncIO Архитектура</h1>
+                <p>Паралелизъм срещу съвместност, преодоляване на GIL през процеси, конкурентно синхронизиране с Locks/Semaphores и асинхронно коопериране с Event Loop.</p>
+            </div>
+
+            <!-- 8.1 -->
+            <section id="sub-8-1">
+                <h2>8.1. Сравнителен Модел: Нишки, Процеси и Корутини</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Модел</th>
+                                <th>Памет</th>
+                                <th>Прерапределяне (Switching)</th>
+                                <th>Подходящ за</th>
+                                <th>Ограничения</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Threading</strong></td>
+                                <td>Споделена (Shared Memory)</td>
+                                <td>Preemptive (от OS)</td>
+                                <td>I/O-bound задачи (мрежа, диск)</td>
+                                <td>Блокиран от GIL за CPU задачи</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Multiprocessing</strong></td>
+                                <td>Изолирана (Separate Memory)</td>
+                                <td>Preemptive (от OS)</td>
+                                <td>CPU-bound задачи (изчисления, ML)</td>
+                                <td>Висок Memory Footprint и IPC overhead</td>
+                            </tr>
+                            <tr>
+                                <td><strong>AsyncIO</strong></td>
+                                <td>Споделена (Single Thread)</td>
+                                <td>Cooperative (корутината предава контрол)</td>
+                                <td>High-density I/O (хиляди WebSocket/HTTP)</td>
+                                <td>Една блокираща функция спира целия Event Loop</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 8.2 -->
+            <section id="sub-8-2">
+                <h2>8.2. Влиянието на GIL върху Нишките (Thread Safety)</h2>
+                <p>Global Interpreter Lock (GIL) гарантира, че само една нишка изпълнява Python байткод в даден момент. Тъй като превключването на нишки може да се случи между **произволни две байткод инструкции**, операциите, състоящи се от повече от една инструкция (напр. <code>count += 1</code>), **НЕ са атомарни** и изискват изрична синхронизация!</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>race_condition_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import threading
+
+counter = 0
+lock = threading.Lock()
+
+def unsafe_increment():
+    global counter
+    for _ in range(100_000):
+        # count += 1 се състои от LOAD_FAST, BINARY_OP, STORE_FAST (Race Condition!)
+        counter += 1
+
+def safe_increment():
+    global counter
+    for _ in range(100_000):
+        with lock: # Гарантира атомарно изпълнение
+            counter += 1</code></pre>
+                </div>
+            </section>
+
+            <!-- 8.3 -->
+            <section id="sub-8-3">
+                <h2>8.3. Модул `threading`: Locks, RLocks, Semaphores & Queues</h2>
+                <p>За безопасна комуникация между нишки стандартната практика е използването на <code>queue.Queue</code>, която е thread-safe по дизайн и имплементира вътрешно заключване.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>producer_consumer.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import threading
+import queue
+import time
+
+work_queue = queue.Queue(maxsize=10)
+
+def worker():
+    while True:
+        item = work_queue.get()
+        if item is None:
+            break
+        print(f"Обработен елемент: {item}")
+        work_queue.task_done()
+
+# Стартиране на worker нишка
+t = threading.Thread(target=worker, daemon=True)
+t.start()
+
+for item in range(5):
+    work_queue.put(item)
+
+work_queue.join() # Изчква обработката на всички задачи</code></pre>
+                </div>
+            </section>
+
+            <!-- 8.4 -->
+            <section id="sub-8-4">
+                <h2>8.4. Истински Паралелизъм с `multiprocessing` и Shared Memory</h2>
+                <p>За заобикаляне на GIL при CPU-intensive задачи <code>multiprocessing</code> стартира отделни CPython процеси с тяхно собствено заделено пространство в RAM.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>shared_memory.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from multiprocessing import Process, Value, Array
+
+def worker(n, shared_arr):
+    n.value = 3.14159
+    for i in range(len(shared_arr)):
+        shared_arr[i] = i * i
+
+if __name__ == '__main__':
+    num = Value('d', 0.0)
+    arr = Array('i', range(5))
+
+    p = Process(target=worker, args=(num, arr))
+    p.start()
+    p.join()
+
+    print(f"Число: {num.value}")
+    print(f"Масив: {list(arr)}")</code></pre>
+                </div>
+            </section>
+
+            <!-- 8.5 -->
+            <section id="sub-8-5">
+                <h2>8.5. Абстракция от Висок Клас: `concurrent.futures`</h2>
+                <p>Предоставя единен интерфейс (<code>ThreadPoolExecutor</code> и <code>ProcessPoolExecutor</code>) за асинхронно управление на пулове от нишки или процеси чрез обект <code>Future</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>executors_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from concurrent.futures import ProcessPoolExecutor, as_completed
+
+def heavy_calculation(n: int) -> int:
+    return sum(i * i for i in range(n))
+
+if __name__ == '__main__':
+    numbers = [10_000_000, 20_000_000, 30_000_000]
+
+    with ProcessPoolExecutor(max_workers=3) as executor:
+        # Изпращане на задачи за паралелна обработка
+        futures = {executor.submit(heavy_calculation, num): num for num in numbers}
+
+        for future in as_completed(futures):
+            input_num = futures[future]
+            print(f"Резултат за {input_num}: {future.result()}")</code></pre>
+                </div>
+            </section>
+
+            <!-- 8.6 -->
+            <section id="sub-8-6">
+                <h2>8.6. Механика на `asyncio` Event Loop</h2>
+                <p><code>asyncio</code> управлява **Event Loop** (цикъл за събития), работещ в една-единствена нишка. Цикълът използва системни механизми като <code>epoll</code> (Linux) или <code>kqueue</code> (macOS) за ефективно изчакване на I/O събития.</p>
+            </section>
+
+            <!-- 8.7 -->
+            <section id="sub-8-7">
+                <h2>8.7. Корутини, Tasks & Futures (`async`/`await`)</h2>
+                <p>Корутините са функции, дефинирани с <code>async def</code>. Ключовата дума <code>await</code> предава обратно контрола на Event Loop докато трае чакането.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>async_gather.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import asyncio
+
+async def fetch_data(id: int, delay: float):
+    print(f"Заявка {id} стартира...")
+    await asyncio.sleep(delay) # Неблокиращо чакане!
+    print(f"Заявка {id} приключи.")
+    return {"id": id, "status": "ok"}
+
+async def main():
+    # Стартиране на множество корутини паралелно
+    results = await asyncio.gather(
+        fetch_data(1, 1.0),
+        fetch_data(2, 0.5),
+        fetch_data(3, 1.5)
+    )
+    print("Всички резултати:", results)
+
+asyncio.run(main())</code></pre>
+                </div>
+            </section>
+
+            <!-- 8.8 -->
+            <section id="sub-8-8">
+                <h2>8.8. Практически Казус: High-Concurrency Async Crawler</h2>
+                <p>Обработка на хиляди едновременни HTTP заявки с контрол на честотата (Rate Limiting) чрез <code>asyncio.Semaphore</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>rate_limited_scraper.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import asyncio
+
+semaphore = asyncio.Semaphore(5) # Лимит до 5 едновременни заявки
+
+async def download_site(url: str):
+    async with semaphore: # Вземане на слот от семафора
+        print(f"Сваляне: {url}")
+        await asyncio.sleep(1.0) # Симулира мрежова заявка
+        return f"Съдържание на {url}"
+
+async def main():
+    urls = [f"https://api.example.com/item/{i}" for i in range(20)]
+    tasks = [download_site(url) for url in urls]
+    results = await asyncio.gather(*tasks)
+    print(f"Успешно свалени: {len(results)} страници.")
+
+asyncio.run(main())</code></pre>
+                </div>
+            </section>
+
+            <!-- 8.9 -->
+            <section id="sub-8-9">
+                <h2>8.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете програма, която използва <code>concurrent.futures.ThreadPoolExecutor</code> за паралелно изчисляване на MD5 хаш суми на списък от големи текстови стрингове.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Какво ще се случи, ако повикаме стандартната блокираща функция `time.sleep(5)` вътре в async корутина?</p>
+                    <div class="quiz-card" id="q8">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q8')">A) Event Loop автоматично ще превключи към друга корутина.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q8')">B) Целият Event Loop спира и замръзва за 5 секунди за всички останали корутини.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q8')">C) Функция хвърля RuntimeError за несъвместимост.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m07_cpython_capi.html" class="btn">⬅️ Към Модул 7: C-API</a>
+                <a href="m09_performance.html" class="btn">Към Модул 9: Производителност ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

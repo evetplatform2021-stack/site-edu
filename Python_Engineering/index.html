@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python Engineering — Начало и Преглед на Курса</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Допълнителни стилове за началната страница */
+        .index-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        .volume-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border, #334155);
+        }
+        .volume-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .module-card {
+            background: var(--bg-card, #1e293b);
+            border: 1px solid var(--border, #334155);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: #38bdf8;
+        }
+        .module-card h3 {
+            margin-top: 0;
+            color: var(--text-heading, #f8fafc);
+            font-size: 1.15rem;
+        }
+        .module-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted, #94a3b8);
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+        }
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid var(--border, #334155);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .stat-item h4 {
+            font-size: 1.8rem;
+            color: #38bdf8;
+            margin: 0;
+        }
+        .stat-item p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.85rem;
+            color: var(--text-muted, #94a3b8);
+        }
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout" style="grid-template-columns: 1fr;">
+        <main class="content" style="max-width: 1200px; margin: 0 auto; width: 100%;">
+            
+            <div class="hero">
+                <span class="badge">Пълно Инженерно Ръководство</span>
+                <h1>Python Engineering: От Основи до Enterprise Архитектура</h1>
+                <p>Изчерпателен курс в 3 тома и 12 задълбочени модула. Овладейте вътрешното устройство на CPython, управлението на паметта, метапрограмирането, асинхронното програмиране, векторизацията и изграждането на високопроизводителни системи.</p>
+                
+                <div class="hero-actions">
+                    <a href="m01_foundations.html" class="btn" style="background:#38bdf8; color:#0f172a; font-weight:700;">🚀 Започни от Модул 1</a>
+                    <a href="m12_capstone.html" class="btn">🏆 Към Capstone Проекта</a>
+                </div>
+            </div>
+
+            <!-- Банер със статистика -->
+            <div class="stats-banner">
+                <div class="stat-item">
+                    <h4>3 Тома</h4>
+                    <p>Структурирано обучение</p>
+                </div>
+                <div class="stat-item">
+                    <h4>12 Модула</h4>
+                    <p>Пълно теоретично & практическо покритие</p>
+                </div>
+                <div class="stat-item">
+                    <h4>50+ Код Проекта</h4>
+                    <p>Готови за производство примери</p>
+                </div>
+                <div class="stat-item">
+                    <h4>50k+ req/sec</h4>
+                    <p>Финална архитектура на Capstone</p>
+                </div>
+            </div>
+
+            <!-- ТOМ 1 -->
+            <div class="volume-header">
+                <span class="volume-badge">ТОМ 1</span>
+                <h2>Основи, Управление на Паметта и ООП</h2>
+            </div>
+
+            <div class="index-grid">
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 1: Основи и Вградени Типове</h3>
+                        <p>Фундамент на езика, вътрешно оформяне на променливите, динамично типизиране, Duck Typing и оптимизация на низове (Interning).</p>
+                    </div>
+                    <a href="m01_foundations.html" class="btn">Отвори Модул 1 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 2: Модел на Паметта и GC</h3>
+                        <p>PyObject, Reference Counting, Garbage Collector (Generational GC), циклично задържане на памет и <code>__slots__</code> спестяване на RAM.</p>
+                    </div>
+                    <a href="m02_memory.html" class="btn">Отвори Модул 2 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 3: Разширено ООП и Обектен Модел</h3>
+                        <p>Даундър (Dunder) методи, MRO (Method Resolution Order), C3 Linearization, Дескриптори (<code>__get__</code>/<code>__set__</code>) и абстрактни класове.</p>
+                    </div>
+                    <a href="m03_oop.html" class="btn">Отвори Модул 3 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 4: Функционално Програмиране & Генератори</h3>
+                        <p>First-class функции, Closures, Lazy Evaluation, Итератори, Генераторни изрази, pipelines и корутини с <code>yield</code>.</p>
+                    </div>
+                    <a href="m04_functional.html" class="btn">Отвори Модул 4 ➔</a>
+                </div>
+            </div>
+
+            <!-- ТОМ 2 -->
+            <div class="volume-header">
+                <span class="volume-badge">ТОМ 2</span>
+                <h2>CPython Дълбочини, Метапрограмиране и Concurrency</h2>
+            </div>
+
+            <div class="index-grid">
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 5: Метапрограмиране & Декоратори</h3>
+                        <p>Метакласове (<code>type</code>), създаване на класове динамично, декоратори с параметри, `functools.wraps` и класови декоратори.</p>
+                    </div>
+                    <a href="m05_metaprogramming.html" class="btn">Отвори Модул 5 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 6: CPython Байткод и Виртуална Машина</h3>
+                        <p>Дисасемблиране с <code>dis</code>, структура на байткода, стъкова виртуална машина на Python и модификация на байткод войнствено.</p>
+                    </div>
+                    <a href="m06_cpython_bytecode.html" class="btn">Отвори Модул 6 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 7: CPython C-API и Разширения</h3>
+                        <p>Писане на C-extensions за Python, взаимодействие с C-структури, GIL управление и ускоряване на изчисленията през C-слоя.</p>
+                    </div>
+                    <a href="m07_cpython_capi.html" class="btn">Отвори Модул 7 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 8: Concurrency, Asyncio & Multiprocessing</h3>
+                        <p>GIL (Global Interpreter Lock), Threading срещу Multiprocessing, Async/Await архитектура, Event Loop и асинхронни I/O операции.</p>
+                    </div>
+                    <a href="m08_concurrency.html" class="btn">Отвори Модул 8 ➔</a>
+                </div>
+            </div>
+
+            <!-- ТОМ 3 -->
+            <div class="volume-header">
+                <span class="volume-badge">ТОМ 3</span>
+                <h2>Performance, Чиста Архитектура и Capstone Проект</h2>
+            </div>
+
+            <div class="index-grid">
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 9: Оптимизация на Производителността</h3>
+                        <p>Профилиране (cProfile, memory_profiler), SIMD векторизация с NumPy, Numba JIT компилация и оптимизация на критични алгоритми.</p>
+                    </div>
+                    <a href="m09_performance.html" class="btn">Отвори Модул 9 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 10: Чиста Архитектура & Шаблони</h3>
+                        <p>Clean Architecture, SOLID принципи в Python, Dependency Injection, Repository Pattern и шина за събития (Event Bus).</p>
+                    </div>
+                    <a href="m10_architecture.html" class="btn">Отвори Модул 10 ➔</a>
+                </div>
+
+                <div class="module-card">
+                    <div>
+                        <h3>Модул 11: Тестване, Профилиране & DevOps</h3>
+                        <p>Pytest, Fixtures, Mocking, Property-based testing (Hypothesis), Dockerization и CI/CD автоматизирани пайплайни.</p>
+                    </div>
+                    <a href="m11_testing_devops.html" class="btn">Отвори Модул 11 ➔</a>
+                </div>
+
+                <div class="module-card" style="border-color: rgba(56, 189, 248, 0.5); background: rgba(56, 189, 248, 0.05);">
+                    <div>
+                        <h3>Модул 12: Capstone Проект</h3>
+                        <p>Изграждане на Enterprise High-Throughput Async Event Processor (над 50,000 събития/сек) с нулев Memory Leak и пълна телеметрия.</p>
+                    </div>
+                    <a href="m12_capstone.html" class="btn" style="background:#38bdf8; color:#0f172a; font-weight:700;">Отвори Capstone ➔</a>
+                </div>
+            </div>
+
+            <footer style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border, #334155); text-align: center; color: var(--text-muted, #94a3b8); font-size: 0.9rem;">
+                <p>Python Engineering Course • Пълно ръководство за софтуерни инженери</p>
+            </footer>
+
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+    </script>
+</body>
+</html>

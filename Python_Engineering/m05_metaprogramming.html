@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 5: Метапрограмиране, Метакласове и AST</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link active">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 5</div>
+            <ul class="nav-links">
+                <li><a href="#sub-5-1">5.1 Динамично Създаване (`type`)</a></li>
+                <li><a href="#sub-5-2">5.2 Метакласове (`__new__` / `__init__`)</a></li>
+                <li><a href="#sub-5-3">5.3 PEP 487: `__init_subclass__`</a></li>
+                <li><a href="#sub-5-4">5.4 Class Decorators vs Metaclasses</a></li>
+                <li><a href="#sub-5-5">5.5 Персонализация с `__prepare__`</a></li>
+                <li><a href="#sub-5-6">5.6 AST (Abstract Syntax Tree)</a></li>
+                <li><a href="#sub-5-7">5.7 Динамичен Код (`exec`/`eval`)</a></li>
+                <li><a href="#sub-5-8">5.8 Казус: Plugin Registry</a></li>
+                <li><a href="#sub-5-9">5.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 1 • Модул 5 от 12</span>
+                <h1>Метапрограмиране, Метакласове и Модификация на AST</h1>
+                <p>Създаване на типове по време на изпълнение (Runtime), анатомия на метакласовете, модификация на абстрактни синтактични дървета и изграждане на динамични рамки.</p>
+            </div>
+
+            <!-- 5.1 -->
+            <section id="sub-5-1">
+                <h2>5.1. Динамично Създаване на Класове с `type()`</h2>
+                <p>В Python класовете сами по себе си са обекти от тип <code>type</code>. Когато използвате синтаксиса <code>class MyClass: ...</code>, CPython трансформира дефиницията в извикване на конструктoра <code>type()</code>.</p>
+                
+                <p>Сигнатурата за динамично конструиране е: <code>type(name, bases, dict)</code></p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>dynamic_class_factory.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code># Традиционна дефиниция:
+# class User:
+#     role = "admin"
+#     def get_role(self): return self.role
+
+# Динамично създаване с type():
+def get_role_fn(self):
+    return self.role
+
+UserDynamic = type(
+    'UserDynamic',                 # Име на класа
+    (object,),                     # Базови класове (tuple)
+    {'role': 'admin', 'get_role': get_role_fn}  # Атрибути и методи (dict)
+)
+
+u = UserDynamic()
+print(u.get_role()) # admin
+print(type(UserDynamic)) # <class 'type'></code></pre>
+                </div>
+            </section>
+
+            <!-- 5.2 -->
+            <section id="sub-5-2">
+                <h2>5.2. Анатомия на Метакласовете (`__new__` vs `__init__`)</h2>
+                <p>Метакласът е "класът на класа". Той дефинира как се конструира сам по себе си даден клас. За разлика от обикновените класове, в метакласа <code>__new__()</code> създава самия **класов обект**, а <code>__init__()</code> го инициализира.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>metaclass_validation.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class StrictInterfaceMeta(type):
+    """Метаклас, който форсира всички методи да имат docstrings"""
+    def __new__(mcs, name, bases, namespace):
+        for attr_name, attr_value in namespace.items():
+            if callable(attr_value) and not attr_name.startswith("__"):
+                if not attr_value.__doc__:
+                    raise TypeError(f"Методът '{attr_name}' в клас '{name}' няма docstring!")
+        return super().__new__(mcs, name, bases, namespace)
+
+class ServiceAPI(metaclass=StrictInterfaceMeta):
+    def fetch_data(self):
+        """Извлича данни от услугата."""
+        return {"status": 200}
+
+    # Подаването на метод без docstring ще хвърли TypeError още при дефинирането!
+    # def process_data(self): pass</code></pre>
+                </div>
+            </section>
+
+            <!-- 5.3 -->
+            <section id="sub-5-3">
+                <h2>5.3. Модерен Подход: PEP 487 и `__init_subclass__`</h2>
+                <p>От Python 3.6+ метакласовете често могат да бъдат заменени с <code>__init_subclass__()</code>. Този кука-метод (hook) се задейства автоматично върху родителския клас, когато някой друг клас наследи от него, избягвайки метакласови конфликти.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>init_subclass_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class PluginRegistry:
+    plugins = {}
+
+    def __init_subclass__(cls, plugin_name: str, **kwargs):
+        super().__init_subclass__(**kwargs)
+        cls.plugins[plugin_name] = cls
+
+class AudioPlugin(PluginRegistry, plugin_name="audio_processor"):
+    pass
+
+class VideoPlugin(PluginRegistry, plugin_name="video_processor"):
+    pass
+
+print(PluginRegistry.plugins)
+# {'audio_processor': <class '__main__.AudioPlugin'>, 'video_processor': <class '__main__.VideoPlugin'>}</code></pre>
+                </div>
+            </section>
+
+            <!-- 5.4 -->
+            <section id="sub-5-4">
+                <h2>5.4. Класови Декоратори срещу Метакласове</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Критерий</th>
+                                <th>Класов Декоратор (Class Decorator)</th>
+                                <th>Метаклас (Metaclass)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Време на изпълнение</strong></td>
+                                <td>След като класовият обект е напълно създаден</td>
+                                <td>По време на самото конструиране на класа</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Наследяване</strong></td>
+                                <td>НЕ се предава автоматично на наследниците</td>
+                                <td>Автоматично се наследява от всички подкласове</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Риск от конфликти</strong></td>
+                                <td>Нулев (просто обвива/модифицира обекта)</td>
+                                <td>Висок (Multiple Inheritance Metaclass Conflict)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5.5 -->
+            <section id="sub-5-5">
+                <h2>5.5. Персонализация на Пространството от Имена с `__prepare__`</h2>
+                <p>Методът <code>__prepare__()</code> на метакласа се извиква **преди** оценката на тялото на класа. Той връща custom mapping (напр. OrderedDict или обект, следящ за дублирани ключове).</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>prepare_duplicate_check.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class UniqueDict(dict):
+    def __setitem__(self, key, value):
+        if key in self:
+            raise KeyError(f"Дублиран атрибут '{key}' не е позволен!")
+        super().__setitem__(key, value)
+
+class UniqueMeta(type):
+    @classmethod
+    def __prepare__(mcs, name, bases):
+        return UniqueDict()
+
+# class StrictModel(metaclass=UniqueMeta):
+#     x = 10
+#     x = 20  # Хвърля KeyError за дублиран атрибут!</code></pre>
+                </div>
+            </section>
+
+            <!-- 5.6 -->
+            <section id="sub-5-6">
+                <h2>5.6. Абстрактно Синтактично Дърво (AST Inspection & Mutation)</h2>
+                <p>Преди CPython да компилира кода до байткод, той изгражда **AST (Abstract Syntax Tree)**. Модулът <code>ast</code> позволява инспекция, анализ и дори трансформации на изходния код в движение през <code>ast.NodeTransformer</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>ast_rewrite.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import ast
+
+source_code = "x = 5 + 10"
+parsed_ast = ast.parse(source_code)
+
+print(ast.dump(parsed_ast, indent=2))
+# Показва структурата: Module(body=[Assign(targets=[Name(id='x')], value=BinOp(...))])</code></pre>
+                </div>
+            </section>
+
+            <!-- 5.7 -->
+            <section id="sub-5-7">
+                <h2>5.7. Динамично Изпълнение на Код (`exec` и `eval`)</h2>
+                <p><code>eval()</code> оценява единични изрази и връща стойност, докато <code>exec()</code> изпълнява произволни блокове с Python код. За сигурност винаги трябва да се ограничават глобалните и локалните области от имена (globals/locals).</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>secure_exec_sandbox.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>user_code = "result = sum([1, 2, 3, 4])"
+
+# Изолирано пространство без достъп до опасни вградени функции
+sandbox_globals = {"__builtins__": {"sum": sum, "range": range}}
+sandbox_locals = {}
+
+exec(user_code, sandbox_globals, sandbox_locals)
+print(sandbox_locals["result"]) # 10</code></pre>
+                </div>
+            </section>
+
+            <!-- 5.8 -->
+            <section id="sub-5-8">
+                <h2>5.8. Практически Казус: Автоматично Регистриращ се Singleton Engine</h2>
+                <div class="code-container">
+                    <div class="code-header"><span>singleton_meta.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class SingletonMeta(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            instance = super().__call__(*args, **kwargs)
+            cls._instances[cls] = instance
+        return cls._instances[cls]
+
+class DatabaseConnection(metaclass=SingletonMeta):
+    def __init__(self):
+        self.connection_id = "CONN_12345"
+
+db1 = DatabaseConnection()
+db2 = DatabaseConnection()
+
+print(db1 is db2) # True -> Един и същ обект в паметта!</code></pre>
+                </div>
+            </section>
+
+            <!-- 5.9 -->
+            <section id="sub-5-9">
+                <h2>5.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете метаклас <code>AutoFreezeMeta</code>, който автоматично прави всички класови атрибути непренаписваеми след създаването на класа, предотвратявайки добавянето на нови методи или атрибути динамично.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Кой метод на метакласа се извиква ПРЕДИ оценка на тялото на класа с цел подготовка на пространството от имена (dict)?</p>
+                    <div class="quiz-card" id="q5">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q5')">A) __init_subclass__()</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q5')">B) __prepare__()</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q5')">C) __new__()</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m04_functional.html" class="btn">⬅️ Към Модул 4: Функции</a>
+                <a href="m06_cpython_bytecode.html" class="btn">Към Модул 6: CPython Байткод ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

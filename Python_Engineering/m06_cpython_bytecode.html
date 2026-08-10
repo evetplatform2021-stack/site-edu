@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 6: CPython Байткод и Interpreter Loop</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link active">М6: Байткод</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 6</div>
+            <ul class="nav-links">
+                <li><a href="#sub-6-1">6.1 Компилационен Пайплайн</a></li>
+                <li><a href="#sub-6-2">6.2 PyFrameObject & Стек</a></li>
+                <li><a href="#sub-6-3">6.3 Изпълнителен Цикъл (ceval.c)</a></li>
+                <li><a href="#sub-6-4">6.4 Дизасемблиране с dis</a></li>
+                <li><a href="#sub-6-5">6.5 Анатомия на Опкодовете</a></li>
+                <li><a href="#sub-6-6">6.6 PEP 659: Adaptive Interpreter</a></li>
+                <li><a href="#sub-6-7">6.7 Модификация на CodeType</a></li>
+                <li><a href="#sub-6-8">6.8 Казус: Bytecode Optimization</a></li>
+                <li><a href="#sub-6-9">6.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 2 • Модул 6 от 12</span>
+                <h1>CPython Байткод, Virtual Machine & Evaluation Loop</h1>
+                <p>Подробен анализ на стековата виртуална машина на CPython, структурата на рамките (PyFrameObject), интерпретаторния цикъл в `ceval.c` и адаптивните оптимизации в Python 3.11+.</p>
+            </div>
+
+            <!-- 6.1 -->
+            <section id="sub-6-1">
+                <h2>6.1. Компилационен Пайплайн: Изходен Код до Байткод</h2>
+                <p>Преди CPython да изпълни вашата програма, тя преминава през четири основни етапа на транслация:</p>
+                <ol>
+                    <li><strong>Tokenizer:</strong> Нарязва чистия текст на лексикални токени (keywords, identifiers, operators).</li>
+                    <li><strong>Parser:</strong> Изгражда Concrete Syntax Tree (CST) и го преобразува в Abstract Syntax Tree (AST).</li>
+                    <li><strong>Symbol Table Generation:</strong> Анализира областите на видимост (LEGB) и определя типа на всяка променлива (локална, глобална, free/cell).</li>
+                    <li><strong>Code Generation:</strong> Превръща AST и Symbol Table в `PyCodeObject`, съдържащ байткод инструкции.</li>
+                </ol>
+            </section>
+
+            <!-- 6.2 -->
+            <section id="sub-6-2">
+                <h2>6.2. Стеков Модел и Структура на `PyFrameObject`</h2>
+                <p>CPython е **Stack-based Virtual Machine** (стекова виртуална машина). Всички математически и логически операции се извършват върху заделен за целта стек за оценка (Evaluation Stack).</p>
+                <p>Всеки път, когато се извика функция, CPython заделя C структура `PyFrameObject` в стека на изпълнение:</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>cpython/Include/cpython/frameobject.h (C Source)</span></div>
+                    <pre><code>struct _frame {
+    PyObject_HEAD
+    struct _frame* f_back;      /* Указател към предишната рамка в извикващия стек */
+    PyCodeObject* f_code;       /* Компилираният байткод за тази рамка */
+    PyObject* f_builtins;       /* Builtins пространство за бърз достъп */
+    PyObject* f_globals;        /* Globals пространство */
+    PyObject* f_locals;         /* Locals пространство (dict или бърз масив) */
+    PyObject** f_valuestack;    /* Указател към върха на временното стеково пространство */
+    int f_lasti;                /* Индекс на последната изпълнена байткод инструкция */
+};</code></pre>
+                </div>
+            </section>
+
+            <!-- 6.3 -->
+            <section id="sub-6-3">
+                <h2>6.3. Главният Изпълнителен Цикъл (`ceval.c`)</h2>
+                <p>Ядрото на виртуалната машина е функцията <code>_PyEval_EvalFrameDefault()</code> във файла <code>Python/ceval.c</code>. В нейната основа стои гигантски C <code>switch-case</code> (или Threaded Code скокове през заглавни таблици), който последователно прочита инструкциите от байткода:</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>ceval.c (Концептуален C модел)</span></div>
+                    <pre><code>for (;;) {
+    opcode = NEXTOP();
+    oparg = NEXTARG();
+
+    switch (opcode) {
+        case TARGET(LOAD_FAST): {
+            PyObject *value = GETLOCAL(oparg);
+            PUSH(value);
+            DISPATCH();
+        }
+        case TARGET(BINARY_OP): {
+            PyObject *right = POP();
+            PyObject *left = POP();
+            PyObject *res = PyNumber_Add(left, right);
+            PUSH(res);
+            DISPATCH();
+        }
+    }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- 6.4 -->
+            <section id="sub-6-4">
+                <h2>6.4. Дизасемблиране и Анализ с `dis` Модула</h2>
+                <p>Стандартният модул <code>dis</code> позволява декомпилиране на Python код до човешки четими байткод инструкции.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>dis_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import dis
+
+def compute(x: int) -> int:
+    y = x * 2
+    return y + 5
+
+dis.dis(compute)</code></pre>
+                </div>
+
+                <p>Изходът показва отместванията на байтовете, опкодовете, техните аргументи и реалните променливи:</p>
+                <div class="code-container">
+                    <div class="code-header"><span>dis assembly output</span></div>
+                    <pre><code>  2           0 LOAD_FAST                0 (x)
+              2 LOAD_CONST               1 (2)
+              4 BINARY_OP                5 (*)
+              8 STORE_FAST               1 (y)
+
+  3          10 LOAD_FAST                1 (y)
+             12 LOAD_CONST               2 (5)
+             14 BINARY_OP                0 (+)
+             18 RETURN_VALUE</code></pre>
+                </div>
+            </section>
+
+            <!-- 6.5 -->
+            <section id="sub-6-5">
+                <h2>6.5. Анатомия на Основните Опкодове (Opcodes)</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Опкод</th>
+                                <th>Аргумент</th>
+                                <th>Действие върху Стека</th>
+                                <th>Производителност</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>LOAD_FAST</code></td>
+                                <td>Индекс в C масив</td>
+                                <td>Пушва локална променлива на стека</td>
+                                <td>Изключително бързо ($O(1)$ direct array lookup)</td>
+                            </tr>
+                            <tr>
+                                <td><code>LOAD_GLOBAL</code></td>
+                                <td>Име в речник</td>
+                                <td>Търси в globals/builtins dict</td>
+                                <td>По-бавно (dict hash lookup + fallback)</td>
+                            </tr>
+                            <tr>
+                                <td><code>LOAD_DEREF</code></td>
+                                <td>Индекс в Cell</td>
+                                <td>Извлича променлива от Closure</td>
+                                <td>Умерено (указател през Cell обект)</td>
+                            </tr>
+                            <tr>
+                                <td><code>STORE_FAST</code></td>
+                                <td>Индекс в C масив</td>
+                                <td>Попва стойност от стека и я записва локално</td>
+                                <td>Изключително бързо ($O(1)$)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 6.6 -->
+            <section id="sub-6-6">
+                <h2>6.6. PEP 659: Specializing Adaptive Interpreter (Python 3.11+)</h2>
+                <p>От Python 3.11 насам CPython включва **Adaptive Inline Caching**. Когато дадена инструкция се изпълни многократно с един и същ тип данни (напр. събиране на две цели числа с <code>BINARY_OP</code>), интерпретаторът динамично мутира байткода на място към специализирана инструкция (напр. <code>BINARY_OP_ADD_INT</code>), заобикаляйки общия C-API диспач.</p>
+            </section>
+
+            <!-- 6.7 -->
+            <section id="sub-6-7">
+                <h2>6.7. Динамична Модификация на `CodeType`</h2>
+                <p>Тъй като <code>PyCodeObject</code> е immutable обект, за динамична промяна на байткод трябва да създадем нов <code>types.CodeType</code> чрез метода <code>replace()</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>bytecode_mutation.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import types
+
+def original_fn():
+    return "Hello World"
+
+# Извличане на байткода
+code_obj = original_fn.__code__
+
+# Замяна на string константата в co_consts
+new_consts = tuple("Hacked Bytecode!" if c == "Hello World" else c for c in code_obj.co_consts)
+modified_code = code_obj.replace(co_consts=new_consts)
+
+# Замяна на кода на функцията
+original_fn.__code__ = modified_code
+print(original_fn()) # 'Hacked Bytecode!'</code></pre>
+                </div>
+            </section>
+
+            <!-- 6.8 -->
+            <section id="sub-6-8">
+                <h2>6.8. Практически Казус: Оптимизация на Глобални Търсения (Global Lookups)</h2>
+                <p><strong>Проблема:</strong> Вътрешни цикли с интензивни извиквания на глобални функции (напр. <code>math.sin</code> или <code>len</code>) губят време за претърсване на глобалните речници при всяка итерация.</p>
+                <p><strong>Решение:</strong> Присвояване на глобалната функция като локална променлива/подразбиращ се аргумент. Това превръща бавния опкод <code>LOAD_GLOBAL</code> в бърз <code>LOAD_FAST</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>lookup_benchmark.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import math
+import time
+
+# Неоптимизиран вариант: LOAD_GLOBAL при всяка итерация
+def slow_loop(data):
+    res = []
+    for x in data:
+        res.append(math.sin(x)) # LOAD_GLOBAL math + LOAD_ATTR sin
+    return res
+
+# Оптимизиран вариант: LOAD_FAST
+def fast_loop(data):
+    sin = math.sin # Локално присвояване!
+    res = []
+    append = res.append
+    for x in data:
+        append(sin(x)) # LOAD_FAST sin + LOAD_FAST append
+    return res</code></pre>
+                </div>
+            </section>
+
+            <!-- 6.9 -->
+            <section id="sub-6-9">
+                <h2>6.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Използвайте модула <code>dis</code>, за да сравните байткода, генериран от списъчно разширение (<code>[x for x in data]</code>) спрямо традиционен <code>for</code> цикъл с <code>append()</code>. Намерете кои опкодове правят list comprehension по-бързо.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Защо опкодът `LOAD_FAST` е значително по-бърз от `LOAD_GLOBAL`?</p>
+                    <div class="quiz-card" id="q6">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q6')">A) Защото LOAD_FAST чете стойността директно от RAM паметта на видеокартата.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q6')">B) Защото LOAD_FAST използва фиксиран индекс в C масив (f_localsplus), докато LOAD_GLOBAL търси ключ в hash речник.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q6')">C) Защото LOAD_FAST не поддържа типова проверка.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m05_metaprogramming.html" class="btn">⬅️ Към Модул 5: Метапрограмиране</a>
+                <a href="m07_cpython_capi.html" class="btn">Към Модул 7: CPython C-API & C Extensions ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 10: Софтуерна Архитектура, Шаблони и Clean Code</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link active">М10: Архитектура</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 10</div>
+            <ul class="nav-links">
+                <li><a href="#sub-10-1">10.1 SOLID Принципи в Python</a></li>
+                <li><a href="#sub-10-2">10.2 Шаблони за Проектиране</a></li>
+                <li><a href="#sub-10-3">10.3 Dependency Injection</a></li>
+                <li><a href="#sub-10-4">10.4 Clean Architecture</a></li>
+                <li><a href="#sub-10-5">10.5 Domain-Driven Design (DDD)</a></li>
+                <li><a href="#sub-10-6">10.6 Protocols срещу ABC</a></li>
+                <li><a href="#sub-10-7">10.7 Data Classes & Value Objects</a></li>
+                <li><a href="#sub-10-8">10.8 Казус: Enterprise Order System</a></li>
+                <li><a href="#sub-10-9">10.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 3 • Модул 10 от 12</span>
+                <h1>Софтуерна Архитектура, Дизайн Шаблони и Clean Code</h1>
+                <p>Прилагане на SOLID принципите в динамичен език, патърни за мащабируемост, Dependency Injection, Clean Architecture и поддържане на бизнес логиката независима от рамки и бази данни.</p>
+            </div>
+
+            <!-- 10.1 -->
+            <section id="sub-10-1">
+                <h2>10.1. SOLID Принципи през Призмата на Python</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Принцип</th>
+                                <th>Идея</th>
+                                <th>Имплементация в Python</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SRP</strong> (Single Responsibility)</td>
+                                <td>Един клас трябва да има само една причина за промяна.</td>
+                                <td>Разделяне на бази данни/I/O логика от бизнес изчисленията.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>OCP</strong> (Open/Closed)</td>
+                                <td>Отворен за разширение, затворен за модификация.</td>
+                                <td>Използване на абстрактни класове, полиморфизъм и декоратори.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>LSP</strong> (Liskov Substitution)</td>
+                                <td>Подкласовете трябва да могат да заменят базовите класове.</td>
+                                <td>Спазване на интерфейсните договори без хвърляне на неочаквани грешки.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ISP</strong> (Interface Segregation)</td>
+                                <td>Малки, специализирани интерфейси пред един гигантски.</td>
+                                <td>Множествено наследяване с `typing.Protocol` или леки ABCs.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DIP</strong> (Dependency Inversion)</td>
+                                <td>Зависимост от абстракции, а не от конкретни реализации.</td>
+                                <td>Подаване на обекти през `__init__` вместо вътрешно инстанциране.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 10.2 -->
+            <section id="sub-10-2">
+                <h2>10.2. Основни Design Patterns в Python</h2>
+                <p>Python предоставя синтактични улеснения (First-Class Functions, Decorators, Dynamic Typing), които пращат някои класически GOF шаблони в миналото, докато други остават жизнено важни:</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>strategy_pattern.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from typing import Callable, Sequence
+
+# В Python Strategy pattern често е просто подаване на функция!
+DiscountStrategy = Callable[[float], float]
+
+def regular_discount(price: float) -> float:
+    return price * 0.95
+
+def vip_discount(price: float) -> float:
+    return price * 0.80
+
+class Order:
+    def __init__(self, price: float, discount_strategy: DiscountStrategy = regular_discount):
+        self.price = price
+        self.discount_strategy = discount_strategy
+
+    def calculate_total(self) -> float:
+        return self.discount_strategy(self.price)
+
+order = Order(100.0, discount_strategy=vip_discount)
+print(order.calculate_total()) # 80.0</code></pre>
+                </div>
+            </section>
+
+            <!-- 10.3 -->
+            <section id="sub-10-3">
+                <h2>10.3. Dependency Injection (DI) & Inversion of Control</h2>
+                <p>Dependency Injection премахва твърдите връзки между компонентите (hardcoded dependencies), правейки кода лесен за тестване с Mock обекти.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>dependency_injection.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from typing import Protocol
+
+class MessageSender(Protocol):
+    def send(self, recipient: str, message: str) -> None: ...
+
+class EmailService:
+    def send(self, recipient: str, message: str) -> None:
+        print(f"Изпращане на Email до {recipient}: {message}")
+
+class NotificationManager:
+    # Зависимостта се инжектира през конструктора (DIP)
+    def __init__(self, sender: MessageSender):
+        self.sender = sender
+
+    def notify_user(self, user_email: str):
+        self.sender.send(user_email, "Добре дошли в системата!")</code></pre>
+                </div>
+            </section>
+
+            <!-- 10.4 -->
+            <section id="sub-10-4">
+                <h2>10.4. Clean Architecture & Layered Design</h2>
+                <p>Основната цел на Clean Architecture е **изолацията на бизнес логиката** (Domain) от външни детайли като frameworks (Django/FastAPI), бази данни (SQLAlchemy) или UI.</p>
+                <ul>
+                    <li><strong>Entities / Domain:</strong> Основни бизнес правила и структури от данни. Не зависят от нищо.</li>
+                    <li><strong>Use Cases / Services:</strong> Специфична за приложението бизнес логика.</li>
+                    <li><strong>Adapters / Repositories:</strong> Конвертират данни от базата/API към Domain обекти.</li>
+                    <li><strong>Infrastructure:</strong> Бази данни, уеб рамки, външни API интеграции.</li>
+                </ul>
+            </section>
+
+            <!-- 10.5 -->
+            <section id="sub-10-5">
+                <h2>10.5. Domain-Driven Design (DDD) Основи</h2>
+                <p>DDD поставя акцент върху моделирането на софтуера спрямо реалната бизнес област чрез **Ubiquitous Language** (общ език между инженери и бизнес експерти):</p>
+                <ul>
+                    <li><strong>Entities:</strong> Обекти с уникална идентичност (ID), чиято стойност варира във времето (напр. <code>User</code>, <code>Order</code>).</li>
+                    <li><strong>Value Objects:</strong> Неизменими обекти (Immutable), дефинирани единствено от техните атрибути (напр. <code>Money(amount=10, currency="EUR")</code>).</li>
+                    <li><strong>Aggregates:</strong> Група от Entities и Value Objects, третирани като една единица за консистентност на данните.</li>
+                </ul>
+            </section>
+
+            <!-- 10.6 -->
+            <section id="sub-10-6">
+                <h2>10.6. Structural Subtyping: `typing.Protocol` срещу `abc.ABC`</h2>
+                <p>Докато <code>abc.ABC</code> изисква номинално наследяване (Nominal Subtyping), <code>typing.Protocol</code> реализира статичен **Duck Typing** (Structural Subtyping) без изрично наследяване.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>protocol_vs_abc.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from typing import Protocol
+
+class Renderable(Protocol):
+    def render(self) -> str: ...
+
+# Не наследява Renderable изрично!
+class Button:
+    def render(self) -> str:
+        return "<button>OK</button>"
+
+def draw_component(c: Renderable):
+    print(c.render())
+
+draw_component(Button()) # Валидно за mypy и CPython!</code></pre>
+                </div>
+            </section>
+
+            <!-- 10.7 -->
+            <section id="sub-10-7">
+                <h2>10.7. Data Classes и Неизменими Value Objects</h2>
+                <p>Модулът <code>dataclasses</code> съкращава писането на boilerplate <code>__init__</code>, <code>__repr__</code> и <code>__eq__</code> методи. С <code>frozen=True</code> се създават перфектни Value Objects.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>value_objects.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Money:
+    amount: float
+    currency: str
+
+    def add(self, other: 'Money') -> 'Money':
+        if self.currency != other.currency:
+            raise ValueError("Несъвместими валути!")
+        return Money(self.amount + other.amount, self.currency)
+
+m1 = Money(100.0, "EUR")
+m2 = Money(50.0, "EUR")
+print(m1.add(m2)) # Money(amount=150.0, currency='EUR')
+# m1.amount = 200  # FrozenInstanceError!</code></pre>
+                </div>
+            </section>
+
+            <!-- 10.8 -->
+            <section id="sub-10-8">
+                <h2>10.8. Практически Казус: Enterprise Repository Pattern</h2>
+                <p>Изолиране на SQL логиката зад изчистен Repository интерфейс за лесна подмяна на базата данни или тестване с In-Memory речник.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>repository_pattern.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from typing import Protocol, Optional, Dict
+from dataclasses import dataclass
+
+@dataclass
+class Product:
+    id: str
+    name: str
+    price: float
+
+class ProductRepository(Protocol):
+    def get_by_id(self, product_id: str) -> Optional[Product]: ...
+    def save(self, product: Product) -> None: ...
+
+# In-Memory Релизация за бързи Unit Тестове
+class InMemoryProductRepository:
+    def __init__(self):
+        self._storage: Dict[str, Product] = {}
+
+    def get_by_id(self, product_id: str) -> Optional[Product]:
+        return self._storage.get(product_id)
+
+    def save(self, product: Product) -> None:
+        self._storage[product.id] = product</code></pre>
+                </div>
+            </section>
+
+            <!-- 10.9 -->
+            <section id="sub-10-9">
+                <h2>10.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Създайте система за обработка на плащания, спазваща <strong>Dependency Inversion Principle</strong>. Напишете <code>PaymentProcessor</code> клас, който приема абстракция <code>PaymentGateway</code>, и имплементирайте два конкретни портала: <code>StripeGateway</code> и <code>PayPalGateway</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Каква е основната разлика между `typing.Protocol` и `abc.ABC` в Python?</p>
+                    <div class="quiz-card" id="q10">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q10')">A) Protocol работи само по време на изпълнение (runtime), а ABC е за статичен анализ.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q10')">B) Protocol използва структурно подтипизиране (duck typing), докато ABC изисква изрично наследяване.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q10')">C) ABC не поддържа декоратора @abstractmethod.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m09_performance.html" class="btn">⬅️ Към Модул 9: Performance</a>
+                <a href="m11_testing_devops.html" class="btn">Към Модул 11: Testing & CI/CD ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

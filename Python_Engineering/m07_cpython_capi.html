@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 7: CPython C-API, C Разширения и FFI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link active">М7: C-API & C Extensions</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 7</div>
+            <ul class="nav-links">
+                <li><a href="#sub-7-1">7.1 Введение в CPython C-API</a></li>
+                <li><a href="#sub-7-2">7.2 PyObject, Refcounting & GIL в C</a></li>
+                <li><a href="#sub-7-3">7.3 C Extension от Нулата</a></li>
+                <li><a href="#sub-7-4">7.4 C-FFI с ctypes</a></li>
+                <li><a href="#sub-7-5">7.5 Модерен CFFI Модул</a></li>
+                <li><a href="#sub-7-6">7.6 Cython Компилация</a></li>
+                <li><a href="#sub-7-7">7.7 Bindings с pybind11 / nanobind</a></li>
+                <li><a href="#sub-7-8">7.8 Казус: High-Speed Array Processing</a></li>
+                <li><a href="#sub-7-9">7.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 2 • Модул 7 от 12</span>
+                <h1>CPython C-API, C Разширения и Foreign Function Interface (FFI)</h1>
+                <p>Директна интеграция на C/C++ native код с Python, управление на референциите (Py_INCREF/Py_DECREF) на C ниво, преодоляване на GIL и компилация през Cython и pybind11.</p>
+            </div>
+
+            <!-- 7.1 -->
+            <section id="sub-7-1">
+                <h2>7.1. Защо и Кога Използваме C-API?</h2>
+                <p>CPython е написан на C, което позволява директно извикване на C библиотеки или писане на високопроизводителни модули на C/C++ за следните основни цели:</p>
+                <ul>
+                    <li><strong>Ускорение на критичен код:</strong> Заобикаляне на overhead-а на интерпретатора за $10\times - 100\times$ по-бързо изпълнение.</li>
+                    <li><strong>Заобикаляне на GIL:</strong> Освобождаване на Global Interpreter Lock с <code>Py_BEGIN_ALLOW_THREADS</code> за паралелни изчисления.</li>
+                    <li><strong>Интеграция с Legacy C/C++ Библиотеки:</strong> Директен достъп до системен софтуер, GPU драйвери или хардуер.</li>
+                </ul>
+            </section>
+
+            <!-- 7.2 -->
+            <section id="sub-7-2">
+                <h2>7.2. Менажиране на Референции и GIL на Ниво C</h2>
+                <p>В C няма автоматичен Garbage Collector. Всеки указател от тип <code>PyObject*</code> изисква стриктно проследяване на референциите:</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Тип Референция</th>
+                                <th>Описание</th>
+                                <th>Основни Макроси</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>New Reference</strong></td>
+                                <td>Функцията връща обект с увеличен refcount (+1). Извикващият носи отговорност да го освободи.</td>
+                                <td><code>PyLong_FromLong()</code>, <code>PyUnicode_FromString()</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Borrowed Reference</strong></td>
+                                <td>Връща указател без промяна на refcount. Обектът се притежава от друг собственик.</td>
+                                <td><code>PyTuple_GetItem()</code>, <code>PyList_GetItem()</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Manual Refcount Operations</strong></td>
+                                <td>Увеличаване или намаляване на бройката референции ръчно.</td>
+                                <td><code>Py_INCREF(op)</code>, <code>Py_DECREF(op)</code>, <code>Py_XDECREF(op)</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 7.3 -->
+            <section id="sub-7-3">
+                <h2>7.3. Написване на C Extension от Нулата</h2>
+                <p>Ето пълен пример за C extension модул (<code>fastmath.c</code>), който дефинира функция <code>fast_add(a, b)</code>:</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>fastmath.c (C Source Code)</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>#define PY_SSIZE_T_CLEAN
+#include &lt;Python.h&gt;
+
+// Функция за събиране на две числа
+static PyObject* fastmath_add(PyObject* self, PyObject* args) {
+    long a, b;
+
+    // Парсиране на Python аргументи до C long типове ("ll" -> long long)
+    if (!PyArg_ParseTuple(args, "ll", &a, &b)) {
+        return NULL; // Връща NULL за сигнализиране на изключение
+    }
+
+    long result = a + b;
+    return PyLong_FromLong(result); // Връща нов PyObject*
+}
+
+// Таблица с методи на модула
+static PyMethodDef FastMathMethods[] = {
+    {"fast_add", fastmath_add, METH_VARARGS, "Бързо събиране на две числа на C ниво."},
+    {NULL, NULL, 0, NULL} /* Сигнал за край на таблицата */
+};
+
+// Дефиниция на модула
+static struct PyModuleDef fastmathmodule = {
+    PyModuleDef_HEAD_INIT,
+    "fastmath",
+    "C Extension Модул за математика",
+    -1,
+    FastMathMethods
+};
+
+// Инициализираща функция (PyInit_<modulename>)
+PyMODINIT_FUNC PyInit_fastmath(void) {
+    return PyModuleCreate(&fastmathmodule);
+}</code></pre>
+                </div>
+
+                <p>За компилиране се използва <code>setuptools</code> скрипт:</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>setup.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from setuptools import setup, Extension
+
+module = Extension('fastmath', sources=['fastmath.c'])
+
+setup(
+    name='FastMath',
+    version='1.0',
+    description='C Extension Module',
+    ext_modules=[module]
+)
+# Компилация в терминала: python setup.py build_ext --inplace</code></pre>
+                </div>
+            </section>
+
+            <!-- 7.4 -->
+            <section id="sub-7-4">
+                <h2>7.4. C-FFI Без Компилация: Вграденият `ctypes` Модул</h2>
+                <p>Модулът <code>ctypes</code> позволява зареждане на вече компилирани споделени библиотеки (<code>.so</code> / <code>.dll</code> / <code>.dylib</code>) директно от Python без да е нужен C компилатор на клиента.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>ctypes_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import ctypes
+import platform
+
+# Зареждане на стандартната C библиотека (libc)
+if platform.system() == "Windows":
+    libc = ctypes.cdll.msvcrt
+else:
+    libc = ctypes.CDLL("libc.so.6")
+
+# Дефиниране на C сигнатурата за puts()
+libc.puts.argtypes = [ctypes.c_char_p]
+libc.puts.restype = ctypes.c_int
+
+# Извикване на C функцията директно
+libc.puts(b"Hello directly from C libc via ctypes!")</code></pre>
+                </div>
+            </section>
+
+            <!-- 7.5 -->
+            <section id="sub-7-5">
+                <h2>7.5. CFFI (C Foreign Function Interface)</h2>
+                <p><code>cffi</code> е по-модерна алтернатива на <code>ctypes</code>, позволяваща директно поставяне на C декларации в Python код с C parser валидация.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>cffi_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from cffi import FFI
+
+ffi = FFI()
+
+# Дефиниране на C сигнатури
+ffi.cdef("""
+    int printf(const char *format, ...);
+""")
+
+C = ffi.dlopen(None) # Зареждане на стандартното C пространство
+C.printf(b"CFFI Execution: %d + %d = %d\n", 10, 20, 30)</code></pre>
+                </div>
+            </section>
+
+            <!-- 7.6 -->
+            <section id="sub-7-6">
+                <h2>7.6. Cython: Хибриден Синтаксис за Висока Скорост</h2>
+                <p>Cython транслира надграден Python код (с C типови декларации <code>cdef</code>) директно до суров C код, генерирайки бърз C extension.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>cython_example.pyx</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code># cython: language_level=3
+
+def compute_sum(int n):
+    cdef long long total = 0
+    cdef int i
+    for i in range(n):
+        total += i
+    return total</code></pre>
+                </div>
+            </section>
+
+            <!-- 7.7 -->
+            <section id="sub-7-7">
+                <h2>7.7. Съвременни Bindings: `pybind11` и `nanobind`</h2>
+                <p>За C++ разработчиците <code>pybind11</code> предоставя заглавна библиотека (header-only), която експортира C++ класове и функции към Python с минимален boilerplate и автоматично управление на паметта.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>cpp_binding.cpp (pybind11)</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>#include &lt;pybind11/pybind11.h&gt;
+
+int add(int i, int j) {
+    return i + j;
+}
+
+PYBIND11_MODULE(cpp_math, m) {
+    m.doc() = "pybind11 example plugin";
+    m.def("add", &add, "A function that adds two numbers");
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- 7.8 -->
+            <section id="sub-7-8">
+                <h2>7.8. Практически Казус: Паралелно Изчисление Без GIL</h2>
+                <p>Освобождаване на GIL при тежки математически изчисления върху масиви от данни, позволяващо на истинските OS нишки да работят 100% паралелно на множество CPU ядра.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>nogil_extension.c</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>static PyObject* heavy_computation(PyObject* self, PyObject* args) {
+    long iterations;
+    if (!PyArg_ParseTuple(args, "l", &iterations)) return NULL;
+
+    //Освобождаване на GIL
+    Py_BEGIN_ALLOW_THREADS
+
+    // Суров C код — работи напълно паралелно без намеса на CPython interpreter!
+    double result = 0.0;
+    for (long i = 0; i < iterations; i++) {
+        result += i * 0.0001;
+    }
+
+    // Връщане на GIL обратно преди работа с PyObject
+    Py_END_ALLOW_THREADS
+
+    return PyFloat_FromDouble(result);
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- 7.9 -->
+            <section id="sub-7-9">
+                <h2>7.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете малък скрипт с <code>ctypes</code>, който зарежда стандартната функция <code>qsort</code> от C библиотека и я използва за сортиране на C масив от цели числа, създаден през <code>(ctypes.c_int * size)()</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Какво се случва, ако не повикаме `Py_DECREF()` за нов обект (New Reference), създаден в C extension?</p>
+                    <div class="quiz-card" id="q7">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q7')">A) CPython автоматично го изчиства при изход от C функцията.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q7')">B) Получава се изтичане на памет (Memory Leak), тъй като refcount никога не достига 0.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q7')">C) Програмата хвърля Segmentation Fault веднага.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m06_cpython_bytecode.html" class="btn">⬅️ Към Модул 6: Байткод</a>
+                <a href="m08_concurrency.html" class="btn">Към Модул 8: Асинхронност & Concurrency ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

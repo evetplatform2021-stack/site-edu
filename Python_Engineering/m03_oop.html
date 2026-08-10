@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 3: Напреднало ООП, MRO и Дескриптори</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link active">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 3</div>
+            <ul class="nav-links">
+                <li><a href="#sub-3-1">3.1 Python Data Model & Dunder</a></li>
+                <li><a href="#sub-3-2">3.2 C3 Linearization & MRO</a></li>
+                <li><a href="#sub-3-3">3.3 Механика на super()</a></li>
+                <li><a href="#sub-3-4">3.4 Дескрипторен Протокол</a></li>
+                <li><a href="#sub-3-5">3.5 Data vs Non-Data Descriptors</a></li>
+                <li><a href="#sub-3-6">3.6 Имплементация на @property</a></li>
+                <li><a href="#sub-3-7">3.7 Иерархия на Attribute Lookup</a></li>
+                <li><a href="#sub-3-8">3.8 ABC vs Protocol (Subtyping)</a></li>
+                <li><a href="#sub-3-9">3.9 Казус: Custom ORM Field</a></li>
+                <li><a href="#sub-3-10">3.10 Задача & Самопроверка</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 1 • Модул 3 от 12</span>
+                <h1>Напреднало ООП, Method Resolution Order и Дескриптори</h1>
+                <p>Анатомия на Python Data Model, алгоритъм C3 Линеаризация за множествено наследяване, атрибутен достъп и създаване на декларативни рамки чрез дескриптори.</p>
+            </div>
+
+            <!-- 3.1 -->
+            <section id="sub-3-1">
+                <h2>3.1. Python Data Model и Специални (Dunder) Методи</h2>
+                <p>Python Data Model е интерфейсът, който позволява на вашите собствени обекти да се интегрират с езика. Чрез имплементиране на специални (dunder) методи, потребителските класове поддържат итерация, итерируеми индекси, итеративни оператори и контекстни мениджъри.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>data_model_vector.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import math
+
+class Vector2D:
+    __slots__ = ('_x', '_y')
+
+    def __init__(self, x: float, y: float):
+        self._x = float(x)
+        self._y = float(y)
+
+    def __repr__(self) -> str:
+        return f"Vector2D(x={self._x}, y={self._y})"
+
+    def __abs__(self) -> float:
+        return math.hypot(self._x, self._y)
+
+    def __add__(self, other: "Vector2D") -> "Vector2D":
+        if not isinstance(other, Vector2D):
+            return NotImplemented
+        return Vector2D(self._x + other._x, self._y + other._y)
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Vector2D):
+            return False
+        return self._x == other._x and self._y == other._y
+
+v1 = Vector2D(3, 4)
+v2 = Vector2D(1, 2)
+print(v1 + v2)  # Vector2D(x=4.0, y=6.0)
+print(abs(v1))  # 5.0</code></pre>
+                </div>
+            </section>
+
+            <!-- 3.2 -->
+            <section id="sub-3-2">
+                <h2>3.2. C3 Linearization & Method Resolution Order (MRO)</h2>
+                <p>При множествено наследяване Python избягва диамантения проблем (Diamond Problem) чрез **C3 Linearization** алгоритъма. Той гарантира запазване на монотонността и локалната последователност на наследяване.</p>
+                <p>Формулата за линеаризация на клас $C$ с родители $B_1, B_2, \dots, B_n$ е:</p>
+                
+                <p>$$L(C(B_1 \dots B_n)) = C + \text{merge}(L(B_1), \dots, L(B_n), B_1 \dots B_n)$$</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>mro_diamond.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class O: pass
+class A(O): pass
+class B(O): pass
+class C(A, B): pass
+
+# Проверка на MRO
+print([cls.__name__ for cls in C.mro()])
+# Резултат: ['C', 'A', 'B', 'O', 'object']</code></pre>
+                </div>
+            </section>
+
+            <!-- 3.3 -->
+            <section id="sub-3-3">
+                <h2>3.3. Дълбока Механика на `super()`</h2>
+                <p>Функцията <code>super()</code> не вика директно родителския клас, а връща прокси обект, който делегира метода на **следващия клас в MRO веригата** на екземпляра, от който е извикан.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>super_cooperative.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class Base:
+    def __init__(self):
+        print("Base.__init__")
+
+class MixinA(Base):
+    def __init__(self):
+        print("MixinA.__init__ start")
+        super().__init__()
+        print("MixinA.__init__ end")
+
+class MixinB(Base):
+    def __init__(self):
+        print("MixinB.__init__ start")
+        super().__init__()
+        print("MixinB.__init__ end")
+
+class Concrete(MixinA, MixinB):
+    def __init__(self):
+        print("Concrete.__init__ start")
+        super().__init__()
+        print("Concrete.__init__ end")
+
+c = Concrete()
+# Изход показва как super() преминава през целия MRO: Concrete -> MixinA -> MixinB -> Base</code></pre>
+                </div>
+            </section>
+
+            <!-- 3.4 -->
+            <section id="sub-3-4">
+                <h2>3.4. Протокол за Дескриптори (`__get__`, `__set__`, `__delete__`)</h2>
+                <p>Дескриптор е всеки обект, който дефинира поне един от следните специални методи: <code>__get__()</code>, <code>__set__()</code> или <code>__delete__()</code>. Те прихващат атрибутния достъп на класовете, в които са дефинирани като класови атрибути.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>descriptor_basic.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class BoundedNumber:
+    def __init__(self, min_val: float, max_val: float):
+        self.min_val = min_val
+        self.max_val = max_val
+
+    def __set_name__(self, owner, name):
+        self.private_name = f"_{name}"
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        return getattr(instance, self.private_name, self.min_val)
+
+    def __set__(self, instance, val: float):
+        if not (self.min_val <= val <= self.max_val):
+            raise ValueError(f"Стойността {val} трябва да бъде между {self.min_val} и {self.max_val}")
+        setattr(instance, self.private_name, val)
+
+class GameCharacter:
+    health = BoundedNumber(0, 100)
+    mana = BoundedNumber(0, 50)
+
+hero = GameCharacter()
+hero.health = 80  # Валидно
+# hero.health = 150  # Грешка: ValueError!</code></pre>
+                </div>
+            </section>
+
+            <!-- 3.5 -->
+            <section id="sub-3-5">
+                <h2>3.5. Data Descriptors срещу Non-Data Descriptors</h2>
+                <p>Разликата определя приоритета при търсене на атрибути (Attribute Lookup):</p>
+                <ul>
+                    <li><strong>Data Descriptor:</strong> Дефинира <code>__set__()</code> и/или <code>__delete__()</code>. Има по-висок приоритет от <code>__dict__</code> на екземпляра!</li>
+                    <li><strong>Non-Data Descriptor:</strong> Дефинира само <code>__get__()</code> (напр. обикновени методи, <code>@classmethod</code>, <code>@staticmethod</code>). Припокрива се, ако в <code>instance.__dict__</code> се запише ключ със същото име.</li>
+                </ul>
+            </section>
+
+            <!-- 3.6 -->
+            <section id="sub-3-6">
+                <h2>3.6. Чиста Имплементация на `@property` под капака</h2>
+                <p>Декораторът <code>@property</code> е нищо повече от вграден Data Descriptor.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>custom_property.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class PureProperty:
+    def __init__(self, fget=None, fset=None):
+        self.fget = fget
+        self.fset = fset
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        if self.fget is None:
+            raise AttributeError("Unreadable attribute")
+        return self.fget(instance)
+
+    def __set__(self, instance, value):
+        if self.fset is None:
+            raise AttributeError("Can't set attribute")
+        self.fset(instance, value)
+
+    def setter(self, fset):
+        return type(self)(self.fget, fset)</code></pre>
+                </div>
+            </section>
+
+            <!-- 3.7 -->
+            <section id="sub-3-7">
+                <h2>3.7. Пълна Иерархия на Достъпа до Атрибут (Attribute Lookup Order)</h2>
+                <p>Когато изпълните <code>obj.attr</code>, CPython следва следния строго определен ред:</p>
+                <ol>
+                    <li>Проверява дали <code>attr</code> е <strong>Data Descriptor</strong> в класа на <code>obj</code> (или неговите родители в MRO).</li>
+                    <li>Проверява дали <code>attr</code> съществува в <code>obj.__dict__</code>.</li>
+                    <li>Проверява дали <code>attr</code> е <strong>Non-Data Descriptor</strong> или обикновен атрибут в класа на <code>obj</code> (и MRO).</li>
+                    <li>Извиква метода <code>__getattr__(attr)</code>, ако е дефиниран в класа.</li>
+                    <li>Хвърля изключение <code>AttributeError</code>.</li>
+                </ol>
+            </section>
+
+            <!-- 3.8 -->
+            <section id="sub-3-8">
+                <h2>3.8. Nominal Subtyping (ABC) срещу Structural Subtyping (Protocol)</h2>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Характеристика</th>
+                                <th>Abstract Base Class (<code>abc.ABC</code>)</th>
+                                <th>Protocol Interface (<code>typing.Protocol</code>)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Тип проверка</strong></td>
+                                <td>Nominal (Изисква изрично наследяване)</td>
+                                <td>Structural (Duck Typing на статично ниво)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Runtime разход</strong></td>
+                                <td>Малък (Проверка при извикване/инициализация)</td>
+                                <td>Нулев (Ползва се главно от mypy/pyright)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Използва се за</strong></td>
+                                <td>Строги йерархии и споделяне на код</td>
+                                <td>Гъвкав компонентен дизайн и DI</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 3.9 -->
+            <section id="sub-3-9">
+                <h2>3.9. Практически Казус: Изграждане на Декларативен ORM Field Validator</h2>
+                <div class="code-container">
+                    <div class="code-header"><span>orm_field_descriptor.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class StringField:
+    def __init__(self, max_length: int):
+        self.max_length = max_length
+
+    def __set_name__(self, owner, name):
+        self.name = name
+
+    def __get__(self, instance, owner):
+        if instance is None: return self
+        return instance.__dict__.get(self.name, "")
+
+    def __set__(self, instance, value):
+        if not isinstance(value, str):
+            raise TypeError(f"Полето {self.name} трябва да бъде str")
+        if len(value) > self.max_length:
+            raise ValueError(f"Полето {self.name} надвишава {self.max_length} символа")
+        instance.__dict__[self.name] = value
+
+class UserProfile:
+    username = StringField(max_length=15)
+
+u = UserProfile()
+u.username = "engineering"  # Успешно
+# u.username = "this_username_is_way_too_long"  # ValueError!</code></pre>
+                </div>
+            </section>
+
+            <!-- 3.10 -->
+            <section id="sub-3-10">
+                <h2>3.10. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Създайте дескриптор <code>@ReadOnlyField</code>, който позволява задаване на стойност на атрибут само веднъж при инициализация (в <code>__init__</code>), а при последващ опит за промяна хвърля <code>AttributeError</code>.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Ако клас дефинира атрибут с име, съвпадащо с ключ в <code>instance.__dict__</code>, кой има приоритет, ако атрибутът е Data Descriptor?</p>
+                    <div class="quiz-card" id="q3">
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q3')">A) Data Descriptor има по-висок приоритет и прихваща достъпа.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q3')">B) Стойността от instance.__dict__ винаги пренаписва всичко.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q3')">C) Хвърля се изключение за конфликт в имената.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m02_memory.html" class="btn">⬅️ Към Модул 2: Памет</a>
+                <a href="m04_functional.html" class="btn">Към Модул 4: Функционално Програмиране ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</body>
+</html>

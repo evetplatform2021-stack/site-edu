@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Академия за Интерактивни Учебни Курсове — Главна Страница</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           ГЛОБАЛНИ ПРОМЕНЛИВИ И ТЕМИ
+           ========================================================================== */
+        :root[data-theme="dark"] {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --accent: #38bdf8;
+            --accent-glow: rgba(56, 189, 248, 0.15);
+            --accent-secondary: #818cf8;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+            --code-bg: #090d16;
+            --success: #4ade80;
+            --warning: #fbbf24;
+            --danger: #f87171;
+            --shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        :root[data-theme="light"] {
+            --bg-primary: #f8fafc;
+            --bg-secondary: #ffffff;
+            --bg-card: #ffffff;
+            --accent: #0284c7;
+            --accent-glow: rgba(2, 132, 199, 0.1);
+            --accent-secondary: #4f46e5;
+            --text-primary: #0f172a;
+            --text-secondary: #475569;
+            --border-color: #e2e8f0;
+            --code-bg: #1e293b;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.7;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Индикатор за скрол */
+        #progress-bar {
+            position: fixed; top: 0; left: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            width: 0%; z-index: 1000; transition: width 0.1s ease-out;
+        }
+
+        /* Навигация / Хедър */
+        header.top-header {
+            position: sticky; top: 0;
+            background-color: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0.75rem 2rem; display: flex;
+            justify-content: space-between; align-items: center; z-index: 900;
+        }
+
+        [data-theme="light"] header.top-header { background-color: rgba(248, 250, 252, 0.9); }
+
+        .logo-title {
+            font-weight: 800; font-size: 1.2rem;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            display: flex; align-items: center; gap: 0.6rem;
+            text-decoration: none;
+        }
+
+        .btn {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-primary); padding: 0.5rem 1rem; border-radius: 8px;
+            cursor: pointer; font-weight: 600; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a !important;
+            font-weight: 700;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover {
+            opacity: 0.9;
+            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
+        }
+
+        /* Лейаут съдържание */
+        main.content {
+            flex-grow: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 2.5rem;
+            text-align: center;
+        }
+        .badge {
+            display: inline-block;
+            background: var(--accent-glow);
+            color: var(--accent);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent);
+        }
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            line-height: 1.25;
+            margin-bottom: 1rem;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Банер със статистика */
+        .stats-banner {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 1.75rem;
+            margin: 2.5rem 0;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+        .stat-item h4 {
+            font-size: 2rem;
+            color: var(--accent);
+            margin: 0;
+            font-weight: 800;
+        }
+        .stat-item p {
+            margin: 0.25rem 0 0 0;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Мрежа с налични курсове */
+        .courses-section {
+            margin-top: 3rem;
+        }
+        .courses-section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .course-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+        .course-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .course-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--accent);
+        }
+        .course-card:hover::before {
+            opacity: 1;
+        }
+
+        .course-header {
+            margin-bottom: 1rem;
+        }
+        .course-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--accent);
+        }
+        .course-card h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .course-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Тагове / Технологии */
+        .course-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-family: 'Fira Code', monospace;
+        }
+
+        .course-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        footer {
+            margin-top: auto;
+            padding: 2rem 0;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Прогрес бар при скролиране -->
+    <div id="progress-bar"></div>
+
+    <!-- Главна навигация -->
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
+            Interactive Learning Portal
+        </a>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()" title="Смяна на темата">
+                <span id="theme-icon">🌙</span> Тема
+            </button>
+            <button class="btn" onclick="window.print()" title="Печат">🖨️</button>
+        </div>
+    </header>
+
+    <!-- Основно съдържание -->
+    <main class="content">
+
+        <!-- Герой банер -->
+        <div class="hero">
+            <span class="badge">Централен Портал за Обучение</span>
+            <h1>Интерактивни Образователни Курсове</h1>
+            <p>Добре дошли в централното място за достъп до специализираните интерактивни курсове. Изберете направление и започнете вашето практическо обучение.</p>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-banner">
+            <div class="stat-item">
+                <h4>2</h4>
+                <p>Пълни Специализирани Курса</p>
+            </div>
+            <div class="stat-item">
+                <h4>15+</h4>
+                <p>Задълбочени Модула</p>
+            </div>
+            <div class="stat-item">
+                <h4>100%</h4>
+                <p>Интерактивно Обучение</p>
+            </div>
+            <div class="stat-item">
+                <h4>50+</h4>
+                <p>Практически Проекта & Примери</p>
+            </div>
+        </div>
+
+        <!-- Списък с курсове -->
+        <section class="courses-section">
+            <h2 class="courses-section-title">
+                <span>📚</span> Налични Курсове
+            </h2>
+
+            <div class="courses-grid">
+
+                <!-- Курс 1: Python Engineering -->
+                <div class="course-card">
+                    <div>
+                        <div class="course-header">
+                            <div class="course-icon">🐍</div>
+                            <h3>Python Engineering</h3>
+                        </div>
+                        <p>Изчерпателно инженерно ръководство в 3 тома и 12 модула. Овладейте CPython паметта, метапрограмирането, асинхронното програмиране, векторизацията и проектирането на високопроизводителни системи.</p>
+                        
+                        <div class="course-tags">
+                            <span class="tag">CPython</span>
+                            <span class="tag">Asyncio</span>
+                            <span class="tag">Memory & GC</span>
+                            <span class="tag">OOP & Design Patterns</span>
+                            <span class="tag">DevOps</span>
+                        </div>
+                    </div>
+
+                    <div class="course-actions">
+                        <span style="font-size:0.85rem; color: var(--text-secondary);">12 Модула • 3 Тома</span>
+                        <a href="Python_Engineering/index.html" class="btn btn-primary">Стартирай Курса ➔</a>
+                    </div>
+                </div>
+
+                <!-- Курс 2: AI for Designers -->
+                <div class="course-card">
+                    <div>
+                        <div class="course-header">
+                            <div class="course-icon" style="background: rgba(129, 140, 248, 0.15); color: #818cf8; border-color: #818cf8;">🎨</div>
+                            <h3>AI for Designers</h3>
+                        </div>
+                        <p>Интерактивно ръководство за приложението на изкуствения интелект в дизайнерския процес. Генеративен UI/UX, Midjourney/Stable Diffusion workflows, автоматизация на активи и Prompt Engineering.</p>
+                        
+                        <div class="course-tags">
+                            <span class="tag">Generative AI</span>
+                            <span class="tag">Prompt Engineering</span>
+                            <span class="tag">UI/UX Workflows</span>
+                            <span class="tag">Midjourney</span>
+                            <span class="tag">Figma AI</span>
+                        </div>
+                    </div>
+
+                    <div class="course-actions">
+                        <span style="font-size:0.85rem; color: var(--text-secondary);">Практическо Ръководство</span>
+                        <a href="AI_for_Designers/index.html" class="btn btn-primary" style="background: #818cf8;">Стартирай Курса ➔</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <footer>
+            <p>© Interactive Learning Academy • Портал за интерактивни учебни материали</p>
+        </footer>
+
+    </main>
+
+    <!-- Скрипт за интерактивност -->
+    <script>
+        // Прогрес бар при скрол
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        // Превключване на тъмна / светла тема
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem("theme", newTheme);
+        }
+
+        // Запомняне на избраната тема от потребителя
+        (function() {
+            const savedTheme = localStorage.getItem("theme");
+            if (savedTheme) {
+                document.documentElement.setAttribute("data-theme", savedTheme);
+                const themeIcon = document.getElementById("theme-icon");
+                if (themeIcon) {
+                    themeIcon.textContent = savedTheme === "dark" ? "🌙" : "☀️";
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

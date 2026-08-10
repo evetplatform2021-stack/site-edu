@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 2: Управление на Паметта и Garbage Collection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link active">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 2</div>
+            <ul class="nav-links">
+                <li><a href="#sub-2-1">2.1 PyMalloc Архитектура</a></li>
+                <li><a href="#sub-2-2">2.2 Arenas, Pools & Blocks</a></li>
+                <li><a href="#sub-2-3">2.3 Reference Counting C-API</a></li>
+                <li><a href="#sub-2-4">2.4 Generational GC Модел</a></li>
+                <li><a href="#sub-2-5">2.5 GC Алгоритъм за Цикли</a></li>
+                <li><a href="#sub-2-6">2.6 Weak References (weakref)</a></li>
+                <li><a href="#sub-2-7">2.7 Профилиране с tracemalloc</a></li>
+                <li><a href="#sub-2-8">2.8 Практически Казус: Memory Leak</a></li>
+                <li><a href="#sub-2-9">2.9 Задача & Интерактивен Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 1 • Модул 2 от 12</span>
+                <h1>Управление на Паметта, PyMalloc & Garbage Collection</h1>
+                <p>Анатомия на системния алокатор на CPython, разплитане на циклично реферирани обекти, слаби референции и инструменти за откриване на течове на памет.</p>
+            </div>
+
+            <!-- 2.1 -->
+            <section id="sub-2-1">
+                <h2>2.1. Иерархия на Паметта в CPython и PyMalloc</h2>
+                <p>CPython внедрява собствен специализиран алокатор на памет, наречен <strong>PyMalloc</strong>. Вместо да прави скъпи системни извиквания към OS през стандартния C <code>malloc()</code> за всеки един от хилядите малки обекти, PyMalloc заделя големи блокове памет и ги управлява в потребителското пространство (user-space).</p>
+                <p>PyMalloc се активира за всички обекти с размер <strong>по-малък или равен на 512 байта</strong>. Всички по-големи алокации се пренасочват директно към системния <code>malloc()</code> на операционната система.</p>
+
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ниво в Иерархията</th>
+                                <th>Име на Структурата</th>
+                                <th>Типичен Размер</th>
+                                <th>Отговорност / Управление</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Ниво 3</strong></td>
+                                <td>Python Objects</td>
+                                <td>Променлив</td>
+                                <td>Специфични за типа алокатори (int, list, dict)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ниво 2</strong></td>
+                                <td>PyMalloc Allocator</td>
+                                <td>&le; 512 bytes</td>
+                                <td>Организация в Arenas, Pools и Blocks</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ниво 1</strong></td>
+                                <td>Virtual Memory Allocator</td>
+                                <td>4 KB / Page</td>
+                                <td>C Runtime (<code>malloc</code> / <code>mmap</code> / <code>VirtualAlloc</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ниво 0</strong></td>
+                                <td>Physical Memory (RAM)</td>
+                                <td>Хардуер</td>
+                                <td>Операционна система (Kernel MMU)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 2.2 -->
+            <section id="sub-2-2">
+                <h2>2.2. Архитектура на PyMalloc: Arenas, Pools и Blocks</h2>
+                <p>Паметта под контрола на PyMalloc се организира на три основни структурни нива:</p>
+                <ul>
+                    <li><strong>Block (Блок):</strong> Минималната единица памет с твърд размер (от 8 до 512 байта, кратен на 8). Един блок съдържа точно един <code>PyObject</code>.</li>
+                    <li><strong>Pool (Пула):</strong> Контигуален блок с размер точно <strong>4 KB</strong> (равен на една виртуална страница памет). Всеки Pool съдържа блокове от точно *един* размерен клас (size-class). Половете се поддържат в двойно свързани списъци.</li>
+                    <li><strong>Arena (Арена):</strong> Голям непрекъснат блок памет с размер <strong>256 KB</strong>, заделен директно през <code>malloc()</code>. Една Arena съдържа точно 64 Pool-а и проследява кои от тях са свободни, частично запълнени или пълни.</li>
+                </ul>
+
+                <div class="code-container">
+                    <div class="code-header"><span>pymalloc_layout.txt</span></div>
+                    <pre><code>+-----------------------------------------------------------------------+
+| ARENA (256 KB)                                                        |
+| +-------------------+ +-------------------+     +-------------------+ |
+| | POOL 0 (4 KB)     | | POOL 1 (4 KB)     | ... | POOL 63 (4 KB)    | |
+| | Size Class: 32 B  | | Size Class: 64 B  |     | Size Class: 512 B | |
+| | [Blk][Blk][Blk]   | | [Block][Block]    |     | [ Block ]         | |
+| +-------------------+ +-------------------+     +-------------------+ |
++-----------------------------------------------------------------------+</code></pre>
+                </div>
+            </section>
+
+            <!-- 2.3 -->
+            <section id="sub-2-3">
+                <h2>2.3. Механика на Reference Counting и C-API Macro Управление</h2>
+                <p>Основният механизъм за управление на жизнения цикъл на обектите в CPython е референтният брояч (<code>ob_refcnt</code>). Всяка променлива, сочеща към даден обект, увеличава този брояч.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>refcount_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import sys
+
+data = [1, 2, 3]
+print(sys.getrefcount(data))  # Резултат: 2 (data + аргумента във функцията)
+
+alias = data
+print(sys.getrefcount(data))  # Резултат: 3
+
+del alias
+print(sys.getrefcount(data))  # Резултат: 2</code></pre>
+                </div>
+                <p>На ниво C-API управлението се извършва чрез макросите <code>Py_INCREF()</code> и <code>Py_DECREF()</code>. Когато <code>Py_DECREF()</code> заде Same refcount до 0, незабавно се извиква деструкторът <code>tp_dealloc</code> за освобождаване на паметта.</p>
+            </section>
+
+            <!-- 2.4 -->
+            <section id="sub-2-4">
+                <h2>2.4. Поколения на Garbage Collector-а (Generational GC)</h2>
+                <p>Референтният брояч не може да открива и освобождава <strong>циклични референции</strong> (когато Обект А сочи към Обект Б, а Обект Б сочи обратно към Обект А, без външна променлива да сочи към тях). За тази цел CPython внедрява допълнителен **Generational Cyclic Garbage Collector**.</p>
+                <p>GC организира обектите в 3 поколения (Generations):</p>
+                <ul>
+                    <li><strong>Generation 0 (Gen 0):</strong> Тук постъпват всички новосъздадени контейнерни обекти. Сканира се най-често.</li>
+                    <li><strong>Generation 1 (Gen 1):</strong> Обектите, оцелели след сканиране на Gen 0, се повишават в Gen 1.</li>
+                    <li><strong>Generation 2 (Gen 2):</strong> Дълготрайни обекти, оцелели множество почиствания. Сканира се рядко.</li>
+                </ul>
+
+                <div class="code-container">
+                    <div class="code-header"><span>gc_thresholds.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import gc
+
+# Извличане на праговете за задействане на GC (Thresholds)
+print(gc.get_threshold())  # Обикновено (700, 10, 10)
+
+# gc.collect() ръчно стартира пълно почистване на всички поколения
+unreachable = gc.collect()
+print(f"Освободени недостижими обекти: {unreachable}")</code></pre>
+                </div>
+            </section>
+
+            <!-- 2.5 -->
+            <section id="sub-2-5">
+                <h2>2.5. Алгоритъм за Откриване на Цикли (Tri-color Marking Derivative)</h2>
+                <p>За откриване на затворени референтни цикли GC изпълнява следните стъпки върху контейнерните обекти (листове, речници, персонализирани класове):</p>
+                <ol>
+                    <li>Копира референтния брояч на всеки обект в временно поле <code>gc_refs</code>.</li>
+                    <li>Обхожда всички референции вътре в контейнера и за всеки рефериран обект намалява неговия <code>gc_refs</code> с 1.</li>
+                    <li>Всички обекти, чийто <code>gc_refs</code> достигне 0, са потенциално изолирани в цикли и се маркират за унищожаване.</li>
+                </ol>
+            </section>
+
+            <!-- 2.6 -->
+            <section id="sub-2-6">
+                <h2>2.6. Слаби Референции (`weakref` Модул)</h2>
+                <p>Слабите референции позволяват достъп до обект без увеличаване на неговия референтен брояч (<code>ob_refcnt</code>). Те са критично важни за кеширащи системи и предотвратяване на референтни цикли.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>weakref_example.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import weakref
+
+class HeavyCacheObject:
+    def __init__(self, name):
+        self.name = name
+
+obj = HeavyCacheObject("DataPayload")
+r = weakref.ref(obj)  # Създаване на слаба референция
+
+print(r() is obj)     # True -> Обектът все още съществува
+del obj               # Премахване на единствената силна референция
+print(r())            # None -> GC е освободил обекта незабавно!</code></pre>
+                </div>
+            </section>
+
+            <!-- 2.7 -->
+            <section id="sub-2-7">
+                <h2>2.7. Профилиране на Паметта с `tracemalloc`</h2>
+                <p>Стандартната библиотека включва модула <code>tracemalloc</code>, който проследява точната C-линия код, където е била заделена паметта.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>tracemalloc_demo.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import tracemalloc
+
+tracemalloc.start()
+
+# Симулиране на алокация
+leaky_list = [dict(a=i) for i in range(10000)]
+
+snapshot = tracemalloc.take_snapshot()
+top_stats = snapshot.statistics('lineno')
+
+print("[ Top 3 Memory Allocations ]")
+for stat in top_stats[:3]:
+    print(stat)</code></pre>
+                </div>
+            </section>
+
+            <!-- 2.8 -->
+            <section id="sub-2-8">
+                <h2>2.8. Практически Казус: Откриване на Memory Leak в Event Pipeline</h2>
+                <p><strong>Проблем:</strong> Дълго работеща микроуслуга консумира постоянно нарастващ размер RAM (+500MB за 24 часа). Причината е регистрация на callback функции, сочещи към родителски обекти през closure, създавайки незабележим цикъл.</p>
+                <p><strong>Решение:</strong> Използване на <code>gc.get_objects()</code> и замени на closure референциите с <code>weakref.WeakKeyDictionary</code>.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>leak_fix.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import weakref
+
+class EventDispatcher:
+    def __init__(self):
+        # Използване на WeakKeyDictionary вместо обикновен dict
+        self._listeners = weakref.WeakKeyDictionary()
+
+    def register(self, listener, callback):
+        self._listeners[listener] = callback</code></pre>
+                </div>
+            </section>
+
+            <!-- 2.9 -->
+            <section id="sub-2-9">
+                <h2>2.9. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете кеширащ декоратор <code>@weak_memoize</code>, който съхранява резултатите от функция, но използва <code>WeakValueDictionary</code>, за да позволи на Garbage Collector-а да изчисти кешираните обекти, когато те вече не се използват никъде в приложението.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Какво се случва с обект с размер 128 байта, когато бъде създаден в CPython?</p>
+                    <div class="quiz-card" id="q2">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q2')">A) Извиква се директно системното извикване malloc() на Linux kernel-а.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q2')">B) Заделя се от PyMalloc в съответния Pool с размерен клас (Size Class) за 128 байта вътре в 256KB Arena.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q2')">C) Записва се директно в Generation 2 на Garbage Collector-а.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m01_foundations.html" class="btn">⬅️ Към Модул 1: Основи</a>
+                <a href="m03_oop.html" class="btn">Към Модул 3: ООП & Метапрограмиране ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

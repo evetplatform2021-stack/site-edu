@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 4: Функционално Програмиране, Closures и Генератори</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <!-- <header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </div>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link active">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header> -->
+	<header class="top-header">
+        <a href="index.html" class="logo-title" style="text-decoration:none; color:inherit;">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Python Engineering
+        </a>
+
+        <nav class="module-nav">
+            <a href="m01_foundations.html" class="mod-link">М1: Основи</a>
+            <a href="m02_memory.html" class="mod-link">М2: Памет</a>
+            <a href="m03_oop.html" class="mod-link">М3: OOP</a>
+            <a href="m04_functional.html" class="mod-link">М4: Функции</a>
+            <a href="m05_metaprogramming.html" class="mod-link">М5: Метапрограмиране</a>
+            <a href="m06_cpython_bytecode.html" class="mod-link">М6: Байткод</a>
+            <a href="m07_cpython_capi.html" class="mod-link">М7: C-API</a>
+            <a href="m08_concurrency.html" class="mod-link">М8: Concurrency</a>
+            <a href="m09_performance.html" class="mod-link">М9: Performance</a>
+            <a href="m10_architecture.html" class="mod-link">М10: Архитектура</a>
+            <a href="m11_testing_devops.html" class="mod-link">М11: Testing & DevOps</a>
+            <a href="m12_capstone.html" class="mod-link">М12: Capstone</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Съдържание на Модул 4</div>
+            <ul class="nav-links">
+                <li><a href="#sub-4-1">4.1 Code Objects & Attributes</a></li>
+                <li><a href="#sub-4-2">4.3 LEGB Scope Rule</a></li>
+                <li><a href="#sub-4-3">4.3 Closures & Cell Objects</a></li>
+                <li><a href="#sub-4-4">4.4 Декоратори & functools</a></li>
+                <li><a href="#sub-4-5">4.5 Итераторен Протокол</a></li>
+                <li><a href="#sub-4-6">4.6 Генератори & yield</a></li>
+                <li><a href="#sub-4-7">4.7 Advanced Generators (send)</a></li>
+                <li><a href="#sub-4-8">4.8 Функционални Примитиви</a></li>
+                <li><a href="#sub-4-9">4.9 Казус: Streaming Pipeline</a></li>
+                <li><a href="#sub-4-10">4.10 Задача & Самопроверка</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Том 1 • Модул 4 от 12</span>
+                <h1>Функционално Програмиране, Closures, Итератори и Генератори</h1>
+                <p>Анатомия на функциите като First-Class Citizens, вътрешно състояние чрез Cell обекти, замразяване на фреймове при генератори и стрийминг на данни.</p>
+            </div>
+
+            <!-- 4.1 -->
+            <section id="sub-4-1">
+                <h2>4.1. Първокласни Функции и Анатомия на `PyCodeObject`</h2>
+                <p>В Python функциите са обекти от първа класа (First-Class Citizens). Всеки функционален обект е обвивка около компилиран **Code Object** (достъпен чрез атрибута <code>__code__</code>), който съдържа чистия байткод и константите.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>code_object_inspection.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>def calculate_tax(amount: float, rate: float = 0.2) -> float:
+    base_fee = 5.0
+    return (amount * rate) + base_fee
+
+code = calculate_tax.__code__
+
+print("Локални променливи (co_varnames):", code.co_varnames)
+print("Константи (co_consts):             ", code.co_consts)
+print("Брой аргументи (co_argcount):      ", code.co_argcount)
+print("Суров Байткод (co_code):           ", code.co_code[:10]) # Байтове</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.2 -->
+            <section id="sub-4-2">
+                <h2>4.2. Области на Видимост: LEGB Правило и `nonlocal`</h2>
+                <p>При търсене на променлива Python следва стриктното правило **LEGB**:</p>
+                <ol>
+                    <li><strong>L (Local):</strong> Дефинирани вътре във текущата функция.</li>
+                    <li><strong>E (Enclosing):</strong> Дефинирани във влагащи (външни) функции.</li>
+                    <li><strong>G (Global):</strong> Дефинирани на ниво модул.</li>
+                    <li><strong>B (Built-in):</strong> Вградени имена в езика (<code>len</code>, <code>range</code>, <code>ValueError</code>).</li>
+                </ol>
+                <p>Ключовата дума <code>nonlocal</code> позволява модифициране на променливи от Enclosing обхвата без преминаване към Global.</p>
+            </section>
+
+            <!-- 4.3 -->
+            <section id="sub-4-3">
+                <h2>4.3. Механика на Closures и Cell Обекти</h2>
+                <p>Заграждението (Closure) възниква, когато вътрешна функция реферира променлива от външна функция, дори след като външната функция е приключила изпълнението си. CPython реализира това чрез специални **Cell обекти** в атрибута <code>__closure__</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>closure_cells.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>def make_counter(start: int = 0):
+    count = start
+    def increment():
+        nonlocal count
+        count += 1
+        return count
+    return increment
+
+counter = make_counter(10)
+print(counter()) # 11
+print(counter()) # 12
+
+# Инспекция на Cell обекта в паметта
+cell = counter.__closure__[0]
+print("Тип на клетката:   ", type(cell))
+print("Текуща стойност:   ", cell.cell_contents) # 12</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.4 -->
+            <section id="sub-4-4">
+                <h2>4.4. Напреднали Декоратори и `functools.wraps`</h2>
+                <p>Декораторите са мета-програмистки механизъм за обвиване на функции. За запазване на метаданните (име, docstring, анотации) е задължително използването на <code>@functools.wraps</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>advanced_decorator.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>import functools
+import time
+from typing import Callable, Any
+
+def retry(retries: int = 3, delay: float = 0.1):
+    def decorator(func: Callable) -> Callable:
+        @functools.wraps(func)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            last_exception = None
+            for attempt in range(1, retries + 1):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last_exception = e
+                    time.sleep(delay)
+            raise last_exception
+        return wrapper
+    return decorator
+
+@retry(retries=2, delay=0.05)
+def unstable_api_call():
+    """Симмулира API извикване"""
+    raise ConnectionError("Сървърът не отговаря")
+
+# Метаданните са запазени благодарение на wraps:
+print(unstable_api_call.__name__) # 'unstable_api_call'
+print(unstable_api_call.__doc__)  # 'Симмулира API извикване'</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.5 -->
+            <section id="sub-4-5">
+                <h2>4.5. Итераторен Протокол (`__iter__` и `__next__`)</h2>
+                <p>Всеки итеруем обект (Iterable) връща Итератор (Iterator) чрез <code>__iter__()</code>. Итераторът трябва да имплементира <code>__next__()</code> и да хвърля изключение <code>StopIteration</code> при изчерпване.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>custom_iterator.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>class FibonacciIterator:
+    def __init__(self, limit: int):
+        self.limit = limit
+        self.count = 0
+        self.a, self.b = 0, 1
+
+    def __iter__(self):
+        return self
+
+    def __next__(self) -> int:
+        if self.count >= self.limit:
+            raise StopIteration
+        val = self.a
+        self.a, self.b = self.b, self.a + self.b
+        self.count += 1
+        return val
+
+for num in FibonacciIterator(5):
+    print(num, end=" ") # 0 1 1 2 3</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.6 -->
+            <section id="sub-4-6">
+                <h2>4.6. Генератори и `yield` Механика</h2>
+                <p>Генераторите са специален вид итератори, създадени чрез функции с думата <code>yield</code>. При изпълнение на <code>yield</code>, стек-фреймът на функцията се **замразява** в паметта ($O(1)$ разход на RAM) заедно с локалните променливи, до следващото извикване на <code>next()</code>.</p>
+            </section>
+
+            <!-- 4.7 -->
+            <section id="sub-4-7">
+                <h2>4.7. Двупосочна Комуникация: `.send()`, `.throw()` и `yield from`</h2>
+                <p>Генераторите могат не само да излъчват данни, но и да ги приемат динамично по време на изпълнение чрез метода <code>.send()</code>.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>generator_send.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>def moving_average():
+    total = 0.0
+    count = 0
+    average = None
+    while True:
+        # Приемане на стойност подадена чрез .send()
+        val = yield average
+        if val is None:
+            break
+        total += val
+        count += 1
+        average = total / count
+
+avg_gen = moving_average()
+next(avg_gen) # Инициализация (Prime generator)
+
+print(avg_gen.send(10)) # 10.0
+print(avg_gen.send(20)) # 15.0
+print(avg_gen.send(30)) # 20.0</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.8 -->
+            <section id="sub-4-8">
+                <h2>4.8. Функционални Примитиви (`functools.partial`, `reduce`, Currying)</h2>
+                <p>За частично прилагане на аргументи се използва <code>functools.partial</code>, позволявайки преизползваемост на логика без наследяване.</p>
+                <div class="code-container">
+                    <div class="code-header"><span>partial_example.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>from functools import partial
+
+def power(base: float, exponent: float) -> float:
+    return base ** exponent
+
+square = partial(power, exponent=2.0)
+cube = partial(power, exponent=3.0)
+
+print(square(5)) # 25.0
+print(cube(3))   # 27.0</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.9 -->
+            <section id="sub-4-9">
+                <h2>4.9. Практически Казус: High-Throughput Stream Pipeline</h2>
+                <p><strong>Проблем:</strong> Анализ на лог файл с размер 20GB за извличане на IP адреси със статус 500. Стандартното прочитане с <code>readlines()</code> препълва RAM паметта.</p>
+                <p><strong>Решение:</strong> Изграждане на Generator Pipeline (Lazy Evaluation chain) с фиксиран Memory Footprint &lt; 10MB.</p>
+
+                <div class="code-container">
+                    <div class="code-header"><span>stream_pipeline.py</span><button class="btn" onclick="copyCode(this)">Копирай</button></div>
+                    <pre><code>def read_lines(filename: str):
+    with open(filename, 'r', encoding='utf-8') as f:
+        for line in f:
+            yield line
+
+def filter_errors(lines):
+    for line in lines:
+        if " HTTP/1.1 500 " in line:
+            yield line
+
+def extract_ip(error_lines):
+    for line in error_lines:
+        yield line.split()[0]
+
+# Верижно свързване без зареждане на целия файл в RAM:
+# lines = read_lines('huge_access.log')
+# errors = filter_errors(lines)
+# ips = extract_ip(errors)
+# print(set(ips))  # Обработва 20GB файл светкавично с минимален RAM!</code></pre>
+                </div>
+            </section>
+
+            <!-- 4.10 -->
+            <section id="sub-4-10">
+                <h2>4.10. Практическа Задача и Интерактивен Куиз</h2>
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Напишете генераторна функция <code>windowed(seq, n)</code>, която приема итеруем обект и връща плъзгащ се прозорец (sliding window) с размер <code>n</code> под формата на кортежи (tuples).</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Къде се съхраняват външните променливи, използвани вътре в дадено заграждение (Closure)?</p>
+                    <div class="quiz-card" id="q4">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q4')">A) В глобалната заглавна таблица на модула.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q4')">B) В Cell обекти, реферирани от атрибута __closure__ на функцията.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q4')">C) Записват се временно на твърдия диск при затваряне на функцията.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="m03_oop.html" class="btn">⬅️ Към Модул 3: ООП</a>
+                <a href="m05_metaprogramming.html" class="btn">Към Модул 5: Метапрограмиране ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function copyCode(button) {
+            const pre = button.parentElement.nextElementSibling;
+            const code = pre.querySelector('code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                button.textContent = "Копирано!";
+                setTimeout(() => { button.textContent = "Копирай"; }, 2000);
+            });
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>
