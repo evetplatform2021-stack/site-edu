@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 4 — Урок 2: Създаване на сценарии за обучение с AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #f8fafc;
+            overflow-x: auto;
+        }
+
+        .quiz-option {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI за HR & L&D
+        </a>
+
+        <nav class="module-nav">
+            <a href="ch01_intro.html" class="mod-link">М1: Основи</a>
+            <a href="ch02_intro.html" class="mod-link">М2: HR Комуникации</a>
+            <a href="ch03_intro.html" class="mod-link">М3: Умения</a>
+            <a href="ch04_intro.html" class="mod-link active">М4: Дизайн</a>
+            <a href="ch05_intro.html" class="mod-link">М5: Оценка</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Урок 2 Съдържание</div>
+            <ul class="nav-links">
+                <li><a href="#sub-4-2-1">4.2.1 Същност на сценария</a></li>
+                <li><a href="#sub-4-2-2">4.2.2 Елементи на сценария</a></li>
+                <li><a href="#sub-4-2-3">4.2.3 Формула за сценарий</a></li>
+                <li><a href="#sub-4-2-4">4.2.4 AI Пример & Шаблон</a></li>
+                <li><a href="#sub-4-2-5">4.2.5 Грешки & Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 4 • Урок 2 от 5</span>
+                <h1>Създаване на сценарии за обучение с AI</h1>
+                <p>Научете как да използвате AI за генериране на детайлни сценарии — с фасилитаторски реплики, тайминг, дискусионни въпроси и инструкции за практическа работа.</p>
+            </div>
+
+            <section id="sub-4-2-1">
+                <h2>1. Какво представлява сценарият за обучение?</h2>
+                <p>Сценарият е подробен план за провеждане на обучителна сесия, който превръща сухата структура в интерактивно преживяване. AI помага при:</p>
+                <div class="card">
+                    <ul>
+                        <li>Генериране на естествени фасилитаторски реплики и преходи</li>
+                        <li>Разпределяне на тайминга за всяка отделна секция</li>
+                        <li>Формулиране на отворени въпроси за дискусия</li>
+                        <li>Ясни инструкции за индивидуални и груп упражнения</li>
+                        <li>Предвиждане на възможни въпроси и затруднения на участниците</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="sub-4-2-2">
+                <h2>2. Основни елементи на добър сценарий</h2>
+                <div class="card">
+                    <h3 style="color:var(--accent)">Структурни компоненти:</h3>
+                    <ul>
+                        <li><strong>Въведение:</strong> Грабващо откриване, поставяне на контекста и целите.</li>
+                        <li><strong>Фасилитаторски реплики:</strong> Точните думи, с които водещият предава концепциите.</li>
+                        <li><strong>Въпроси към аудиторията:</strong> Питания, стимулиращи критично мислене.</li>
+                        <li><strong>Упражнения & Инструкции:</strong> Стъпка по стъпка правила за практическа работа.</li>
+                        <li><strong>Тайминг:</strong> Прецизно разпределение на минутите за всяка част.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="sub-4-2-3">
+                <h2>3. Формула за сценарий с AI</h2>
+                <div class="code-container">
+                    <div class="code-header"><span>script_generation_formula.txt</span></div>
+                    <pre><code>1. Тема & Аудитория: Посочете профила на участниците
+2. Формат: Онлайн, присъствено или хибридно
+3. Компоненти: Реплики, въпроси, упражнения и тайминг
+4. Инструкция: "Създай детайлен сценарий стъпка по стъпка."
+5. Ограничения: "Избягвай общи примери; добави реални бизнес казуси."</code></pre>
+                </div>
+            </section>
+
+            <section id="sub-4-2-4">
+                <h2>4. Примери за AI подкани</h2>
+                <div class="card">
+                    <h3>Промпт шаблон & Резултат:</h3>
+                    <p><strong>Подкана:</strong> „Създай сценарий за 45-минутно обучение по управление на времето. Включи въведение, фасилитаторски реплики, въпроси и тайминг.“</p>
+
+                    <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-top: 1rem;">
+                        <p style="margin-top:0; color:var(--accent); font-weight:600;">Генериран AI сценарий:</p>
+                        <p><strong>Въведение (5 мин):</strong> „Добре дошли! Днес ще разгледаме как да организираме деня си без стрес...“</p>
+                        <p><strong>Основна част (20 мин):</strong> Фасилитаторски реплики за Приоритети + Дискусионен въпрос: „Кой е най-големият ви крадец на време?“</p>
+                        <p><strong>Упражнение (15 мин):</strong> Практическа задача по Матрицата на Айзенхауер.</p>
+                        <p style="margin-bottom:0;"><strong>Заключение (5 мин):</strong> Обобщение и 3 стъпки за утрешния ден.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sub-4-2-5">
+                <h2>5. Чести грешки & Интерактивен куиз</h2>
+                <div class="card">
+                    <h3 style="color:var(--danger)">Избягвайте следните пропуски:</h3>
+                    <ul>
+                        <li>Липса на разпределение на времето (тайминг).</li>
+                        <li>Прекалено монотонни и общи фасилитаторски реплики.</li>
+                        <li>Липса на въпроси, задвижващи дискусията.</li>
+                        <li>Неясни и сложни инструкции за упражненията.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Изберете тема от вашата практика и поискайте от AI да генерира сценарий с конкретни реплики, въпроси и тайминг за 30-минутна сесия.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Какво прави един AI сценарий наистина приложим за фасилитатора?</p>
+                    <div class="quiz-card" id="q4-2">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q4-2')">A) Използването само на теоритични определения без тайминг.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q4-2')">B) Включването на точни реплики, тайминг, интерактивни въпроси и ясни инструкции.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q4-2')">C) Предоставянето само на списък с препоръчителна литература.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="ch04_lesson01.html" class="btn">⬅️ Към Урок 1</a>
+                <a href="ch04_lesson03.html" class="btn">Към Урок 3: Упражнения & Казуси ➡️</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

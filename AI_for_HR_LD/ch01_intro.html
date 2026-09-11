@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 1 — Въведение | AI за HR & L&D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero-banner {
+            text-align: left;
+            padding: 2.5rem 2rem;
+            background: radial-gradient(circle at top left, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 2.5rem;
+        }
+
+        .module-badge {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.4rem;
+            color: var(--text-heading);
+            margin: 0 0 1rem 0;
+            font-weight: 800;
+        }
+
+        .hero-banner p {
+            font-size: 1.15rem;
+            color: var(--text-body);
+            margin: 0;
+            line-height: 1.7;
+        }
+
+        .content-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem 2rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .content-section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            margin-top: 0;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .outcomes-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 0.75rem 1.5rem;
+        }
+
+        .outcomes-list li {
+            position: relative;
+            padding-left: 1.75rem;
+            color: var(--text-body);
+            font-size: 0.98rem;
+        }
+
+        .outcomes-list li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            color: var(--text-heading);
+            margin: 0 0 1.5rem 0;
+            font-weight: 800;
+        }
+
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .lesson-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-3px);
+            border-color: var(--accent);
+        }
+
+        .lesson-card h3 {
+            font-size: 1.15rem;
+            color: var(--text-heading);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .lesson-card p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0 0 1.25rem 0;
+            flex-grow: 1;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI за HR & L&D
+        </a>
+        <div class="nav-actions">
+            <a href="index.html" class="btn">🏠 Начало</a>
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <div class="hero-banner">
+            <div class="module-badge">Модул 1</div>
+            <h1>Основи на AI за HR & L&D</h1>
+            <p>
+                Добре дошли в първия модул от курса „AI за HR & L&D“.  
+                Тук ще изградите основата, която ви е необходима, за да използвате AI професионално, безопасно и ефективно в работата си.  
+                Ще научите как работят AI моделите, как да създавате качествени подкани, как да оценявате резултатите и как да избирате правилните инструменти.
+            </p>
+        </div>
+
+        <div class="content-section">
+            <h2>🎯 Какво ще научите в този модул</h2>
+            <ul class="outcomes-list">
+                <li>Как функционират съвременните AI модели (LLM)</li>
+                <li>Как да създавате ефективни подкани (prompts)</li>
+                <li>Как да оценявате качеството на AI резултатите</li>
+                <li>Как да използвате AI етично и безопасно</li>
+                <li>Как да избирате правилния AI инструмент според задачата</li>
+            </ul>
+        </div>
+
+        <h2 class="section-title">📚 Структура на модула</h2>
+
+        <div class="lessons-grid">
+            <div class="lesson-card">
+                <div>
+                    <h3>Урок 1: Как работи AI (LLM, модели, ограничения)</h3>
+                    <p>Научете основите на AI моделите и какво могат и не могат да правят.</p>
+                </div>
+                <a href="ch01_lesson01.html" class="btn">Към урока ➡️</a>
+            </div>
+
+            <div class="lesson-card">
+                <div>
+                    <h3>Урок 2: Prompting за HR & L&D</h3>
+                    <p>Открийте как да създавате ясни, точни и професионални подкани.</p>
+                </div>
+                <a href="ch01_lesson02.html" class="btn">Към урока ➡️</a>
+            </div>
+
+            <div class="lesson-card">
+                <div>
+                    <h3>Урок 3: Оценка на AI резултати</h3>
+                    <p>Научете как да преценявате качеството и безопасността на AI отговорите.</p>
+                </div>
+                <a href="ch01_lesson03.html" class="btn">Към урока ➡️</a>
+            </div>
+
+            <div class="lesson-card">
+                <div>
+                    <h3>Урок 4: Етика и безопасност при работа с AI</h3>
+                    <p>Разберете как да използвате AI отговорно в HR & L&D процеси.</p>
+                </div>
+                <a href="ch01_lesson04.html" class="btn">Към урока ➡️</a>
+            </div>
+
+            <div class="lesson-card">
+                <div>
+                    <h3>Урок 5: Избор на правилния AI инструмент</h3>
+                    <p>Научете как да избирате най-подходящия AI инструмент според задачата.</p>
+                </div>
+                <a href="ch01_lesson05.html" class="btn">Към урока ➡️</a>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2>💡 Как да използвате този модул</h2>
+            <p style="margin: 0;">
+                Препоръчваме да преминете през уроците последователно.  
+                Всеки урок надгражда предишния и ви подготвя за практическата работа в следващите модули.  
+                В края на модула ще имате стабилна основа за работа с AI в HR & L&D.
+            </p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="index.html" class="btn">⬅ Към началната страница</a>
+            <a href="ch01_lesson01.html" class="btn btn-primary">Започни с Урок 1 ➜</a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>© 2026 AI за HR & L&D. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+    </script>
+</body>
+</html>

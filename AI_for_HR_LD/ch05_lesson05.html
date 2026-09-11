@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 5 — Урок 5: Създаване на финални отчети и препоръки с AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.2rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.5rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #f8fafc;
+            overflow-x: auto;
+        }
+
+        .quiz-option {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI за HR & L&D
+        </a>
+
+        <nav class="module-nav">
+            <a href="ch01_intro.html" class="mod-link">М1: Основи</a>
+            <a href="ch02_intro.html" class="mod-link">М2: HR Комуникации</a>
+            <a href="ch03_intro.html" class="mod-link">М3: Умения</a>
+            <a href="ch04_intro.html" class="mod-link">М4: Дизайн</a>
+            <a href="ch05_intro.html" class="mod-link active">М5: Оценка</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Урок 5 Съдържание</div>
+            <ul class="nav-links">
+                <li><a href="#sub-5-5-1">5.5.1 Какво съдържа</a></li>
+                <li><a href="#sub-5-5-2">5.5.2 AI отчети</a></li>
+                <li><a href="#sub-5-5-3">5.5.3 Елементи</a></li>
+                <li><a href="#sub-5-5-4">5.5.4 Отчет пример</a></li>
+                <li><a href="#sub-5-5-5">5.5.5 Формула & Куиз</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 5 • Урок 5 от 5</span>
+                <h1>Създаване на финални отчети и препоръки с AI</h1>
+                <p>В този урок ще научите как AI може да обобщи всички събрани данни от обучителна програма и да генерира завършен, структуриран отчет с препоръки за мениджмънта.</p>
+            </div>
+
+            <section id="sub-5-5-1">
+                <h2>1. Какво представлява финалният отчет?</h2>
+                <p>Финалният отчет е стратегически документ, който обобщава цялостния ефект от обучението:</p>
+                <div class="card">
+                    <ul>
+                        <li>Основни постигнати резултати и успеваемост</li>
+                        <li>Детайлен анализ на ангажираността и участието</li>
+                        <li>Анализ на тестовете, казусите и практическите задачи</li>
+                        <li>Оценка на наблюдаване на поведенческите промени</li>
+                        <li>Силни и слаби страни на проведената програма</li>
+                        <li>Конкретни препоръки и следващи стъпки за бизнес лидерите</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="sub-5-5-2">
+                <h2>2. Как AI подпомага създаването на отчети</h2>
+                <div class="card">
+                    <h3 style="color:var(--accent)">Предимства на AI при отчети:</h3>
+                    <ul>
+                        <li>Обобщава големи обеми от количествени и качествени данни</li>
+                        <li>Оформя ясни структури според целевата аудитория (Executive Summary vs. L&D Deep Dive)</li>
+                        <li>Извлича ключови изводи и формулира стратегически препоръки</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="sub-5-5-3">
+                <h2>3. Основни елементи на финалния отчет</h2>
+                <div class="card">
+                    <ul>
+                        <li><strong>Обобщение:</strong> Кратко резюме за мениджмънта.</li>
+                        <li><strong>Анализ на ангажираност:</strong> Присъствие, активност, завършеност.</li>
+                        <li><strong>Анализ на резултатите:</strong> Оценки от тестове и упражнения.</li>
+                        <li><strong>Поведенчески промени:</strong> Приложение на уменията в работата.</li>
+                        <li><strong>Препоръки:</strong> Конкретни стъпки за последващо развитие.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="sub-5-5-4">
+                <h2>4. Пример за генериране на отчет с AI</h2>
+                <div class="card">
+                    <h3>Промпт шаблон & Резултат:</h3>
+                    <p><strong>Подкана:</strong> „Създай финален отчет за обучение по комуникация на база: 85% присъствие, 70% участие, среден тестов резултат 78%, наблюдавани подобрения в активното слушане.“</p>
+
+                    <div style="background: var(--bg-main); padding: 1rem; border-radius: 8px; border: 1px solid var(--border); margin-top: 1rem;">
+                        <p style="margin-top:0; color:var(--accent); font-weight:600;">Генериран AI резултат:</p>
+                        <p><strong>Обобщение:</strong> Обучението постига висока ангажираност и измерим напредък в комуникацията.</p>
+                        <p><strong>Силни страни:</strong> Практически упражнения, ролеви игри, активно слушане.</p>
+                        <p><strong>Слаби страни:</strong> Затруднения с асертивната комуникация при част от групата.</p>
+                        <p style="margin-bottom:0;"><strong>Препоръки:</strong> Добавяне на допълнителен кратък модул за асертивност и казуси.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section id="sub-5-5-5">
+                <h2>5. Формула, грешки & Интерактивен куиз</h2>
+                <div class="code-container">
+                    <div class="code-header"><span>final_report_formula.txt</span></div>
+                    <pre><code>1. Определете данните: ангажираност, резултати, наблюдения
+2. Определете целта: обобщение, подобрение, анализ
+3. Инструктирайте AI: "Създай отчет с изводи и препоръки."
+4. Добавете контекст: тема, аудитория, формат</code></pre>
+                </div>
+
+                <div class="card">
+                    <h3 style="color:var(--danger)">Чести грешки:</h3>
+                    <ul>
+                        <li>Прекалено дълги отчети без кратка обобщаваща секция за бизнес ръководството.</li>
+                        <li>Липса на конкретни препоръки и следващи стъпки.</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Практическа Задача</h3>
+                    <p>Съберете наличните данни от завършено обучение и използвайте AI за генериране на финален отчет с резюме, анализи и препоръки.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Интерактивен Куиз</h3>
+                    <p><strong>Въпрос:</strong> Коя е най-важната част от финалния отчет за ръководните кадри (C-level / Management)?</p>
+                    <div class="quiz-card" id="q5-5">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q5-5')">A) Пълният списък с отделните оценки от всеки тест.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q5-5')">B) Краткото резюме (Executive Summary) с ключови изводи, бизнес ефект и препоръки.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q5-5')">C) Детайлното описание на всеки слайд.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="ch05_lesson04.html" class="btn">⬅️ Към Урок 4</a>
+                <a href="ch_final.html" class="btn btn-primary">Към Финала на Курса ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>
