@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 2 — Урок 5: AI Аватари | AI в действие</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links li.active a {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #f8fafc;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .quiz-option {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .bullet-list, ul:not(.nav-links) {
+            padding-left: 1.25rem;
+        }
+
+        .bullet-list li, section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .number-list {
+            padding-left: 1.25rem;
+        }
+
+        .number-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в действие
+        </a>
+
+        <nav class="module-nav">
+            <a href="module1_intro.html" class="mod-link">М1: Основи</a>
+            <a href="module2_intro.html" class="mod-link active">М2: Агенти & Стратегия</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 2 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="module2_lesson1.html">Урок 1: AI агенти</a></li>
+                <li><a href="module2_lesson2.html">Урок 2: База знания (RAG)</a></li>
+                <li><a href="module2_lesson3.html">Урок 3: Brand Voice</a></li>
+                <li><a href="module2_lesson4.html">Урок 4: Мултимодален AI</a></li>
+                <li class="active"><a href="#theory">Урок 5: AI Аватари</a></li>
+                <li><a href="module2_lesson6.html">Урок 6: Напреднал дизайн</a></li>
+                <li><a href="module2_lesson7.html">Урок 7: Мултимодалност</a></li>
+                <li><a href="module2_lesson8.html">Урок 8: Автономни агенти</a></li>
+                <li><a href="module2_lesson9.html">Урок 9: AI стратегия</a></li>
+                <li><a href="module2_lesson10.html">Урок 10: Управление на риска</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 2 • Урок 5 от 10</span>
+                <h1>Урок 5: Как да създаваме видео презентации и обучителни материали с реалистични AI аватари</h1>
+                <p>Използвайте фотореалистични дигитални лектори, които се синхронизират перфектно с текст на десетки езици без нужда от студио или актьори.</p>
+            </div>
+
+            <!-- 1. Теоретична основа -->
+            <section id="theory">
+                <h2>1. Теоретична основа и бизнес логика</h2>
+                <div class="card">
+                    <p>
+                        Едно от най-бързо развиващите се приложения на AI е генерирането на видео съдържание с <strong>AI аватари (Synthetic Video / Digital Twins)</strong>. Традиционното видеопроизводство изисква камери, студио, актьори, диктори, монтаж и множество презаснемания.
+                    </p>
+                    <p>
+                        AI аватарите премахват всички тези бариери. Те представляват фотореалистични дигитални лектори, чиито устни, мимики и жестове се синхронизират перфектно с подадения текст. Можете да промените една дума в сценария — и видеото се прегенерира за минути.
+                    </p>
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">За бизнеса това означава:</h3>
+                    <ul class="bullet-list">
+                        <li>Нулеви разходи за студио и техника.</li>
+                        <li>Мигновени корекции при промяна на данни.</li>
+                        <li>Възможност за създаване на видео на десетки езици.</li>
+                        <li>Премахване на зависимостта от графици на мениджъри и актьори.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 2. Методология -->
+            <section id="methodology">
+                <h2>2. Методология и стъпки за създаване на видео с AI аватари</h2>
+                <div class="card">
+                    <p>
+                        Процесът е автоматизиран, но изисква спазване на три ключови стъпки:
+                    </p>
+
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">1. Селекция и брандиране на аватара</h3>
+                    <p>Избира се аватар, който отговаря на корпоративната култура — делови, технологичен, креативен. Настройва се заден план: офис, конферентна зала, брандиран фон.</p>
+
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">2. Гласова и езикова настройка (Localization)</h3>
+                    <p>Подавате текстовия сценарий. AI може да изговори текста на над 40 езика с перфектен акцент и синхронизация на устните (Lip-Sync).</p>
+
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">3. Интеграция на визуални слайдове (B-Roll)</h3>
+                    <p>За по-динамично видео се добавят слайдове, графики, екранни записи или продуктови снимки, които се сменят в точния момент от сценария.</p>
+
+                    <div class="code-container">
+                        <div class="code-header"><span>Шаблон за текст за AI аватар</span></div>
+                        <pre><code>[Аватар „Елена“, бизнес облекло, фон: конферентна зала с лого]
+
+ТЕКСТ ЗА ИЗГОВАРЯНЕ:
+„Здравейте, колеги! Добре дошли в уводния курс за сигурност на данните за 2026 година. Ще разгледаме трите златни правила за защита от фишинг атаки.“
+
+[Команда: Превключи на Слайд 2 в 0:15 сек]
+
+ТЕКСТ:
+„Обърнете внимание на графиката до мен. Над 90% от пробивите започват от един невнимателен клик. Нека видим как да разпознаем опасните писма…“</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Рискове -->
+            <section id="risks">
+                <h2>3. Рискове и как да ги избегнем</h2>
+                <div class="card">
+                    <ul class="bullet-list" style="margin: 0;">
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Ефектът на „Зловещата долина“ (Uncanny Valley):</strong> Ако аватарът изглежда твърде роботизиран, зрителят усеща дискомфорт.
+                            <br><em style="color:var(--text-muted);">Решение:</em> Използвайте платформи от последно поколение с микро-движения.
+                        </li>
+                        <li>
+                            <strong>Етични рискове и Deepfakes:</strong> Клонирането на лице или глас без контрол е опасно.
+                            <br><em style="color:var(--text-muted);">Решение:</em> Изисквайте видео съгласие и използвайте корпоративни платформи с двуфакторна автентификация.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 4. Практически пример -->
+            <section id="case">
+                <h2>4. Практически пример от живота (Бизнес казус)</h2>
+                <div class="card">
+                    <p>
+                        <strong>Ситуация:</strong> Николай е мениджър „Продуктово обучение“ в международна компания за медицинска апаратура. Трябва да създаде видео интродукция на 15 езика — задача, която традиционно струва над 30 000 евро и отнема 3 месеца.
+                    </p>
+                    <p>
+                        <strong>Приложение на AI:</strong> Николай пише сценария на английски, превежда го чрез AI на 15 езика и го подава в платформа за аватари. Избира професионален дигитален лектор и добавя слайдовете.
+                    </p>
+                    <p style="margin-top: 1rem;">
+                        <strong>Резултат:</strong> За 2 часа се генерират 15 перфектни видеа. Един и същ AI лектор говори на всички езици с естествена мимика и точен Lip-Sync. Разходът е под 100 евро. Продуктът е лансиран едновременно в 15 държави.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 5. Куиз -->
+            <section id="quiz">
+                <h2>5. Интерактивен Куиз за проверка на знанията</h2>
+                <div class="card">
+                    <p><strong>Въпрос:</strong> Каква е основната полза от използването на AI аватари при създаването на корпоративни видео обучения?</p>
+                    <div class="quiz-card" id="q2_5">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q2_5')">A) Налага се наемането на професионални студиа и живи актьори.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q2_5')">B) Премахват се разходите за студио, спестява се време и се правят мигновени корекции или локализация на десетки езици само с промяна на текста.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q2_5')">C) Видеоклиповете могат да се генерират само на един език без възможност за субтитри.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="module2_lesson4.html" class="btn">⬅️ Към Урок 4</a>
+                <a href="module2_lesson6.html" class="btn btn-primary">Към Урок 6: Напреднал дизайн ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в действие. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

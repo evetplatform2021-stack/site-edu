@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI в действие — Индекс на курса</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 3rem;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.8rem;
+            color: var(--text-heading);
+            margin: 0 0 1rem 0;
+            font-weight: 800;
+        }
+
+        .hero-banner p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 750px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .progress-box {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .progress-bar {
+            background: var(--border);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .module-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-card h2 {
+            font-size: 1.3rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+        }
+
+        .module-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .chapter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .chapter-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-list a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .chapter-list a:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в действие
+        </a>
+        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+    </header>
+
+    <div class="container">
+        <div class="hero-banner">
+            <h1>Добре дошли в курса „AI в действие“</h1>
+            <p>Курсът съдържа два модула с общо 20 урока — от основи на AI до напреднали агенти, автоматизация, сигурност и корпоративна стратегия.</p>
+            
+            <div class="progress-box">
+                <div class="progress-header">
+                    <span>Прогрес на курса:</span>
+                    <span id="progressText">0% завършени</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modules-grid">
+            <!-- Модул 1 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 1</div>
+                    <h2>Основи на AI и продуктивност</h2>
+                    <p class="module-desc">Базови умения за работа с генеративен AI — промптове, анализ, визуализация, продуктивност и автоматизация.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module1_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 1 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module1_lesson1.html">Урок 1: Основи на промптването <span>➡️</span></a></li>
+                        <li><a href="module1_lesson2.html">Урок 2: Анализ на текст и документи <span>➡️</span></a></li>
+                        <li><a href="module1_lesson3.html">Урок 3: Обработка на данни с AI <span>➡️</span></a></li>
+                        <li><a href="module1_lesson4.html">Урок 4: Генериране на съдържание <span>➡️</span></a></li>
+                        <li><a href="module1_lesson5.html">Урок 5: AI за имейли и комуникация <span>➡️</span></a></li>
+                        <li><a href="module1_lesson6.html">Урок 6: AI за презентации <span>➡️</span></a></li>
+                        <li><a href="module1_lesson7.html">Урок 7: Визуализации и графики <span>➡️</span></a></li>
+                        <li><a href="module1_lesson8.html">Урок 8: Базово изображение и дизайн <span>➡️</span></a></li>
+                        <li><a href="module1_lesson9.html">Урок 9: Автоматизация на задачи <span>➡️</span></a></li>
+                        <li><a href="module1_lesson10.html">Урок 10: Практически казуси <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module1_intro.html" class="btn" style="justify-content: center;">Към Модул 1</a>
+            </div>
+
+            <!-- Модул 2 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 2</div>
+                    <h2>AI Агенти, Автоматизация и Стратегия</h2>
+                    <p class="module-desc">Напреднали корпоративни приложения — агенти, автоматизация, мултимодални процеси, сигурност, стратегия и управление на риска.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module2_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 2 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module2_lesson1.html">Урок 1: AI агенти и персонализация <span>➡️</span></a></li>
+                        <li><a href="module2_lesson2.html">Урок 2: База знания (RAG) <span>➡️</span></a></li>
+                        <li><a href="module2_lesson3.html">Урок 3: Brand Voice <span>➡️</span></a></li>
+                        <li><a href="module2_lesson4.html">Урок 4: Мултимодален AI <span>➡️</span></a></li>
+                        <li><a href="module2_lesson5.html">Урок 5: AI Аватари <span>➡️</span></a></li>
+                        <li><a href="module2_lesson6.html">Урок 6: Напреднал визуален дизайн <span>➡️</span></a></li>
+                        <li><a href="module2_lesson7.html">Урок 7: Автономна автоматизация <span>➡️</span></a></li>
+                        <li><a href="module2_lesson8.html">Урок 8: Сложни промптове <span>➡️</span></a></li>
+                        <li><a href="module2_lesson9.html">Урок 9: AI и киберсигурност <span>➡️</span></a></li>
+                        <li><a href="module2_lesson10.html">Урок 10: Fact-checking и халюцинации <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module2_intro.html" class="btn" style="justify-content: center;">Към Модул 2</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в действие. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        // Progress Bar Logic (20 lessons total)
+        const totalLessons = 20;
+        const completedLessons = 0; // Може да се актуализира динамично
+
+        const progressFill = document.getElementById("progressFill");
+        const progressText = document.getElementById("progressText");
+
+        const percent = Math.round((completedLessons / totalLessons) * 100);
+        if (progressFill) progressFill.style.width = percent + "%";
+        if (progressText) progressText.textContent = percent + "% завършени";
+    </script>
+</body>
+</html>

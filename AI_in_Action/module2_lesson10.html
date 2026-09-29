@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 1 — Урок 10: Fact-checking и AI халюцинации | AI в действие</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links li.active a {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #f8fafc;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .quiz-option {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .bullet-list, ul:not(.nav-links) {
+            padding-left: 1.25rem;
+        }
+
+        .bullet-list li, section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .number-list {
+            padding-left: 1.25rem;
+        }
+
+        .number-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в действие
+        </a>
+
+        <nav class="module-nav">
+            <a href="module1_intro.html" class="mod-link">М1: Основи</a>
+            <a href="module2_intro.html" class="mod-link active">М2: Агенти & Стратегия</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 2 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="module2_lesson1.html">Урок 1: AI агенти</a></li>
+                <li><a href="module2_lesson2.html">Урок 2: База знания (RAG)</a></li>
+                <li><a href="module2_lesson3.html">Урок 3: Brand Voice</a></li>
+                <li><a href="module2_lesson4.html">Урок 4: Мултимодален AI</a></li>
+                <li><a href="module2_lesson5.html">Урок 5: AI Аватари</a></li>
+                <li><a href="module2_lesson6.html">Урок 6: Напреднал дизайн</a></li>
+                <li><a href="module2_lesson7.html">Урок 7: Автономна автоматизация</a></li>
+                <li><a href="module2_lesson8.html">Урок 8: Сложни промптове</a></li>
+                <li><a href="module2_lesson9.html">Урок 9: AI и киберсигурност</a></li>
+                <li class="active"><a href="#theory">Урок 10: Fact-checking и халюцинации</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 2 • Урок 10 от 10</span>
+                <h1>Урок 10: Как да разпознаваме AI халюцинации и да прилагаме Fact-checking в генерираното съдържание</h1>
+                <p>Разберете защо езиковите модели понякога измислят факти и се научете да прилагате рамки за проверка на достоверността.</p>
+            </div>
+
+            <!-- 1. Теоретична основа -->
+            <section id="theory">
+                <h2>1. Теоретична основа и бизнес логика</h2>
+                <div class="card">
+                    <p>
+                        Големите езикови модели (LLMs) не са бази данни с факти, а <strong>машини за предсказване на езика</strong>. Те изчисляват коя е най-вероятната следваща дума, вместо да проверяват информацията в енциклопедия.
+                    </p>
+                    <p>
+                        Това води до феномена <strong>AI халюцинация</strong> — текст, който звучи логично и авторитетно, но е напълно невярен, измислен или изопачен.
+                    </p>
+                    <p>
+                        В корпоративна среда използването на халюциниран текст в доклади, договори или финансови анализи може да доведе до съдебни дела, загуба на репутация и сериозни финансови щети.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. Методология -->
+            <section id="methodology">
+                <h2>2. Методология и техники за откриване и контрол (Fact-Checking Framework)</h2>
+                <div class="card">
+                    <p>
+                        За да се предпазят от грешки, служителите трябва да преминат към режим на <strong>активен одит</strong> на генерираното от AI съдържание. Три ключови техники:
+                    </p>
+                    <ol class="number-list">
+                        <li><strong>Промпт за саморефлексия (Self-Correction):</strong> След важен отговор принудете AI сам да провери работата си, преди да я копирате.</li>
+                        <li><strong>Кръстосано питане (Cross-Examination):</strong> Задайте същия въпрос по различен начин или в друга сесия/модел и сравнете резултатите.</li>
+                        <li><strong>Принудително цитиране на източници (Source Verification):</strong> Изисквайте точни източници (URL, книга, документ) и лично проверявайте линковете.</li>
+                    </ol>
+
+                    <div class="code-container">
+                        <div class="code-header"><span>Шаблон за промпт за саморефлексия и одит на халюцинации</span></div>
+                        <pre><code>"Прегледай отговора, който току-що ми генерира. Действай като безмилостен и скептичен редактор за проверка на фактите (Fact-checker).
+Изпълни следните задачи:
+1. Посочи кои твърдения или цифри в текста са директни факти (а не общи логически заключения).
+2. Оцени степента на увереност за всеки факт по скалата от 1 до 10. Ако някой факт е под 10, го отбележи.
+3. Има ли в текста предположения или измислени елементи, които добави само за да звучи изречението по-красиво? Ако да — премахни ги и ми дай редактирана, 100% доказана версия."</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Рискове -->
+            <section id="risks">
+                <h2>3. Рискове и как да ги избегнем</h2>
+                <div class="card">
+                    <ul class="bullet-list" style="margin: 0;">
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Automation Bias (Психологическо сляпо петно):</strong> Хората се доверяват прекалено, защото AI пише уверено и авторитетно.
+                            <br><em style="color:var(--text-muted);">Решение:</em> Златното правило — AI за структура, стил и креативност; човекът за проверка на фактите. Нито една конкретна цифра, дата или закон не напуска компютъра без ръчна проверка.
+                        </li>
+                        <li>
+                            <strong>„Мъртви“ или фалшиви линкове:</strong> AI често сглобява реални домейни с измислени пътища, които водят до грешка 404.
+                            <br><em style="color:var(--text-muted);">Решение:</em> Никога не включвайте линкове, генерирани от AI, в официални материали, без да сте кликнали и проверили, че реално съществуват.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 4. Практически пример -->
+            <section id="case">
+                <h2>4. Практически пример от живота (Бизнес казус)</h2>
+                <div class="card">
+                    <p>
+                        <strong>Ситуация:</strong> Стефан е финансов анализатор в инвестиционна компания. Той трябва да изготви пазарен профил на нов конкурент в логистичния софтуер и използва AI, за да събере информация. AI му връща текст, в който се твърди, че конкурентът работи с гиганти като DHL и BMW, има оборот от 45 млн. евро и цитира „Доклад на Financial Times от октомври 2025 г.“.
+                    </p>
+                    <p>
+                        <strong>Приложение на Fact-checking:</strong><br>
+                        1. Стефан отваря нова сесия и пита AI за точния URL към статията във Financial Times.<br>
+                        2. Кликва върху линка — оказва се, че не съществува (грешка 404).<br>
+                        3. Прави ръчно търсене в Търговския регистър и официалния сайт на конкурента. Открива, че реалният оборот е под 1.5 млн. евро, а „партньорството“ с DHL е просто общ уебинар.
+                    </p>
+                    <p style="margin-top: 1rem;">
+                        <strong>Резултат:</strong> Благодарение на навременния Fact-checking, Стефан изтрива измислените данни и представя реалната картина пред борда. Компанията избягва грешно стратегическо решение и Стефан запазва професионалната си репутация чрез 5 минути критично мислене.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 5. Куиз -->
+            <section id="quiz">
+                <h2>5. Интерактивен Куиз за проверка на знанията</h2>
+                <div class="card">
+                    <p><strong>Въпрос:</strong> Защо големите езикови модели (LLM) понякога „халюцинират“ и представят неверни факти за истински?</p>
+                    <div class="quiz-card" id="q2_10">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q2_10')">A) Защото нарочно се опитват да измамят потребителя за финансова печалба.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q2_10')">B) Защото те са машини за предсказване на езика и изчисляват следващата вероятна дума, вместо да правят реална проверка в база данни.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q2_10')">C) Защото нямат достъп до електрическата мрежа.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="module2_lesson9.html" class="btn">⬅️ Към Урок 9</a>
+                <a href="module2_intro.html" class="btn btn-primary">Към интрото на Модул 2 ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в действие. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

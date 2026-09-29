@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 1 — Урок 8: Създаване и редактиране на изображения с AI | AI в действие</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.5rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.4rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links li.active a {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-container {
+            background: #090d16;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .code-header {
+            background: #1e293b;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        pre {
+            margin: 0;
+            padding: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #f8fafc;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        .quiz-option {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--accent);
+        }
+
+        .quiz-option.correct {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .quiz-option.incorrect {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .bullet-list, ul:not(.nav-links) {
+            padding-left: 1.25rem;
+        }
+
+        .bullet-list li, section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .number-list {
+            padding-left: 1.25rem;
+        }
+
+        .number-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в действие
+        </a>
+
+        <nav class="module-nav">
+            <a href="module1_intro.html" class="mod-link active">М1: Основи</a>
+            <a href="module2_intro.html" class="mod-link">М2: Агенти & Стратегия</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 1 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="module1_lesson1.html">1.1 Обработка на текст</a></li>
+                <li><a href="module1_lesson2.html">1.2 Транскрипти и срещи</a></li>
+                <li><a href="module1_lesson3.html">1.3 Превод и корекция</a></li>
+                <li><a href="module1_lesson4.html">1.4 Обратна връзка</a></li>
+                <li><a href="module1_lesson5.html">1.5 Извличане на данни</a></li>
+                <li><a href="module1_lesson6.html">1.6 Големи документи</a></li>
+                <li><a href="module1_lesson7.html">1.7 Excel и диаграми</a></li>
+                <li class="active"><a href="#theory">1.8 Изображения</a></li>
+                <li><a href="module1_lesson9.html">1.9 Инфографики</a></li>
+                <li><a href="module1_lesson10.html">1.10 Презентации</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 1 • Урок 8 от 10</span>
+                <h1>Как да създавате и редактирате изображения с AI</h1>
+                <p>Създавайте уникални визуални материали, корпоративна фотография и илюстрации чрез Text-to-Image модели и напреднали техники за редакция.</p>
+            </div>
+
+            <!-- 1. Теоретична основа -->
+            <section id="theory">
+                <h2>1. Теоретична основа и бизнес логика</h2>
+                <div class="card">
+                    <p>
+                        В съвременния корпоративен свят визуалното съдържание е ключово — презентации, социални мрежи, вътрешни бюлетини, уебсайтове. Традиционният процес изисква дизайнерски умения, скъп софтуер или сток снимки, които често изглеждат клиширани.
+                    </p>
+                    <p>
+                        Генеративният AI променя всичко чрез <strong>Text-to-Image</strong> и <strong>Inpainting/Outpainting</strong>. Моделите буквално „рисуват“ изображението от нулата, пиксел по пиксел.
+                    </p>
+
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">Три основни бизнес приложения:</h3>
+                    <ul class="bullet-list">
+                        <li><strong>Генерация:</strong> Уникални снимки, 3D рендери, илюстрации, векторни графики.</li>
+                        <li><strong>Inpainting:</strong> Локална редакция — промяна на конкретен елемент.</li>
+                        <li><strong>Outpainting:</strong> Разширяване на рамката — дорисуване на фон.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 2. Методология -->
+            <section id="methodology">
+                <h2>2. Методология и златни правила (Промпт инженеринг)</h2>
+                <div class="card">
+                    <p>
+                        За професионално изображение промптът трябва да съдържа повече от описание на обекта. Той трябва да включва стил, композиция, камера и атмосфера.
+                    </p>
+
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">4 ключови компонента на качествения промпт:</h3>
+                    <ol class="number-list">
+                        <li><strong>Субект:</strong> Основният обект.</li>
+                        <li><strong>Стил и среда:</strong> Тип изображение, интериор, осветление.</li>
+                        <li><strong>Композиция и камера:</strong> Обектив, перспектива, фокус.</li>
+                        <li><strong>Цветове и атмосфера:</strong> Тонове, настроение.</li>
+                    </ol>
+
+                    <div class="code-container">
+                        <div class="code-header"><span>Шаблон за напреднал промпт за бизнес изображение</span></div>
+                        <pre><code>"Висококачествена корпоративна фотография на млада жена мениджър, седяща на конферентна маса с лаптоп. 
+Модерен светъл офис, боке ефект, естествена светлина. Професионално заснемане, чисти линии. 
+Цветова палитра: корпоративно синьо, бяло, светло сиво."</code></pre>
+                    </div>
+
+                    <h3 style="color:var(--accent); margin-top:1.5rem;">Насоки за редакция (Image Editing)</h3>
+                    <div class="code-container">
+                        <div class="code-header"><span>Шаблон за Inpainting редакция</span></div>
+                        <pre><code>"Премахни чашата за кафе от масата и я замени с прозрачна чаша с вода, запазвайки стила и осветлението."</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Рискове -->
+            <section id="risks">
+                <h2>3. Рискове и как да ги избегнем</h2>
+                <div class="card">
+                    <ul class="bullet-list" style="margin: 0;">
+                        <li style="margin-bottom: 1rem;">
+                            <strong>Анатомични дефекти:</strong> Изкривени пръсти, странни очи, деформации.
+                            <br><em style="color:var(--text-muted);">Решение:</em> Проверявайте изображението с увеличение и използвайте Inpainting за корекция.
+                        </li>
+                        <li>
+                            <strong>Авторски права:</strong> Избягвайте имена на художници или фотографи.
+                            <br><em style="color:var(--text-muted);">Решение:</em> Описвайте стилове с технически термини.
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 4. Практически пример -->
+            <section id="case">
+                <h2>4. Практически пример от живота (Бизнес казус)</h2>
+                <div class="card">
+                    <p>
+                        <strong>Ситуация:</strong> Калоян, маркетинг специалист, трябва да създаде банери за кампания в LinkedIn. Няма бюджет и няма дизайнер.
+                    </p>
+                    <p>
+                        <strong>Приложение на AI:</strong> Калоян подава прецизен промпт:
+                    </p>
+
+                    <div class="code-container">
+                        <div class="code-header"><span>Промпт за банер кампания</span></div>
+                        <pre><code>„Концептуално 3D изкуство. Холограмен щит, обгръщащ дигитална банкова сграда. 
+Тъмен футуристичен фон, нюанси на синьо и неоново зелено. Кинематографично осветление, 8k.“</code></pre>
+                    </div>
+
+                    <p style="margin-top: 1rem;">
+                        <strong>Резултат:</strong> AI генерира 4 варианта за 30 секунди. Калоян избира най-добрия и използва Outpainting, за да го разшири хоризонтално. Кампанията стартира навреме и постига 40% по-висока ангажираност.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 5. Куиз -->
+            <section id="quiz">
+                <h2>5. Интерактивен Куиз за проверка на знанията</h2>
+                <div class="card">
+                    <p><strong>Въпрос:</strong> Каква е разликата между технологиите Inpainting и Outpainting при работа с изображения?</p>
+                    <div class="quiz-card" id="q8">
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q8')">A) Inpainting създава ново изображение от нулата, а Outpainting го изтрива.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, true, 'q8')">B) Inpainting позволява локална редакция (промяна на елемент вътре в кадъра), а Outpainting разширява рамката и дорисува нов фон извън нея.</div>
+                        <div class="quiz-option" onclick="checkAnswer(this, false, 'q8')">C) Няма разлика, и двете понятия означават едно и също нещо.</div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="module1_lesson7.html" class="btn">⬅️ Към Урок 7</a>
+                <a href="module1_lesson9.html" class="btn btn-primary">Към Урок 9: Инфографики ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в действие. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+
+        function checkAnswer(element, isCorrect, qId) {
+            const options = document.querySelectorAll(`#${qId} .quiz-option`);
+            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>
