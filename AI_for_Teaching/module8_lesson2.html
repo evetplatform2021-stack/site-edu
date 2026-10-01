@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 8 — Урок 2: Инфографики и диаграми с AI | AI в образованието</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            gap: 1rem;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--text-heading);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.4rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+            scrollbar-width: thin;
+            max-width: 65vw;
+        }
+
+        .module-nav::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .module-nav::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .module-nav {
+                max-width: 45vw;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links li.active a {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bullet-list, ul:not(.nav-links) {
+            padding-left: 1.25rem;
+        }
+
+        .bullet-list li, section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в образованието
+        </a>
+
+        <nav class="module-nav">
+            <a href="module1_intro.html" class="mod-link">М1: Основи</a>
+            <a href="module2_intro.html" class="mod-link">М2: Етика</a>
+            <a href="module3_intro.html" class="mod-link">М3: Промпти</a>
+            <a href="module4_intro.html" class="mod-link">М4: Асистенти</a>
+            <a href="module5_intro.html" class="mod-link">М5: Анализ</a>
+            <a href="module6_intro.html" class="mod-link">М6: Учебен процес</a>
+            <a href="module7_intro.html" class="mod-link">М7: Инструменти</a>
+            <a href="module8_intro.html" class="mod-link active">М8: Визуализация</a>
+            <a href="module9_intro.html" class="mod-link">М9: Екипна работа</a>
+            <a href="module10_intro.html" class="mod-link">М10: Мултимедия</a>
+            <a href="module11_intro.html" class="mod-link">М11: Лаборатория</a>
+            <a href="module12_intro.html" class="mod-link">М12: Стратегия</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 8 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="module8_lesson1.html">8.1 Генериране на изображения</a></li>
+                <li class="active"><a href="#goals">1. Цели на урока</a></li>
+                <li><a href="#why">2. Важност на инфографиките</a></li>
+                <li><a href="#tools">3. Основни инструменти</a></li>
+                <li><a href="#types">4. Видове инфографики</a></li>
+                <li><a href="#case">5. Казус за обсъждане</a></li>
+                <li><a href="#faq">6. Въпроси и отговори</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 8 • Урок 2</span>
+                <h1>Инфографики и диаграми с AI</h1>
+                <p>Научете как да използвате изкуствения интелект за бързо обобщаване на сложна информация, създаване на процесни диаграми и концептуални карти.</p>
+            </div>
+
+            <section id="goals">
+                <h2>1. Цели на урока</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li>Да научи преподавателите как да използват AI за създаване на инфографики и диаграми.</li>
+                        <li>Да представи инструменти, които автоматично генерират визуални обобщения на данни и концепции.</li>
+                        <li>Да развие умения за визуално представяне на учебно съдържание.</li>
+                        <li>Да подпомогне учителите в създаването на ясни, структурирани и ангажиращи визуални материали.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="why">
+                <h2>2. Защо инфографиките и диаграмите са важни в учебния процес</h2>
+                <div class="card">
+                    <p>Инфографиките успешно обобщават сложна информация, подпомагат визуалните ученици, улесняват запомнянето и правят уроците по-интересни при представяне на данни, процеси и връзки между понятията.</p>
+                </div>
+            </section>
+
+            <section id="tools">
+                <h2>3. Основни AI инструменти за инфографики и диаграми</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li><strong>Canva AI:</strong> Автоматично генерира инфографики от текст с помощта на огромна библиотека от готови шаблони.</li>
+                        <li><strong>Microsoft Designer:</strong> Създава модерни, професионални визуализации за диаграми и процеси с интеграция на Copilot.</li>
+                        <li><strong>Venngage AI:</strong> Специализирана платформа за по-сложни визуални структури, проекти и презентации.</li>
+                        <li><strong>Google Charts + AI помощници:</strong> Генерира код или структура за статистически диаграми, полезно за математика и география.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="types">
+                <h2>4. Видове инфографики и диаграми, които AI може да създаде</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li><strong>Процесни диаграми:</strong> За водния цикъл, фотосинтезата и кръговрата на веществата.</li>
+                        <li><strong>Сравнителни инфографики:</strong> За митоза срещу мейоза или литературни герои.</li>
+                        <li><strong>Хронологични линии:</strong> За исторически събития и биографии.</li>
+                        <li><strong>Статистически и концептуални карти:</strong> Бар диаграми, кръгови графики и карти на понятия.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="case">
+                <h2>5. Казус за обсъждане</h2>
+                <div class="card">
+                    <p><strong>Казус: „Инфографиката е твърде сложна за учениците“</strong></p>
+                    <p>Учител създава инфографика за 4. клас, но AI генерира твърде много текст и сложни връзки.</p>
+                    <p style="margin-top: 1rem;"><strong>Насоки:</strong> В подканата задължително трябва да се укаже нивото (4. клас), опростеният детски стил и да се ограничи броят на ключовите елементи.</p>
+                </div>
+            </section>
+
+            <section id="faq">
+                <h2>6. Въпроси и отговори от темата</h2>
+                <div class="card">
+                    <p><strong>Въпрос 1: Кой инструмент е най-добър за инфографики?</strong></p>
+                    <p style="color: var(--text-muted); margin-bottom: 1rem;"><em>Отговор:</em> Canva AI — благодарение на богатата си база от готови шаблони.</p>
+
+                    <p><strong>Въпрос 2: Как да избегнем претрупването с информация?</strong></p>
+                    <p style="color: var(--text-muted);"><em>Отговор:</em> Чрез ограничаване на елементите в подканата и избор на подходящ минималистичен или опростен стил.</p>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="module8_lesson1.html" class="btn">⬅️ Към Урок 1</a>
+                <a href="module8_lesson3.html" class="btn btn-primary">Към Урок 3 ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в образованието. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+    </script>
+</body>
+</html>

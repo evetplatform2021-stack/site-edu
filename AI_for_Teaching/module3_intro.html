@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 3: Създаване на ефективни подкани — Интро | AI в действие</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --info-bg: rgba(56, 189, 248, 0.1);
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --info-bg: rgba(2, 132, 199, 0.05);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .module-badge-top {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+            display: inline-block;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: var(--text-heading);
+            margin: 0 0 1.5rem 0;
+            font-weight: 800;
+        }
+
+        h2 {
+            font-size: 1.6rem;
+            color: var(--text-heading);
+            margin: 2.5rem 0 1rem 0;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .intro-lead {
+            font-size: 1.2rem;
+            color: var(--text-body);
+            margin-bottom: 2rem;
+        }
+
+        .content-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-panel {
+            background: var(--info-bg);
+            border-left: 4px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            padding: 1.25rem;
+            margin: 1.5rem 0;
+        }
+
+        ul {
+            padding-left: 1.25rem;
+            margin: 0;
+        }
+
+        li {
+            margin-bottom: 0.75rem;
+        }
+
+        .lesson-nav-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-body);
+            transition: all 0.2s ease;
+        }
+
+        .lesson-nav-card:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .lesson-title-text {
+            font-weight: 600;
+            color: var(--text-heading);
+            margin: 0 0 0.25rem 0;
+        }
+
+        .lesson-desc-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin: 0;
+        }
+
+        .nav-footer-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 3.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в действие: Преподаване
+        </a>
+        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+    </header>
+
+    <div class="container">
+        <div class="module-badge-top">Модул 3</div>
+        <h1>Создаване на ефективни подкани (Prompt Engineering)</h1>
+        
+        <p class="intro-lead">Този модул е създаден специално за преподаватели, които искат да овладеят изкуството на формулиране на подкани (prompts) — от базови принципи и универсални шаблони до специализирани инструкции за анализ, резюме и генериране на учебни материали и цели на урока.</p>
+        
+        <h2>🎯 Основни цели на модула</h2>
+        <div class="content-box">
+            <ul>
+                <li><strong>Основи на подканите:</strong> Да даде ясно разбиране защо формулировката определя качеството на резултата от ИИ.</li>
+                <li><strong>Структурирани шаблони:</strong> Да предостави готови формули за роли, контекст, формати и ограничения.</li>
+                <li><strong>Анализ и преработка:</strong> Да обучи преподавателите как да извличат извадки, резюмета и да адаптират текстове.</li>
+                <li><strong>Учебни материали и цели:</strong> Да предложи подкани за генериране на планове, упражнения и цели по таксономията на Bloom.</li>
+            </ul>
+        </div>
+
+        <h2>📚 Структура на уроците в Модул 3</h2>
+        <p style="margin-bottom: 1.5rem; color: var(--text-muted);">Изберете урок, за да продължите обучението:</p>
+
+        <a href="module3_lesson1.html" class="lesson-nav-card">
+            <div class="lesson-info">
+                <div class="lesson-title-text">Урок 1: Основи на създаването на ефективни подкани</div>
+                <p class="lesson-desc-text">Основни принципи: яснота, контекст, роля, формат, стил, ограничения и итерация.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <a href="module3_lesson2.html" class="lesson-nav-card">
+            <div class="lesson-info">
+                <div class="lesson-title-text">Урок 2: Структурирани подкани за преподаватели</div>
+                <p class="lesson-desc-text">Готови шаблони по категории: материали, обяснения, тестове, планове и обратна връзка.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <a href="module3_lesson3.html" class="lesson-nav-card">
+            <div class="lesson-info">
+                <div class="lesson-title-text">Урок 3: Подкани за анализ, резюме и преработка на текст</div>
+                <p class="lesson-desc-text">Методи за съкращаване, структуриране в таблици и адаптиране към различни аудитории.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <a href="module3_lesson4.html" class="lesson-nav-card">
+            <div class="lesson-info">
+                <div class="lesson-title-text">Урок 4: Подкани за учебни материали и цели на урока</div>
+                <p class="lesson-desc-text">Формулиране на измерими цели по таксономията на Bloom и диференцирани планове на уроци.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <div class="info-panel">
+            <strong>💡 Важен съвет:</strong> Никога не използвайте прости команди от рода на „Обобщи“ или „Направи урок“. Винаги задавайте роля, контекст и очакван формат, за да постигнете максимално професионални резултати.
+        </div>
+
+        <div class="nav-footer-buttons">
+            <a href="index.html" class="btn">⬅️ Към главния индекс</a>
+            <a href="module3_lesson1.html" class="btn btn-primary">Започни Урок 1 ➜</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в действие. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+    </script>
+</body>
+</html>

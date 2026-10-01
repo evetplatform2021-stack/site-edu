@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 12: Пътна карта за развитие на преподаването с ИИ | AI в образованието</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+            --stage-1: #3b82f6;
+            --stage-2: #10b981;
+            --stage-3: #f59e0b;
+            --stage-4: #ec4899;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+            --stage-1: #2563eb;
+            --stage-2: #059669;
+            --stage-3: #d97706;
+            --stage-4: #db2777;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+            gap: 1rem;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--text-heading);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .module-nav {
+            display: flex;
+            gap: 0.4rem;
+            overflow-x: auto;
+            padding: 0.25rem 0;
+            scrollbar-width: thin;
+            max-width: 65vw;
+        }
+
+        .module-nav::-webkit-scrollbar {
+            height: 4px;
+        }
+
+        .module-nav::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .mod-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .mod-link:hover, .mod-link.active {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .module-nav {
+                max-width: 45vw;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links li.active a {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-stage-1 { border-left: 4px solid var(--stage-1); }
+        .card-stage-2 { border-left: 4px solid var(--stage-2); }
+        .card-stage-3 { border-left: 4px solid var(--stage-3); }
+        .card-stage-4 { border-left: 4px solid var(--stage-4); }
+
+        .bullet-list, ul:not(.nav-links) {
+            padding-left: 1.25rem;
+        }
+
+        .bullet-list li, section ul li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sub-heading {
+            font-weight: 600;
+            color: var(--text-heading);
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в образованието
+        </a>
+
+        <nav class="module-nav">
+            <a href="module1_intro.html" class="mod-link">М1: Основи</a>
+            <a href="module2_intro.html" class="mod-link">М2: Етика</a>
+            <a href="module3_intro.html" class="mod-link">М3: Промпти</a>
+            <a href="module4_intro.html" class="mod-link">М4: Асистенти</a>
+            <a href="module5_intro.html" class="mod-link">М5: Анализ</a>
+            <a href="module6_intro.html" class="mod-link">М6: Учебен процес</a>
+            <a href="module7_intro.html" class="mod-link">М7: Инструменти</a>
+            <a href="module8_intro.html" class="mod-link">М8: Визуализация</a>
+            <a href="module9_intro.html" class="mod-link">М9: Екипна работа</a>
+            <a href="module10_intro.html" class="mod-link">М10: Мултимедия</a>
+            <a href="module11_intro.html" class="mod-link">М11: Лаборатория</a>
+            <a href="module12_intro.html" class="mod-link active">М12: Стратегия</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Финален раздел</div>
+            <ul class="nav-links">
+                <li class="active"><a href="#intro">Въведение</a></li>
+                <li><a href="#stage1">Етап 1: Основи (0–3 м.)</a></li>
+                <li><a href="#stage2">Етап 2: Интеграция (3–6 м.)</a></li>
+                <li><a href="#stage3">Етап 3: Трансформация (6–12 м.)</a></li>
+                <li><a href="#stage4">Етап 4: Иновации (12+ м.)</a></li>
+                <li><a href="#recommendations">Финални препоръки</a></li>
+                <li><a href="#conclusion">Заключение</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Финален раздел на курса • Модул 12</span>
+                <h1>Пътна карта за развитие на преподаването с ИИ</h1>
+                <p>Стратегически документ за дългосрочна трансформация на преподавателската практика, изграждане на дигитална компетентност и устойчива AI култура.</p>
+            </div>
+
+            <section id="intro">
+                <h2>🎯 Въведение</h2>
+                <div class="card">
+                    <p>Пътната карта очертава дългосрочната трансформация на преподавателската практика чрез интеграция на изкуствен интелект. Тя служи като стратегически ориентир за учители, екипи и училища, които искат да развиват дигитална компетентност, да модернизират учебния процес и да изграждат устойчива AI култура.</p>
+                    <p>Пътната карта е разделена на четири основни етапа, които отразяват естественото развитие на уменията и практиките — от първи стъпки до иновации и лидерство.</p>
+                </div>
+            </section>
+
+            <section id="stage1">
+                <h2>🟦 Етап 1: Основи (0–3 месеца)</h2>
+                <div class="card card-stage-1">
+                    <p class="sub-heading">🎯 Цели на етапа</p>
+                    <ul class="bullet-list">
+                        <li>Усвояване на базови концепции за генеративен AI.</li>
+                        <li>Първи стъпки с ChatGPT, Copilot и визуални AI инструменти.</li>
+                        <li>Разбиране на етичните принципи и безопасност.</li>
+                        <li>Използване на AI за малки, ежедневни задачи.</li>
+                    </ul>
+
+                    <p class="sub-heading">🧩 Основни дейности</p>
+                    <ul class="bullet-list">
+                        <li>Четене и преработка на текстове с AI.</li>
+                        <li>Създаване на прости подкани.</li>
+                        <li>Генериране на кратки обяснения, примери и упражнения.</li>
+                        <li>Първи визуализации (инфографики, изображения).</li>
+                        <li>Използване на AI за подготовка на материали.</li>
+                    </ul>
+
+                    <p class="sub-heading">📌 Очаквани резултати</p>
+                    <ul class="bullet-list">
+                        <li>Учителят разбира как работи AI.</li>
+                        <li>Може да създава базови подкани.</li>
+                        <li>Използва AI за спестяване на време.</li>
+                        <li>Прилага етични и безопасни практики.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="stage2">
+                <h2>🟩 Етап 2: Интеграция (3–6 месеца)</h2>
+                <div class="card card-stage-2">
+                    <p class="sub-heading">🎯 Цели на етапа</p>
+                    <ul class="bullet-list">
+                        <li>Включване на AI в ежедневната педагогическа практика.</li>
+                        <li>Създаване на учебни материали с AI.</li>
+                        <li>Диференцирано обучение и персонализирани ресурси.</li>
+                        <li>Автоматизация на административни задачи.</li>
+                    </ul>
+
+                    <p class="sub-heading">🧩 Основни дейности</p>
+                    <ul class="bullet-list">
+                        <li>Създаване на презентации, работни листове, флашкарти.</li>
+                        <li>Генериране на тестове, рубрики и обратна връзка.</li>
+                        <li>Използване на AI за адаптиране на съдържание към различни нива.</li>
+                        <li>Организация на работа чрез Copilot, Teams, OneNote.</li>
+                    </ul>
+
+                    <p class="sub-heading">📌 Очаквани резултати</p>
+                    <ul class="bullet-list">
+                        <li>Учителят интегрира AI в повечето учебни дейности.</li>
+                        <li>Създава качествени визуални и текстови материали.</li>
+                        <li>Използва AI за диференциране и подкрепа на ученици със СОП.</li>
+                        <li>Намалява административното натоварване.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="stage3">
+                <h2>🟧 Етап 3: Трансформация (6–12 месеца)</h2>
+                <div class="card card-stage-3">
+                    <p class="sub-heading">🎯 Цели на етапа</p>
+                    <ul class="bullet-list">
+                        <li>Проектиране на AI-подкрепени уроци и учебни сценарии.</li>
+                        <li>Създаване на мултимедийни проекти.</li>
+                        <li>Нови модели на оценяване с AI.</li>
+                        <li>Включване на AI в екипни и проектни дейности.</li>
+                    </ul>
+
+                    <p class="sub-heading">🧩 Основни дейности</p>
+                    <ul class="bullet-list">
+                        <li>Създаване на цялостни уроци с AI.</li>
+                        <li>Комбиниране на текст, визуализации, аудио и видео.</li>
+                        <li>Използване на AI за анализ на резултати и напредък.</li>
+                        <li>Създаване на задания, устойчиви на AI.</li>
+                        <li>Екипни проекти с AI инструменти.</li>
+                    </ul>
+
+                    <p class="sub-heading">📌 Очаквани резултати</p>
+                    <ul class="bullet-list">
+                        <li>Учителят трансформира начина си на преподаване.</li>
+                        <li>Уроците стават по-динамични, визуални и интерактивни.</li>
+                        <li>Оценяването става по-обективно и структурирано.</li>
+                        <li>Учениците работят с AI като партньор в учене и творчество.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="stage4">
+                <h2>🟥 Етап 4: Иновации (12+ месеца)</h2>
+                <div class="card card-stage-4">
+                    <p class="sub-heading">🎯 Цели на етапа</p>
+                    <ul class="bullet-list">
+                        <li>Създаване на училищни политики за използване на AI.</li>
+                        <li>Обучение на колеги и изграждане на AI култура.</li>
+                        <li>Разработване на AI-подкрепени учебни програми.</li>
+                        <li>Въвеждане на иновативни педагогически модели.</li>
+                    </ul>
+
+                    <p class="sub-heading">🧩 Основни дейности</p>
+                    <ul class="bullet-list">
+                        <li>Създаване на вътрешни стандарти за AI в училище.</li>
+                        <li>Провеждане на обучения и семинари за колеги.</li>
+                        <li>Разработване на нови учебни материали и курсове.</li>
+                        <li>Използване на AI за училищни проекти, кампании и инициативи.</li>
+                        <li>Въвеждане на AI в STEAM, проектно обучение, интердисциплинарни уроци.</li>
+                    </ul>
+
+                    <p class="sub-heading">📌 Очаквани резултати</p>
+                    <ul class="bullet-list">
+                        <li>Учителят става AI лидер в училището.</li>
+                        <li>Училището развива устойчива AI стратегия.</li>
+                        <li>Учениците придобиват модерни дигитални умения.</li>
+                        <li>Образователната среда става иновативна и конкурентна.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="recommendations">
+                <h2>🏁 Финални препоръки за устойчиво развитие</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li>✔️ <strong>Развивай подкани</strong> — те са основата на всичко.</li>
+                        <li>✔️ <strong>Използвай AI като партньор</strong>, не като заместител.</li>
+                        <li>✔️ <strong>Поддържай баланс</strong> между технология и педагогика.</li>
+                        <li>✔️ <strong>Адаптирай съдържанието</strong> към нуждите на учениците.</li>
+                        <li>✔️ <strong>Спазвай етични и безопасни практики</strong> във всеки етап.</li>
+                        <li>✔️ <strong>Споделяй опит</strong> и обучавай колеги.</li>
+                        <li>✔️ <strong>Изграждай училищна AI култура</strong> за дългосрочен успех.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="conclusion">
+                <h2>🌟 Заключение</h2>
+                <div class="card">
+                    <p>Тази пътна карта превръща изкуствения интелект в стратегически инструмент за развитие на преподаването. Тя дава ясна посока — от първите стъпки до иновации и лидерство.</p>
+                    <p>С нея учителите могат да изградят модерна, ефективна и ангажираща учебна среда, в която AI е естествена част от процеса на учене и творчество.</p>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="module11_lesson4.html" class="btn">⬅️ Към Модул 11</a>
+                <a href="index.html" class="btn btn-primary">Към Начална страница 🏠</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 AI в образованието. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Изкуствен интелект в преподаването — Индекс на курса</title>
+    <link rel="preconnect" href="https://googleapis.com">
+    <link rel="preconnect" href="https://gstatic.com" crossorigin>
+    <link href="https://googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 1.5rem;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 3rem;
+        }
+
+        .hero-banner h1 {
+            font-size: 2.8rem;
+            color: var(--text-heading);
+            margin: 0 0 1rem 0;
+            font-weight: 800;
+        }
+
+        .hero-banner p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 750px;
+            margin: 0 auto 2rem auto;
+        }
+
+        .progress-box {
+            max-width: 500px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: left;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-heading);
+        }
+
+        .progress-bar {
+            background: var(--border);
+            border-radius: 999px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: var(--accent);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .modules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent);
+        }
+
+        .module-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .module-card h2 {
+            font-size: 1.3rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+        }
+
+        .module-desc {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .chapter-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem 0;
+        }
+
+        .chapter-list li {
+            margin-bottom: 0.5rem;
+        }
+
+        .chapter-list a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .chapter-list a:hover {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+        
+        footer p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            AI в действие: Преподаване
+        </a>
+        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+    </header>
+
+    <div class="container">
+        <div class="hero-banner">
+            <h1>Изкуствен интелект в преподаването и учебния процес</h1>
+            <p>Този курс е създаден специално за преподаватели, които искат не просто да „опитат“ ИИ, а да го превърнат в реален, ежедневен помощник в своята работа — от планиране на уроци до създаване на задания, оценяване и работа с различни групи обучаеми.</p>
+            
+            <div class="progress-box">
+                <div class="progress-header">
+                    <span>Прогрес на курса:</span>
+                    <span id="progressText">0% завършени</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modules-grid">
+            <!-- Модул 1 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 1</div>
+                    <h2>Основи на генеративния AI</h2>
+                    <p class="module-desc">Да даде ясно, практично разбиране за генеративния ИИ, големите езикови модели (LLM) и неговите възможности в образованието.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module1_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 1 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module1_lesson1.html">Урок 1: Какво е генеративен AI <span>➡️</span></a></li>
+                        <li><a href="module1_lesson2.html">Урок 2: Как работят езиковите модели <span>➡️</span></a></li>
+                        <li><a href="module1_lesson3.html">Урок 3: Какво може и какво не може AI <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module1_intro.html" class="btn" style="justify-content: center;">Към Модул 1</a>
+            </div>
+            <!-- Модул 2 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 2</div>
+                    <h2>Етика, безопасност и отговорно използване</h2>
+                    <p class="module-desc">Изграждане на култура на етично и безопасно използване на ИИ в образованието, авторски права и академична честност.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module2_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 2 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module2_lesson1.html">Урок 1: Рискове и ограничения <span>➡️</span></a></li>
+                        <li><a href="module2_lesson2.html">Урок 2: Авторски права и академична честност <span>➡️</span></a></li>
+                        <li><a href="module2_lesson3.html">Урок 3: Отговорно използване в училищна среда <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module2_intro.html" class="btn" style="justify-content: center;">Към Модул 2</a>
+            </div>
+            <!-- Модул 3 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 3</div>
+                    <h2>Създаване на ефективни подкани (Prompt Engineering)</h2>
+                    <p class="module-desc">Основни принципи на промптването, подкани за преподаватели, генериране на обяснения, тестове и проектиране на уроци.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module3_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 3 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module3_lesson1.html">Урок 1: Основни принципи <span>➡️</span></a></li>
+                        <li><a href="module3_lesson2.html">Урок 2: Подкани за преподаватели <span>➡️</span></a></li>
+                        <li><a href="module3_lesson3.html">Урок 3: Подкани за анализ и преработка <span>➡️</span></a></li>
+                        <li><a href="module3_lesson4.html">Урок 4: Подкани за проектиране на уроци <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module3_intro.html" class="btn" style="justify-content: center;">Към Модул 3</a>
+            </div>
+            <!-- Модул 4 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 4</div>
+                    <h2>AI асистенти в ежедневната работа на учителя</h2>
+                    <p class="module-desc">ChatGPT и Microsoft Copilot като интелигентни помощници за подготовка на материали, автоматизация на административни задачи и документация.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module4_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 4 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module4_lesson1.html">Урок 1: ChatGPT като интелигентен помощник <span>➡️</span></a></li>
+                        <li><a href="module4_lesson2.html">Урок 2: Microsoft Copilot <span>➡️</span></a></li>
+                        <li><a href="module4_lesson3.html">Урок 3: Автоматизация на административни задачи <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module4_intro.html" class="btn" style="justify-content: center;">Към Модул 4</a>
+            </div>
+            <!-- Модул 5 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 5</div>
+                    <h2>AI при търсене, анализ и обработка на информация</h2>
+                    <p class="module-desc">Стратегии за ефективно търсене, проверка на фактите (факт-чекинг), оценка на източници и генериране на резюмета за различни възрасти.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module5_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 5 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module5_lesson1.html">Урок 1: Стратегии за ефективно търсене <span>➡️</span></a></li>
+                        <li><a href="module5_lesson2.html">Урок 2: Проверка на достоверност <span>➡️</span></a></li>
+                        <li><a href="module5_lesson3.html">Урок 3: Генериране на резюмета и синтез <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module5_intro.html" class="btn" style="justify-content: center;">Към Модул 5</a>
+            </div>
+            <!-- Модул 6 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 6</div>
+                    <h2>AI в учебния процес</h2>
+                    <p class="module-desc">Диференцирано обучение, персонализирани материали, подкрепа за ученици със СОП, AI за оценяване, рубрики и приобщаващо образование.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module6_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 6 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module6_lesson1.html">Урок 1: Създаване на задания устойчиви на AI <span>➡️</span></a></li>
+                        <li><a href="module6_lesson2.html">Урок 2: Диференцирано обучение <span>➡️</span></a></li>
+                        <li><a href="module6_lesson3.html">Урок 3: AI за оценяване и обратна връзка <span>➡️</span></a></li>
+                        <li><a href="module6_lesson4.html">Урок 4: Приобщаващо образование <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module6_intro.html" class="btn" style="justify-content: center;">Към Модул 6</a>
+            </div>
+            <!-- Модул 7 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 7</div>
+                    <h2>AI инструменти за учители</h2>
+                    <p class="module-desc">Преглед и работа със специализирани платформи за текст, визуализация, аудио, видео и управление на класната стая.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module7_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 7 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module7_lesson1.html">Урок 1: Инструменти за текст <span>➡️</span></a></li>
+                        <li><a href="module7_lesson2.html">Урок 2: Инструменти за визуализация <span>➡️</span></a></li>
+                        <li><a href="module7_lesson3.html">Урок 3: Инструменти за аудио и видео <span>➡️</span></a></li>
+                        <li><a href="module7_lesson4.html">Урок 4: Инструменти за управление на класната стая <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module7_intro.html" class="btn" style="justify-content: center;">Към Модул 7</a>
+            </div>
+            <!-- Модул 8 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 8</div>
+                    <h2>Визуализиране на идеи с AI</h2>
+                    <p class="module-desc">Генериране на изображения, инфографики, диаграми и съвременен графичен дизайн на дидактически и учебни материали.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module8_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 8 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module8_lesson1.html">Урок 1: Генериране на изображения <span>➡️</span></a></li>
+                        <li><a href="module8_lesson2.html">Урок 2: Инфографики и диаграми <span>➡️</span></a></li>
+                        <li><a href="module8_lesson3.html">Урок 3: Дизайн на учебни материали <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module8_intro.html" class="btn" style="justify-content: center;">Към Модул 8</a>
+            </div>
+            <!-- Модул 9 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 9</div>
+                    <h2>Екипна работа и колаборация с AI</h2>
+                    <p class="module-desc">Внедряване на изкуствен интелект в екипни проекти, професионална комуникация и съвместно създаване на образователни ресурси.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module9_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 9 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module9_lesson1.html">Урок 1: AI в екипни проекти <span>➡️</span></a></li>
+                        <li><a href="module9_lesson2.html">Урок 2: AI за комуникация <span>➡️</span></a></li>
+                        <li><a href="module9_lesson3.html">Урок 3: AI за съвместно създаване на съдържание <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module9_intro.html" class="btn" style="justify-content: center;">Към Модул 9</a>
+            </div>
+            <!-- Модул 10 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 10</div>
+                    <h2>Генериране на слайдове, видеа, музика и др.</h2>
+                    <p class="module-desc">Генериране на модерни мултимедийни проекти — от AI презентации и анимации до аудио, говор и музикални фонове.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module10_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 10 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module10_lesson1.html">Урок 1: AI презентации <span>➡️</span></a></li>
+                        <li><a href="module10_lesson2.html">Урок 2: AI video и анимации <span>➡️</span></a></li>
+                        <li><a href="module10_lesson3.html">Урок 3: AI аудио и музика <span>➡️</span></a></li>
+                        <li><a href="module10_lesson4.html">Урок 4: Комплексни мултимедийни проекти <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module10_intro.html" class="btn" style="justify-content: center;">Към Модул 10</a>
+            </div>
+            <!-- Модул 11 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 11</div>
+                    <h2>Практическа лаборатория</h2>
+                    <p class="module-desc">Лабораторна работа: разработка на материали, задания и провеждането на цялостна AI трансформация на реален урок.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="module11_intro.html" class="btn btn-primary" style="width: 100%; justify-content: center;">Виж интрото на Модул 11 ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="module11_lesson1.html">Урок 1: Създаване на цялостен урок с AI <span>➡️</span></a></li>
+                        <li><a href="module11_lesson2.html">Урок 2: Създаване на учебни материали <span>➡️</span></a></li>
+                        <li><a href="module11_lesson3.html">Урок 3: Създаване на задания и оценяване <span>➡️</span></a></li>
+                        <li><a href="module11_lesson4.html">Урок 4: Мини-проект: AI трансформация на реален урок <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="module11_intro.html" class="btn" style="justify-content: center;">Към Модул 11</a>
+            </div>
+            <!-- Бонус секция: Пътна карта за развитие -->
+            <div class="module-card" style="background: linear-gradient(135deg, rgba(56, 189, 248, 0.05) 0%, rgba(16, 185, 129, 0.05) 100%);">
+                <div>
+                    <div class="module-badge" style="color: var(--success);">Стратегия</div>
+                    <h2>Пътна карта за развитие</h2>
+                    <p class="module-desc">Етапи на дългосрочно дигитално израстване: от базово усвояване и автоматизация до създаване на училищни AI програми.</p>
+                    
+                    <div style="margin-bottom: 1rem;">
+                        <a href="roadmap.html" class="btn btn-primary" style="width: 100%; justify-content: center; background: var(--success);">Виж пътната карта ➡️</a>
+                    </div>
+
+                    <ul class="chapter-list">
+                        <li><a href="roadmap.html#stage1">Етап 1: Основи (0–3 месеца) <span>➡️</span></a></li>
+                        <li><a href="roadmap.html#stage2">Етап 2: Интеграция (3–6 месеца) <span>➡️</span></a></li>
+                        <li><a href="roadmap.html#stage3">Етап 3: Трансформация (6–12 месеца) <span>➡️</span></a></li>
+                        <li><a href="roadmap.html#stage4">Етап 4: Иновации (12+ месеца) <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="roadmap.html" class="btn" style="justify-content: center; border-color: var(--success); color: var(--success);">Към Стратегията</a>
+            </div>
+
+        </div> <!-- Край на .modules-grid -->
+    </div> <!-- Край на .container -->
+
+    <footer>
+        <p>© 2026 AI в действие. Всички права запазени. Интерактивна платформа за професионалисти.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Автоматично зареждане на последно избраната тема при стартиране
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+
+        // Динамична логика за прогрес бара (актуализирана за новия курс с 39 урока общо)
+        const totalLessons = 39;
+        const completedLessons = 0; // Тази стойност може да се управлява според преминатите уроци
+
+        const progressFill = document.getElementById("progressFill");
+        const progressText = document.getElementById("progressText");
+
+        const percent = Math.round((completedLessons / totalLessons) * 100);
+        if (progressFill) progressFill.style.width = percent + "%";
+        if (progressText) progressText.textContent = percent + "% завършени";
+    </script>
+</body>
+</html>
