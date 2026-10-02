@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 5 — Урок 5.1: AI като ментор | SAMR + AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a; --bg-card: #1e293b; --border: #334155;
+            --text-heading: #f8fafc; --text-body: #cbd5e1; --text-muted: #94a3b8;
+            --accent: #38bdf8; --accent-hover: #0284c7; --success: #10b981; --danger: #ef4444;
+        }
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc; --bg-card: #ffffff; --border: #e2e8f0;
+            --text-heading: #0f172a; --text-body: #334155; --text-muted: #64748b;
+            --accent: #0284c7; --accent-hover: #0369a1; --success: #059669; --danger: #dc2626;
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 1000; transition: width 0.1s ease-out; }
+        
+        .top-header {
+            position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; gap: 1rem;
+        }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.05rem; color: var(--text-heading); text-decoration: none; white-space: nowrap; }
+        
+        .module-nav { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.25rem 0; scrollbar-width: thin; max-width: 60vw; }
+        .module-nav::-webkit-scrollbar { height: 4px; }
+        .module-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .mod-link { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+        .mod-link:hover, .mod-link.active { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; white-space: nowrap; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
+
+        .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1400px; margin: 0 auto; gap: 2rem; padding: 2rem 1.5rem; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        .sidebar { position: sticky; top: 5rem; height: fit-content; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .nav-group-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.4rem; }
+        .nav-links a { color: var(--text-body); text-decoration: none; font-size: 0.85rem; display: block; padding: 0.35rem 0.5rem; border-radius: 6px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links li.active a { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+        .content { max-width: 900px; }
+        .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-block; margin-bottom: 1rem; }
+        .hero h1 { font-size: 2.1rem; color: var(--text-heading); margin: 0 0 0.75rem 0; font-weight: 800; }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); margin: 0 0 2rem 0; }
+        section { margin-bottom: 3rem; }
+        section h2 { font-size: 1.4rem; color: var(--text-heading); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+        .bullet-list { padding-left: 1.25rem; } .bullet-list li { margin-bottom: 0.6rem; }
+        .quiz-option { background: var(--bg-main); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem 1rem; margin-bottom: 0.5rem; cursor: pointer; transition: all 0.2s; font-size: 0.95rem; }
+        .quiz-option:hover { border-color: var(--accent); }
+        .quiz-option.correct { border-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+        .quiz-option.incorrect { border-color: var(--danger); background: rgba(239, 68, 68, 0.1); }
+        .module-footer-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+    <header class="top-header">
+        <a href="index.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            SAMR + Bloom
+        </a>
+
+        <!-- Навигационна лента с всички модули -->
+        <nav class="module-nav">
+            <a href="samr_module1_intro.html" class="mod-link">М1: Основи</a>
+            <a href="samr_module2_intro.html" class="mod-link">М2: SAMR</a>
+            <a href="samr_module3_intro.html" class="mod-link">М3: Bloom</a>
+            <a href="samr_module4_intro.html" class="mod-link">М4: Матрица</a>
+            <a href="samr_module5_intro.html" class="mod-link active">М5: Сценарии</a>
+            <a href="samr_module6_intro.html" class="mod-link">М6: Проект</a>
+        </nav>
+
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 5 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="samr_module5_intro.html">Интро на Модул 5</a></li>
+                <li class="active"><a href="#content">Урок 5.1: AI като ментор</a></li>
+                <li><a href="samr_module5_lesson2.html">Урок 5.2: Симулации</a></li>
+                <li><a href="samr_module5_lesson3.html">Урок 5.3: Оценяване</a></li>
+            </ul>
+        </aside>
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 5 • Урок 5.1</span>
+                <h1>AI като ментор</h1>
+                <p>Използване на изкуствения интелект за водене на обучаемия през адаптивна пътека, предоставяне на насочваща обратна връзка и предлагане на следващи стъпки в обучението.</p>
+            </div>
+            
+            <section id="content">
+                <h2>1. Същност и функции на AI ментора</h2>
+                <div class="card">
+                    <p>В съвременния образователен дизайн изкуственият интелект може да бъде конфигуриран да действа като <strong>индивидуален ментор</strong> за всеки ученик. За разлика от стандартния софтуер, AI менторът разпознава контекста, задава отворени въпроси и адаптира темпото.</p>
+                    <p><strong>Основни функции на AI ментора:</strong></p>
+                    <ul class="bullet-list">
+                        <li><strong>Адаптивно водене:</strong> Насочва ученика стъпка по стъпка през сложни концепции, без да разкрива готовия отговор преждевременно.</li>
+                        <li><strong>Формативна обратна връзка:</strong> Анализира грешките в реално време и обяснява *защо* даден подход е неправилен.</li>
+                        <li><strong>Предлагане на следващи стъпки:</strong> Препоръчва допълнителни материали или упражнения въз основа на индивидуалните слабости на обучаемия.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2>2. Проверка на знанията (Тест)</h2>
+                <div class="card" id="q1">
+                    <p><strong>Въпрос 1:</strong> Кое е основното предимство на AI в ролята на ментор спрямо обикновения софтуер?</p>
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q1')">A) Че изобщо не изисква интернет връзка.</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, true, 'q1')">B) Че може да адаптира темпото, да задава насочващи въпроси и да дава контекстуална обратна връзка.</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q1')">C) Че автоматично поставя срочни двойки без знанието на учителя.</div>
+                </div>
+                <div class="card" id="q2">
+                    <p><strong>Въпрос 2:</strong> Как трябва да подходи ефективният AI ментор при затруднение на ученика?</p>
+                    <div class="quiz-option" onclick="checkAnswer(this, true, 'q2')">A) Да го насочи с подсказки и въпроси, които да му помогнат да стигне сам до решението.</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q2')">B) Веднага да напише пълното домашно вместо него.</div>
+                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q2')">C) Да прекрати сесията и да блокира профила на ученика.</div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="samr_module5_intro.html" class="btn">⬅️ Към Интро на Модул 5</a>
+                <a href="#" class="btn btn-primary" onclick="alert('Продължаваме към Урок 5.2...'); return false;">Към Урок 5.2 (Симулации) ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer><p>© 2026 SAMR + Bloom + AI Курс. Всички права запазени.</p></footer>
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            document.getElementById("progress-bar").style.width = (winScroll / height) * 100 + "%";
+        };
+        function toggleTheme() {
+            const html = document.documentElement;
+            const newTheme = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️️";
+        }
+        function checkAnswer(element, isCorrect, qId) {
+            document.querySelectorAll(`#${qId} .quiz-option`).forEach(opt => opt.classList.remove('correct', 'incorrect'));
+            element.classList.add(isCorrect ? 'correct' : 'incorrect');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 2 — Урок 2.1: Ниво S (Substitution) | SAMR + AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+        }
+
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+
+        #progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 1000;
+            transition: width 0.1s ease-out;
+        }
+
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.05rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.4rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            color: #ffffff;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            gap: 2rem;
+            padding: 2rem 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 5rem;
+            height: fit-content;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .nav-group-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.4rem;
+        }
+
+        .nav-links a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover, .nav-links li.active a {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent);
+        }
+
+        .content {
+            max-width: 900px;
+        }
+
+        .badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 {
+            font-size: 2.1rem;
+            color: var(--text-heading);
+            margin: 0 0 0.75rem 0;
+            font-weight: 800;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin: 0 0 2rem 0;
+        }
+
+        section {
+            margin-bottom: 3rem;
+        }
+
+        section h2 {
+            font-size: 1.4rem;
+            color: var(--text-heading);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .bullet-list {
+            padding-left: 1.25rem;
+        }
+
+        .bullet-list li {
+            margin-bottom: 0.6rem;
+        }
+
+        .task-box {
+            background: rgba(16, 185, 129, 0.05);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 1.75rem;
+            margin-top: 1.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            background: var(--bg-main);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            margin-top: 0.75rem;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .module-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="samr_module2_intro.html" class="logo-title">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Модул 2 — Изглед
+        </a>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 2 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="samr_module2_intro.html">Интро на Модул 2</a></li>
+                <li class="active"><a href="#content">1. Учебно съдържание</a></li>
+                <li><a href="#examples">2. Примери</a></li>
+                <li><a href="#task">3. Практическа задача</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 2 • Урок 2.1</span>
+                <h1>Ниво S: Substitution (Замяна)</h1>
+                <p>Първото ниво на модела SAMR, при което изкуственият интелект заменя традиционен инструмент, без да променя същността на самата задача.</p>
+            </div>
+
+            <!-- 1. Учебно съдържание -->
+            <section id="content">
+                <h2>1. Учебно съдържание</h2>
+                <div class="card">
+                    <p>
+                        На ниво <strong>Замяна (Substitution)</strong> технологията или изкуственият интелект действат като директен заместител на съществуващ инструмент, като функционалната промяна в самата учебна дейност е минимална или липсва. 
+                    </p>
+                    <p>
+                        Например, ако досега учениците са търсили думи в хартиен речник или са проверявали правописа си ръчно, използването на AI инструмент за същата цел представлява чиста замяна. Задачата остава същата, но се изпълнява по-бързо в дигитална среда.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 2. Примери -->
+            <section id="examples">
+                <h2>2. Конкретни образователни примери</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li><strong>AI превежда текст вместо речник:</strong> Ученикът въвежда чуждоезиков израз за директен превод, вместо да използва традиционен справочник.</li>
+                        <li><strong>AI проверява правопис вместо ученикът:</strong> Автоматично коригиране на печатни и граматични грешки в текстов редактор с вграден AI асистент.</li>
+                        <li><strong>Дигитален диктат с AI разпознаване:</strong> Превръщане на говор в текст вместо ръчно записване в тетрадка.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 3. Практическа задача -->
+            <section id="task">
+                <h2>3. Практическа задача за обучаемите</h2>
+                <div class="task-box">
+                    <p><strong>Инструкция за изпълнение:</strong></p>
+                    <p>Дай 3 конкретни примера от твоята преподавателска практика или предмет, които отговарят на нивото **Substitution (Замяна)** с използване на AI.</p>
+                    
+                    <label for="userResponseS" style="font-weight: 600; font-size: 0.9rem; display: block; margin-top: 1rem;">Твоите 3 примера:</label>
+                    <textarea id="userResponseS" placeholder="Опиши трите примера тук..."></textarea>
+                    
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Отговорът е записан успешно локално!')">💾 Запази отговора</button>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="samr_module2_intro.html" class="btn">⬅️ Към Интро на Модул 2</a>
+                <a href="#" class="btn btn-primary" onclick="alert('Следващият урок се зарежда...'); return false;">Към Урок 2.2 (Augmentation) ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 SAMR + Bloom + AI Курс. Всички права запазени.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('samr_theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('samr_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+    </script>
+</body>
+</html>
