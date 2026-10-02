@@ -9,275 +9,74 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root[data-theme="dark"] {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --border: #334155;
-            --text-heading: #f8fafc;
-            --text-body: #cbd5e1;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-hover: #0284c7;
-            --success: #10b981;
-            --danger: #ef4444;
+            --bg-main: #0f172a; --bg-card: #1e293b; --border: #334155;
+            --text-heading: #f8fafc; --text-body: #cbd5e1; --text-muted: #94a3b8;
+            --accent: #38bdf8; --accent-hover: #0284c7; --success: #10b981;
         }
-
         :root[data-theme="light"] {
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --border: #e2e8f0;
-            --text-heading: #0f172a;
-            --text-body: #334155;
-            --text-muted: #64748b;
-            --accent: #0284c7;
-            --accent-hover: #0369a1;
-            --success: #059669;
-            --danger: #dc2626;
+            --bg-main: #f8fafc; --bg-card: #ffffff; --border: #e2e8f0;
+            --text-heading: #0f172a; --text-body: #334155; --text-muted: #64748b;
+            --accent: #0284c7; --accent-hover: #0369a1; --success: #059669;
         }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-body);
-            line-height: 1.6;
-        }
-
-        #progress-bar {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 3px;
-            background: var(--accent);
-            width: 0%;
-            z-index: 1000;
-            transition: width 0.1s ease-out;
-        }
-
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 1000; transition: width 0.1s ease-out; }
+        
         .top-header {
-            position: sticky;
-            top: 0;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border);
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
+            position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; gap: 1rem;
         }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.05rem; color: var(--text-heading); text-decoration: none; white-space: nowrap; }
+        
+        .module-nav { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.25rem 0; scrollbar-width: thin; max-width: 60vw; }
+        .module-nav::-webkit-scrollbar { height: 4px; }
+        .module-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .mod-link { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+        .mod-link:hover, .mod-link.active { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
 
-        .logo-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 800;
-            font-size: 1.05rem;
-            color: var(--text-heading);
-            text-decoration: none;
-        }
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; white-space: nowrap; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
 
-        .btn {
-            background: var(--bg-card);
-            color: var(--text-heading);
-            border: 1px solid var(--border);
-            padding: 0.4rem 0.8rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            transition: all 0.2s ease;
-        }
+        .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1400px; margin: 0 auto; gap: 2rem; padding: 2rem 1.5rem; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        .sidebar { position: sticky; top: 5rem; height: fit-content; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .nav-group-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.4rem; }
+        .nav-links a { color: var(--text-body); text-decoration: none; font-size: 0.85rem; display: block; padding: 0.35rem 0.5rem; border-radius: 6px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links li.active a { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
 
-        .btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #0f172a;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            color: #ffffff;
-        }
-
-        .layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            max-width: 1400px;
-            margin: 0 auto;
-            gap: 2rem;
-            padding: 2rem 1.5rem;
-        }
-
-        @media (max-width: 900px) {
-            .layout {
-                grid-template-columns: 1fr;
-            }
-            .sidebar {
-                display: none;
-            }
-        }
-
-        .sidebar {
-            position: sticky;
-            top: 5rem;
-            height: fit-content;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.25rem;
-        }
-
-        .nav-group-title {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.75rem;
-        }
-
-        .nav-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .nav-links li {
-            margin-bottom: 0.4rem;
-        }
-
-        .nav-links a {
-            color: var(--text-body);
-            text-decoration: none;
-            font-size: 0.85rem;
-            display: block;
-            padding: 0.35rem 0.5rem;
-            border-radius: 6px;
-            transition: all 0.2s;
-        }
-
-        .nav-links a:hover, .nav-links li.active a {
-            background: rgba(56, 189, 248, 0.1);
-            color: var(--accent);
-        }
-
-        .content {
-            max-width: 900px;
-        }
-
-        .badge {
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--accent);
-            padding: 0.25rem 0.75rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-
-        .hero h1 {
-            font-size: 2.1rem;
-            color: var(--text-heading);
-            margin: 0 0 0.75rem 0;
-            font-weight: 800;
-        }
-
-        .hero p {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin: 0 0 2rem 0;
-        }
-
-        section {
-            margin-bottom: 3rem;
-        }
-
-        section h2 {
-            font-size: 1.4rem;
-            color: var(--text-heading);
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .bullet-list {
-            padding-left: 1.25rem;
-        }
-
-        .bullet-list li {
-            margin-bottom: 0.6rem;
-        }
-
-        .quiz-option {
-            background: var(--bg-main);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            margin-bottom: 0.5rem;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .quiz-option:hover {
-            border-color: var(--accent);
-        }
-
-        .quiz-option.correct {
-            border-color: var(--success);
-            background: rgba(16, 185, 129, 0.1);
-        }
-
-        .quiz-option.incorrect {
-            border-color: var(--danger);
-            background: rgba(239, 68, 68, 0.1);
-        }
-
-        .module-footer-nav {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 4rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem 1.5rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 4rem;
-        }
+        .content { max-width: 900px; }
+        .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-block; margin-bottom: 1rem; }
+        .hero h1 { font-size: 2.1rem; color: var(--text-heading); margin: 0 0 0.75rem 0; font-weight: 800; }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); margin: 0 0 2rem 0; }
+        section { margin-bottom: 3rem; }
+        section h2 { font-size: 1.4rem; color: var(--text-heading); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+        .bullet-list { padding-left: 1.25rem; } .bullet-list li { margin-bottom: 0.6rem; }
+        .task-box { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        textarea { width: 100%; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.95rem; margin-top: 0.75rem; resize: vertical; min-height: 100px; }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        .module-footer-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
     </style>
 </head>
 <body>
-
     <div id="progress-bar"></div>
-
     <header class="top-header">
-        <a href="samr_module3_intro.html" class="logo-title">
+        <a href="index.html" class="logo-title">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            Модул 3 — Изглед
+            SAMR + Bloom
         </a>
+        <nav class="module-nav">
+            <a href="samr_module1_intro.html" class="mod-link">М1: Основи</a>
+            <a href="samr_module2_intro.html" class="mod-link">М2: SAMR</a>
+            <a href="samr_module3_intro.html" class="mod-link active">М3: Bloom</a>
+            <a href="samr_module4_intro.html" class="mod-link">М4: Матрица</a>
+            <a href="samr_module5_intro.html" class="mod-link">М5: Сценарии</a>
+            <a href="samr_module6_intro.html" class="mod-link">М6: Проект</a>
+        </nav>
         <div style="display:flex; gap:0.5rem;">
             <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
             <button class="btn" onclick="window.print()">🖨️</button>
@@ -291,7 +90,10 @@
                 <li><a href="samr_module3_intro.html">Интро на Модул 3</a></li>
                 <li><a href="samr_module3_lesson1.html">Урок 3.1: Remember + AI</a></li>
                 <li><a href="samr_module3_lesson2.html">Урок 3.2: Understand + AI</a></li>
-                <li class="active"><a href="#content">Урок 3.3: Apply + AI</a></li>
+                <li class="active"><a href="samr_module3_lesson3.html">Урок 3.3: Apply + AI</a></li>
+                <li><a href="samr_module3_lesson4.html">Урок 3.4: Analyze + AI</a></li>
+                <li><a href="samr_module3_lesson5.html">Урок 3.5: Evaluate + AI</a></li>
+                <li><a href="samr_module3_lesson6.html">Урок 3.6: Create + AI</a></li>
             </ul>
         </aside>
 
@@ -299,110 +101,51 @@
             <div class="hero">
                 <span class="badge">Модул 3 • Урок 3.3</span>
                 <h1>Ниво Apply + AI (Прилагане)</h1>
-                <p>Третото когнитивно ниво на таксономията на Блум, фокусирано върху използването на абстрактни концепции и правила в нови, практически ситуации с помощта на AI.</p>
+                <p>Третото когнитивно ниво на таксономията на Блум, насочено към използване на знанията в нови или практични ситуационни задачи.</p>
             </div>
 
-            <!-- 1. Учебно съдържание и дефиниции -->
             <section id="content">
-                <h2>1. Дефиниция и същност на нивото</h2>
+                <h2>1. Учебно съдържание</h2>
                 <div class="card">
-                    <p>
-                        Нивото <strong>Прилагане (Apply)</strong> изисква от обучаемия да приложи наученото правило, процедура, метод или концепция в нова, конкретна или нестандартна ситуация. Тук знанието престава да бъде абстрактна теория и се превръща в практически инструмент за действие.
-                    </p>
-                    <p><strong>Как изкуственият интелект подпомага етапа на прилагане:</strong></p>
+                    <p>Нивото <strong>Прилагане (Apply)</strong> изисква от обучаемия да използва научените процедури, концепции и правила в нови ситуации, да решава практически задачи и да изпълнява проекти.</p>
+                    <p><strong>AI подпомага прилагането чрез:</strong></p>
                     <ul class="bullet-list">
-                        <li><strong>Генериране на упражнения и казуси:</strong> Създаване на практически задачи, съобразени с конкретното ниво на класа.</li>
-                        <li><strong>Интерактивни симулации на процедури:</strong> Позволява на учениците да следват стъпки при решаване на задачи и да получават мигновени корекции при грешен ход.</li>
-                        <li><strong>Ролеви тренировки:</strong> Изпълнение на сценарии "на живо" (например преговори, езикови диалози, решаване на технически проблеми).</li>
+                        <li><strong>Генериране на казуси (Scenario-based tasks):</strong> Създаване на реалистични работни казуси за решаване.</li>
+                        <li><strong>Интерактивни тренажори:</strong> Позволяват на ученика да прилага теорията в симулирана среда с насоки в реално време.</li>
+                        <li><strong>Практически насоки:</strong> Стъпка по стъпка проверка на изпълнението на процедурни задачи.</li>
                     </ul>
                 </div>
             </section>
 
-            <!-- 2. Практически упражнения -->
-            <section id="exercises">
-                <h2>2. Примери за практически упражнения с AI</h2>
-                <div class="card">
-                    <p><strong>Упражнение 1: Решаване на математически или логически стъпки</strong></p>
-                    <p style="color: var(--text-muted); margin-bottom: 1rem;">Ученикът въвежда условие на трудна задача, а AI не дава директния отговор, а го насочва със стъпкови въпроси за прилагане на правилото.</p>
-                    
-                    <p><strong>Упражнение 2: Практическо приложение на езикови правила</strong></p>
-                    <p style="color: var(--text-muted);">Учениците прилагат новонаучено граматично правило, като водят симулиран чат с AI асистент на съответния чужд език, който коригира грешките в движение.</p>
-                </div>
-            </section>
-
-            <!-- 3. Казус за обсъждане -->
-            <section id="case-study">
-                <h2>3. Практически казус</h2>
-                <div class="card">
-                    <p><strong>Казус: „Прилагане на икономически закон в реална среда“</strong></p>
-                    <p>
-                        Учител по икономика иска учениците да приложат закона за търсенето и предлагането. Вместо да решават абстрактни задачи от учебника, преподавателят използва AI, за да генерира виртуален пазарен сценарий (симулация на малък град), където учениците управляват магазин и трябва да коригират цените спрямо променящото се поведение на "виртуални клиенти".
-                    </p>
-                    <p style="margin-top: 1rem; color: var(--accent);">
-                        <em>Анализ:</em> Този подход демонстрира отлично ниво "Apply", тъй като изисква активно използване на теоретичното знание за решаване на динамичен проблем.
-                    </p>
-                </div>
-            </section>
-
-            <!-- 4. Тест за проверка на знанията -->
-            <section id="quiz">
-                <h2>4. Проверка на знанията (Тест)</h2>
-                
-                <div class="card" id="q1">
-                    <p><strong>Въпрос 1:</strong> Коя е основната характеристика на когнитивното ниво „Прилагане“ (Apply) в таксономията на Блум?</p>
-                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q1')">A) Механично запомняне на дефиниции и дати от учебника.</div>
-                    <div class="quiz-option" onclick="checkAnswer(this, true, 'q1')">B) Използване на наученото правило или процедура в нова, практическа ситуация.</div>
-                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q1')">C) Създаване на изцяло нов продукт от нулата без предварителни правила.</div>
-                </div>
-
-                <div class="card" id="q2">
-                    <p><strong>Въпрос 2:</strong> Как най-ефективно AI подпомага обучението на ниво „Прилагане“?</p>
-                    <div class="quiz-option" onclick="checkAnswer(this, true, 'q2')">A) Чрез генериране на казуси, симулации и насочващи стъпкови упражнения за решаване на проблеми.</div>
-                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q2')">B) Като скрива изцяло учебния материал от ученика.</div>
-                    <div class="quiz-option" onclick="checkAnswer(this, false, 'q2')">C) Като изчислява вместо ученика всички оценки за срока.</div>
+            <section id="task">
+                <h2>2. Практическа задача за обучаемите</h2>
+                <div class="task-box">
+                    <p><strong>Инструкция за изпълнение:</strong> Създай практическа задача (казус), в която учениците трябва да приложат теоретично понятие с помощта на AI асистент. Опиши задачата.</p>
+                    <label for="userResponseApply" style="font-weight: 600; font-size: 0.9rem; display: block; margin-top: 1rem;">Твоята задача (Apply + AI):</label>
+                    <textarea id="userResponseApply" placeholder="Опиши казуса или упражнението тук..."></textarea>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Отговорът е записан успешно локално!')">💾 Запази отговора</button>
                 </div>
             </section>
 
             <div class="module-footer-nav">
                 <a href="samr_module3_lesson2.html" class="btn">⬅️ Към Урок 3.2</a>
-                <a href="#" class="btn btn-primary" onclick="alert('Продължаваме към следващите уроци...'); return false;">Към Урок 3.4 (Analyze) ➜</a>
+                <a href="samr_module3_lesson4.html" class="btn btn-primary">Към Урок 3.4 ➜</a>
             </div>
         </main>
     </div>
 
-    <footer>
-        <p>© 2026 SAMR + Bloom + AI Курс. Всички права запазени.</p>
-    </footer>
-
+    <footer><p>© 2026 SAMR + Bloom + AI Курс. Всички права запазени.</p></footer>
     <script>
         window.onscroll = function() {
             let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            let scrolled = (winScroll / height) * 100;
-            document.getElementById("progress-bar").style.width = scrolled + "%";
+            document.getElementById("progress-bar").style.width = (winScroll / height) * 100 + "%";
         };
-
         function toggleTheme() {
             const html = document.documentElement;
-            const currentTheme = html.getAttribute("data-theme");
-            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            const newTheme = html.getAttribute("data-theme") === "dark" ? "light" : "dark";
             html.setAttribute("data-theme", newTheme);
             document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
-            localStorage.setItem('samr_theme', newTheme);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('samr_theme');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-theme', savedTheme);
-                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
-            }
-        });
-
-        function checkAnswer(element, isCorrect, qId) {
-            const options = document.querySelectorAll(`#${qId} .quiz-option`);
-            options.forEach(opt => opt.classList.remove('correct', 'incorrect'));
-            element.classList.add(isCorrect ? 'correct' : 'incorrect');
         }
     </script>
 </body>

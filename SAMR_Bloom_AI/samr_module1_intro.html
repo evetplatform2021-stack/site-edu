@@ -9,203 +9,58 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root[data-theme="dark"] {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --border: #334155;
-            --text-heading: #f8fafc;
-            --text-body: #cbd5e1;
-            --text-muted: #94a3b8;
-            --accent: #38bdf8;
-            --accent-hover: #0284c7;
-            --success: #10b981;
-            --info-bg: rgba(56, 189, 248, 0.1);
+            --bg-main: #0f172a; --bg-card: #1e293b; --border: #334155;
+            --text-heading: #f8fafc; --text-body: #cbd5e1; --text-muted: #94a3b8;
+            --accent: #38bdf8; --accent-hover: #0284c7; --success: #10b981; --info-bg: rgba(56, 189, 248, 0.1);
         }
-
         :root[data-theme="light"] {
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --border: #e2e8f0;
-            --text-heading: #0f172a;
-            --text-body: #334155;
-            --text-muted: #64748b;
-            --accent: #0284c7;
-            --accent-hover: #0369a1;
-            --success: #059669;
-            --info-bg: rgba(2, 132, 199, 0.05);
+            --bg-main: #f8fafc; --bg-card: #ffffff; --border: #e2e8f0;
+            --text-heading: #0f172a; --text-body: #334155; --text-muted: #64748b;
+            --accent: #0284c7; --accent-hover: #0369a1; --success: #059669; --info-bg: rgba(2, 132, 199, 0.05);
         }
-
-        body {
-            margin: 0;
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-body);
-            line-height: 1.6;
-        }
-
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        
         .top-header {
-            position: sticky;
-            top: 0;
-            background: var(--bg-card);
-            border-bottom: 1px solid var(--border);
-            padding: 0.75rem 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            z-index: 100;
+            position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; gap: 1rem;
         }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.05rem; color: var(--text-heading); text-decoration: none; white-space: nowrap; }
+        
+        .module-nav { display: flex; gap: 0.4rem; overflow-x: auto; padding: 0.25rem 0; scrollbar-width: thin; max-width: 60vw; }
+        .module-nav::-webkit-scrollbar { height: 4px; }
+        .module-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .mod-link { color: var(--text-muted); text-decoration: none; padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; white-space: nowrap; transition: all 0.2s; }
+        .mod-link:hover, .mod-link.active { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
 
-        .logo-title {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-weight: 800;
-            font-size: 1.1rem;
-            color: var(--text-heading);
-            text-decoration: none;
-        }
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; white-space: nowrap; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
 
-        .btn {
-            background: var(--bg-card);
-            color: var(--text-heading);
-            border: 1px solid var(--border);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s ease;
-        }
+        .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1400px; margin: 0 auto; gap: 2rem; padding: 2rem 1.5rem; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        .sidebar { position: sticky; top: 5rem; height: fit-content; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .nav-group-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.4rem; }
+        .nav-links a { color: var(--text-body); text-decoration: none; font-size: 0.85rem; display: block; padding: 0.35rem 0.5rem; border-radius: 6px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links li.active a { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
 
-        .btn:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .btn-primary {
-            background: var(--accent);
-            color: #0f172a;
-            border: none;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            color: #ffffff;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 3rem 1.5rem;
-        }
-
-        .module-badge-top {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: var(--accent);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-            display: inline-block;
-        }
-
-        h1 {
-            font-size: 2.3rem;
-            color: var(--text-heading);
-            margin: 0 0 1.5rem 0;
-            font-weight: 800;
-        }
-
-        h2 {
-            font-size: 1.4rem;
-            color: var(--text-heading);
-            margin: 2.5rem 0 1rem 0;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.5rem;
-        }
-
-        .intro-lead {
-            font-size: 1.15rem;
-            color: var(--text-body);
-            margin-bottom: 2rem;
-        }
-
-        .content-box {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.75rem;
-            margin-bottom: 2rem;
-        }
-
-        .info-panel {
-            background: var(--info-bg);
-            border-left: 4px solid var(--accent);
-            border-radius: 0 8px 8px 0;
-            padding: 1.25rem;
-            margin: 1.5rem 0;
-        }
-
-        ul {
-            padding-left: 1.25rem;
-            margin: 0;
-        }
-
-        li {
-            margin-bottom: 0.75rem;
-        }
-
-        .lesson-nav-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            text-decoration: none;
-            color: var(--text-body);
-            transition: all 0.2s ease;
-        }
-
-        .lesson-nav-card:hover {
-            border-color: var(--accent);
-            transform: translateX(4px);
-        }
-
-        .lesson-title-text {
-            font-weight: 600;
-            color: var(--text-heading);
-            margin: 0 0 0.25rem 0;
-        }
-
-        .lesson-desc-text {
-            font-size: 0.9rem;
-            color: var(--text-muted);
-            margin: 0;
-        }
-
-        .nav-footer-buttons {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 3.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-        }
-
-        footer {
-            text-align: center;
-            padding: 2rem 1.5rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 4rem;
-        }
+        .content { max-width: 900px; }
+        .module-badge-top { font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: inline-block; }
+        h1 { font-size: 2.3rem; color: var(--text-heading); margin: 0 0 1.5rem 0; font-weight: 800; }
+        h2 { font-size: 1.4rem; color: var(--text-heading); margin: 2.5rem 0 1rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .intro-lead { font-size: 1.15rem; color: var(--text-body); margin-bottom: 2rem; }
+        .content-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 2rem; }
+        .info-panel { background: var(--info-bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1.25rem; margin: 1.5rem 0; }
+        ul { padding-left: 1.25rem; margin: 0; }
+        li { margin-bottom: 0.75rem; }
+        .lesson-nav-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center; text-decoration: none; color: var(--text-body); transition: all 0.2s ease; }
+        .lesson-nav-card:hover { border-color: var(--accent); transform: translateX(4px); }
+        .lesson-title-text { font-weight: 600; color: var(--text-heading); margin: 0 0 0.25rem 0; }
+        .lesson-desc-text { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+        .nav-footer-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
     </style>
 </head>
 <body>
@@ -213,54 +68,74 @@
     <header class="top-header">
         <a href="index.html" class="logo-title">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            SAMR + Bloom + AI
+            SAMR + Bloom
         </a>
-        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+        <nav class="module-nav">
+            <a href="samr_module1_intro.html" class="mod-link active">М1: Основи</a>
+            <a href="samr_module2_intro.html" class="mod-link">М2: SAMR</a>
+            <a href="samr_module3_intro.html" class="mod-link">М3: Bloom</a>
+            <a href="samr_module4_intro.html" class="mod-link">М4: Матрица</a>
+            <a href="samr_module5_intro.html" class="mod-link">М5: Сценарии</a>
+            <a href="samr_module6_intro.html" class="mod-link">М6: Проект</a>
+        </nav>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️️</button>
+        </div>
     </header>
 
-    <div class="container">
-        <!-- Общо въведение в курса (само тук, в Модул 1) -->
-        <span class="module-badge-top">Курс — Общо въведение</span>
-        <h1>SAMR + таксономията на Bloom + AI: Модел за трансформация на обучението</h1>
-        
-        <p class="intro-lead">Тези учебни материали са създадени като пълен сценарий, текст за презентации и ръководство за участници, за да превърнат изкуствения интелект в реален инструмент за когнитивна трансформация в класната стая.</p>
-        
-        <div class="content-box">
-            <ul>
-                <li><strong>Цел на курса:</strong> Надграждане на преподаването от обикновена дигитална замяна до дълбоко преосмисляне и творчество.</li>
-                <li><strong>Формат:</strong> Интерактивни уроци, съчетаващи технологичните нива (SAMR) с когнитивните етапи (Bloom).</li>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 1 Уроци</div>
+            <ul class="nav-links">
+                <li class="active"><a href="samr_module1_intro.html">Интро на Модул 1</a></li>
+                <li><a href="samr_module1_lesson1.html">Урок 1.1: Трансформационно обучение</a></li>
+                <li><a href="samr_module1_lesson2.html">Урок 1.2: Ролята на учителя и ученика</a></li>
             </ul>
-        </div>
+        </aside>
 
-        <!-- Представяне на Модул 1 и неговите уроци -->
-        <span class="module-badge-top" style="margin-top: 1rem;">Модул 1</span>
-        <h2 style="margin-top: 0.2rem;">Основи на трансформационното обучение с AI</h2>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Този модул поставя фундаменталните основи на съвременното образование, в което изкуственият интелект е когнитивен партньор.</p>
-
-        <a href="samr_module1_lesson1.html" class="lesson-nav-card">
-            <div>
-                <div class="lesson-title-text">Урок 1.1 — Какво е трансформационно обучение?</div>
-                <p class="lesson-desc-text">Разлика между традиционно и трансформационно обучение, AI като когнитивен партньор.</p>
+        <main class="content">
+            <span class="module-badge-top">Курс — Общо въведение</span>
+            <h1>SAMR + таксономията на Bloom + AI: Модел за трансформация на обучението</h1>
+            
+            <p class="intro-lead">Тези учебни материали са създадени като пълен сценарий, текст за презентации и ръководство за участници, за да превърнат изкуствения интелект в реален инструмент за когнитивна трансформация в класната стая.</p>
+            
+            <div class="content-box">
+                <ul>
+                    <li><strong>Цел на курса:</strong> Надграждане на преподаването от обикновена дигитална замяна до дълбоко преосмисляне и творчество.</li>
+                    <li><strong>Формат:</strong> Интерактивни уроци, съчетаващи технологичните нива (SAMR) с когнитивните етапи (Bloom).</li>
+                </ul>
             </div>
-            <span style="color: var(--accent);">➡️</span>
-        </a>
 
-        <a href="samr_module1_lesson2.html" class="lesson-nav-card">
-            <div>
-                <div class="lesson-title-text">Урок 1.2 — Как AI променя ролята на учителя и обучаемия</div>
-                <p class="lesson-desc-text">Учителят като дизайнер на преживявания, обучаемият като създател на знания.</p>
+            <span class="module-badge-top" style="margin-top: 1rem;">Модул 1</span>
+            <h2 style="margin-top: 0.2rem;">Основи на трансформационното обучение с AI</h2>
+            <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Този модул поставя фундаменталните основи на съвременното образование, в което изкуственият интелект е когнитивен партньор.</p>
+
+            <a href="samr_module1_lesson1.html" class="lesson-nav-card">
+                <div>
+                    <div class="lesson-title-text">Урок 1.1 — Какво е трансформационно обучение?</div>
+                    <p class="lesson-desc-text">Разлика между традиционно и трансформационно обучение, AI като когнитивен партньор.</p>
+                </div>
+                <span style="color: var(--accent);">➡️</span>
+            </a>
+
+            <a href="samr_module1_lesson2.html" class="lesson-nav-card">
+                <div>
+                    <div class="lesson-title-text">Урок 1.2 — Как AI променя ролята на учителя и обучаемия</div>
+                    <p class="lesson-desc-text">Учителят като дизайнер на преживявания, обучаемият като създател на знания.</p>
+                </div>
+                <span style="color: var(--accent);">➡️</span>
+            </a>
+
+            <div class="info-panel">
+                <strong>💡 Съвет за напредък:</strong> Преминете последователно през уроците на този модул и изпълнете практическата задача в края на Урок 1.1.
             </div>
-            <span style="color: var(--accent);">➡️</span>
-        </a>
 
-        <div class="info-panel">
-            <strong>💡 Съвет за напредък:</strong> Преминете последователно през уроците на този модул и изпълнете практическата задача в края на Урок 1.1.
-        </div>
-
-        <div class="nav-footer-buttons">
-            <a href="index.html" class="btn">⬅️ Начална страница</a>
-            <a href="samr_module1_lesson1.html" class="btn btn-primary">Започни Урок 1.1 ➜</a>
-        </div>
+            <div class="nav-footer-buttons">
+                <a href="index.html" class="btn">⬅️ Начална страница</a>
+                <a href="samr_module1_lesson1.html" class="btn btn-primary">Започни Урок 1.1 ➜</a>
+            </div>
+        </main>
     </div>
 
     <footer>
@@ -276,7 +151,6 @@
             document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
             localStorage.setItem('samr_theme', newTheme);
         }
-
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('samr_theme');
             if (savedTheme) {
