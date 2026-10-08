@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 5 — Урок 5.1: Разработване и защита на проект | Растерна графика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 1000; transition: width 0.1s ease-out; }
+        .top-header { position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.05rem; color: var(--text-heading); text-decoration: none; }
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
+        .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1400px; margin: 0 auto; gap: 2rem; padding: 2rem 1.5rem; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        .sidebar { position: sticky; top: 5rem; height: fit-content; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .nav-group-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.4rem; }
+        .nav-links a { color: var(--text-body); text-decoration: none; font-size: 0.85rem; display: block; padding: 0.35rem 0.5rem; border-radius: 6px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links li.active a { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+        .content { max-width: 900px; }
+        .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-block; margin-bottom: 1rem; }
+        .hero h1 { font-size: 2.1rem; color: var(--text-heading); margin: 0 0 0.75rem 0; font-weight: 800; }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); margin: 0 0 2rem 0; }
+        section { margin-bottom: 3rem; }
+        section h2 { font-size: 1.35rem; color: var(--text-heading); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+        .bullet-list { padding-left: 1.25rem; }
+        .bullet-list li { margin-bottom: 0.6rem; }
+        .case-study { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 1.5rem; margin-top: 1rem; }
+        .task-box { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        textarea { width: 100%; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.95rem; margin-top: 0.75rem; resize: vertical; min-height: 100px; }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        .quiz-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        .quiz-question { font-weight: 600; color: var(--text-heading); margin-bottom: 0.75rem; }
+        .quiz-options label { display: block; margin-bottom: 0.5rem; cursor: pointer; padding: 0.4rem 0.5rem; border-radius: 6px; transition: background 0.2s; }
+        .quiz-options label:hover { background: rgba(56, 189, 248, 0.08); }
+        .quiz-feedback { margin-top: 1rem; font-weight: 600; font-size: 0.9rem; }
+        .module-footer-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="photoshop_index.html" class="logo-title">📚 Растерна графика • Adobe Photoshop</a>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 5 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="photoshop_module5_intro.html">⬅️ Обзор на Модул 5</a></li>
+                <li class="active"><a href="#content">1. Задание за проект</a></li>
+                <li><a href="#validation">2. Техническа проверка</a></li>
+                <li><a href="#defense">3. Презентация и защита</a></li>
+                <li><a href="#task">4. Практическа задача</a></li>
+                <li><a href="#quiz">5. Мини тест</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 5 • Урок 5.1 (Теория: 4 ч. / Практика: 8 ч.)</span>
+                <h1>Разработване, експортиране и защита на комплексен графичен проект</h1>
+                <p>Изработване на курсов проект (рекламен плакат, продуктова визия за електронна търговия или социални медии), съдържащ фотоколаж, ретуш, текст и спазване на техническите изисквания.</p>
+            </div>
+
+            <section id="content">
+                <h2>1. Задание за курсов проект и избор на тема</h2>
+                <div class="card">
+                    <p>
+                        Курсистите избират една от следните практични насоки:
+                    </p>
+                    <ul class="bullet-list">
+                        <li><strong>Рекламен плакат:</strong> Включва сложен дигитален монтаж, акцентна типография, фоторетуш и подготовка в CMYK за печат (300 PPI).</li>
+                        <li><strong>Продуктова визия за електронна търговия:</strong> Изрязване на продукт с Select and Mask, добавяне на сенки, цветови корекции и експорт в RGB (72/96 PPI).</li>
+                        <li><strong>Кампания за социални медии:</strong> Комплект от адаптивни визии за Facebook/Instagram с използване на Smart Objects и AI инструмент Generative Fill.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="validation">
+                <h2>2. Техническа проверка, именуване и архивиране</h2>
+                <div class="card">
+                    <p>Преди финалното предаване се извършва задължителен технически одит на файла:</p>
+                    <ul class="bullet-list">
+                        <li>Проверка на резолюцията и цветовия модел според предназначението.</li>
+                        <li>Организиране на слоевете в логични и цветово кодирани групи (*Layer Groups*).</li>
+                        <li>Правилно именуване на файловете (например *Project_Ime_Familiya.psd*).</li>
+                        <li>Архивиране на оригиналния работен PSD файл с поддържани слоеве заедно с готовия експорт (JPEG/TIFF/PDF).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="defense">
+                <h2>3. Презентиране и защита на визуалния проект</h2>
+                <div class="card">
+                    <p>
+                        Защитата преминава през представяне на творческата концепция, избор на инструменти в Adobe Photoshop, справяне с технически предизвикателства по време на изработката и обосновка на дизайнерските решения пред комисията.
+                    </p>
+                </div>
+            </section>
+
+            <section id="casestudy">
+                <h2>Практически казус</h2>
+                <div class="case-study">
+                    <p><strong>Казус:</strong> Предаден проект съдържа неизчистени маски, сляти слоеве и неправилен цветови профил (RGB вместо CMYK за печатния плакат).</p>
+                    <p><strong>Решение:</strong> Чрез техническата самооценка студентът открива грешките, коригира профила през Edit > Convert to Profile и подрежда слоевете в структурирани групи преди защитата.</p>
+                </div>
+            </section>
+
+            <section id="task">
+                <h2>4. Практическа задача (Финално портфолио)</h2>
+                <div class="task-box">
+                    <p><strong>Инструкция:</strong> Опишете концепцията на вашия финален курсов проект, избрания формат, използваните инструменти от Photoshop и постигнатите резултати.</p>
+                    <textarea id="userResponse" placeholder="Опишете вашия проект тук..."></textarea>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Финалният проект е регистриран успешно!')">💾 Запази концепцията</button>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2>5. Мини тест за завършване на курса</h2>
+                <div class="quiz-box">
+                    <div id="quizContainer">
+                        <div style="margin-bottom: 1.5rem;">
+                            <div class="quiz-question">Въпрос 1: Какво задължително трябва да съдържа архивният работен файл на завършения графичен проект?</div>
+                            <div class="quiz-options">
+                                <label><input type="radio" name="q1" value="a"> А) Оригиналния PSD файл с ненарушени и организирани слоеве, маски и смарт обекти.</label>
+                                <label><input type="radio" name="q1" value="b"> Б) Само еднослойно черно-бяло изображение.</label>
+                                <label><input type="radio" name="q1" value="c"> В) Само текстовия документ с описание.</label>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div class="quiz-question">Въпрос 2: Кой е правилният подход при подготовка на файл за офсетов печат на финалния етап?</div>
+                            <div class="quiz-options">
+                                <label><input type="radio" name="q2" value="a"> А) CMYK цветови модел и резолюция 300 PPI.</label>
+                                <label><input type="radio" name="q2" value="b"> Б) RGB цветови модел и резолюция 72 PPI.</label>
+                                <label><input type="radio" name="q2" value="c"> В) Indexed Color палитра.</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="checkQuiz()">Провери отговорите</button>
+                        <div id="quizFeedback" class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="photoshop_module5_intro.html" class="btn">⬅️ Към обзор на Модул 5</a>
+                <a href="photoshop_index.html" class="btn btn-primary" onclick="alert('Поздравления! Успешно завършихте целия курс по Растерна графика!')">Към Индекса на курса 🏆</a>
+            </div>
+        </main>
+    </div>
+
+    <footer><p>© 2026 Професионално обучение по Графичен дизайн — Растерна графика. Всички права запазени.</p></footer>
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('photoshop_theme', newTheme);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('photoshop_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? '🌙' : '☀️';
+            }
+        });
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const feedback = document.getElementById('quizFeedback');
+            if (!q1 || !q2) { feedback.style.color = 'var(--danger)'; feedback.textContent = 'Моля, отговорете на всички въпроси.'; return; }
+            let score = (q1.value === 'a' ? 1 : 0) + (q2.value === 'a' ? 1 : 0);
+            if (score === 2) { feedback.style.color = 'var(--success)'; feedback.textContent = 'Браво! Всички отговори са верни (2/2). Успешно завършихте целия курс по Растерна графика!'; }
+            else { feedback.style.color = 'var(--danger)'; feedback.textContent = `Имате ${score}/2 верни отговора. Проверете изискванията и опитайте пак.`; }
+        }
+    </script>
+</body>
+</html>

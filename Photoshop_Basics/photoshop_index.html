@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Растерна графика (Adobe Photoshop) — Индекс на курса</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+        }
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+        }
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-body);
+            line-height: 1.6;
+        }
+        .top-header {
+            position: sticky;
+            top: 0;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 100;
+        }
+        .logo-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--text-heading);
+            text-decoration: none;
+        }
+        .btn {
+            background: var(--bg-card);
+            color: var(--text-heading);
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .hero-banner {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 3rem;
+        }
+        .hero-banner h1 { font-size: 2.3rem; color: var(--text-heading); margin: 0 0 1rem 0; font-weight: 800; }
+        .hero-banner p { font-size: 1.1rem; color: var(--text-muted); max-width: 850px; margin: 0 auto 2rem auto; }
+        .progress-box { max-width: 500px; margin: 0 auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; text-align: left; }
+        .progress-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; font-size: 0.9rem; font-weight: 600; color: var(--text-heading); }
+        .progress-bar { background: var(--border); border-radius: 999px; height: 10px; overflow: hidden; }
+        .progress-fill { background: var(--accent); height: 100%; width: 0%; transition: width 0.3s ease; }
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 1.5rem; }
+        .module-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .module-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+        .module-badge { font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .module-card h2 { font-size: 1.25rem; color: var(--text-heading); margin: 0 0 0.75rem 0; }
+        .module-desc { color: var(--text-muted); font-size: 0.92rem; margin-bottom: 1.25rem; }
+        .chapter-list { list-style: none; padding: 0; margin: 0 0 1.5rem 0; }
+        .chapter-list li { margin-bottom: 0.5rem; }
+        .chapter-list a {
+            color: var(--text-body);
+            text-decoration: none;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.35rem 0.5rem;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+        .chapter-list a:hover { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <a href="photoshop_index.html" class="logo-title">
+            📚 Растерна графика • Adobe Photoshop
+        </a>
+        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+    </header>
+
+    <div class="container">
+        <div class="hero-banner">
+            <h1>Професионално обучение: Растерна графика (Adobe Photoshop)</h1>
+            <p>Професия: Код 021101 „Графичен дизайн“ | III СПК | Обем: 56 ч. теория + 64 ч. практика (общо 120 часа). Съобразено с Adobe Photoshop 2022–по-нова, включително облачни функции, недеструктивни работни потоци и AI инструменти като Generative Fill.</p>
+            
+            <div class="progress-box">
+                <div class="progress-header">
+                    <span>Прогрес на курса:</span>
+                    <span id="progressText">0% завършени</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem; text-align: center;">
+            <a href="photoshop_module1_intro.html" class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;">📖 Към въведението на курса и Модул 1 ➡️</a>
+        </div>
+
+        <div class="modules-grid">
+            <!-- Модул 1 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 1 (12ч Теория / 8ч Практика)</div>
+                    <h2>Теоретични основи на растерната графика и работна среда</h2>
+                    <p class="module-desc">Пиксели, резолюция, цветови модели, файлови формати, интерфейс на Photoshop и фотография/композиция.</p>
+                    <ul class="chapter-list">
+                        <li><a href="photoshop_module1_lesson1_1.html">Урок 1.1: Същност на растерната графика и параметри <span>➡️</span></a></li>
+                        <li><a href="photoshop_module1_lesson1_2.html">Урок 1.2: Файлови формати в растерната графика <span>➡️</span></a></li>
+                        <li><a href="photoshop_module1_lesson1_3.html">Урок 1.3: Интерфейс и производителност <span>➡️</span></a></li>
+                        <li><a href="photoshop_module1_lesson1_4.html">Урок 1.4: Фотография и композиция в дизайна <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="photoshop_module1_intro.html" class="btn" style="justify-content: center;">Към Модул 1</a>
+            </div>
+
+            <!-- Модул 2 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 2 (14ч Теория / 16ч Практика)</div>
+                    <h2>Слоеве, селекции и недеструктивна редакция</h2>
+                    <p class="module-desc">Архитектура на слоеве, интелигентни селекции, маски (Layer & Clipping Masks) и геометрични трансформации.</p>
+                    <ul class="chapter-list">
+                        <li><a href="photoshop_module2_lesson2_1.html">Урок 2.1: Архитектура и управление на слоеве <span>➡️</span></a></li>
+                        <li><a href="photoshop_module2_lesson2_2.html">Урок 2.2: Инструменти за селекция и Select Subject <span>➡️</span></a></li>
+                        <li><a href="photoshop_module2_lesson2_3.html">Урок 2.3: Работа с маски и недеструктивен процес <span>➡️</span></a></li>
+                        <li><a href="photoshop_module2_lesson2_4.html">Урок 2.4: Геометрични трансформации и Warp <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="photoshop_module2_intro.html" class="btn" style="justify-content: center;">Към Модул 2</a>
+            </div>
+
+            <!-- Модул 3 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 3 (16ч Теория / 20ч Практика)</div>
+                    <h2>Цветови корекции, ретуш и дигитален монтаж</h2>
+                    <p class="module-desc">Adjustment layers, професионален ретуш (Frequency Separation), четки и фотоколаж.</p>
+                    <ul class="chapter-list">
+                        <li><a href="photoshop_module3_lesson3_1.html">Урок 3.1: Цветови корекции и корекционни слоеве <span>➡️</span></a></li>
+                        <li><a href="photoshop_module3_lesson3_2.html">Урок 3.2: Професионален ретуш и възстановяване <span>➡️</span></a></li>
+                        <li><a href="photoshop_module3_lesson3_3.html">Урок 3.3: Рисуващ инструментариум и четки <span>➡️</span></a></li>
+                        <li><a href="photoshop_module3_lesson3_4.html">Урок 3.4: Основи на дигиталния монтаж и колаж <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="photoshop_module3_intro.html" class="btn" style="justify-content: center;">Към Модул 3</a>
+            </div>
+
+            <!-- Модул 4 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 4 (10ч Теория / 12ч Практика)</div>
+                    <h2>Филтри, типография, AI инструменти и автоматизация</h2>
+                    <p class="module-desc">Smart filters, Generative Fill, Generative Expand, типография, Actions и експорт.</p>
+                    <ul class="chapter-list">
+                        <li><a href="photoshop_module4_lesson4_1.html">Урок 4.1: Филтри, Smart Filters и AI (Generative Fill) <span>➡️</span></a></li>
+                        <li><a href="photoshop_module4_lesson4_2.html">Урок 4.2: Типография и текстови ефекти <span>➡️</span></a></li>
+                        <li><a href="photoshop_module4_lesson4_3.html">Урок 4.3: Автоматизация (Actions) и експорт за медии <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="photoshop_module4_intro.html" class="btn" style="justify-content: center;">Към Модул 4</a>
+            </div>
+
+            <!-- Модул 5 -->
+            <div class="module-card">
+                <div>
+                    <div class="module-badge">Модул 5 (4ч Теория / 8ч Практика)</div>
+                    <h2>Практически проект и защита</h2>
+                    <p class="module-desc">Комплексен курсов проект, самооценка, техническа проверка, именуване, архивиране и презентация.</p>
+                    <ul class="chapter-list">
+                        <li><a href="#mod5-1">Урок 5.1: Разработване, експорт и защита на проект <span>➡️</span></a></li>
+                    </ul>
+                </div>
+                <a href="photoshop_module5_intro.html" class="btn" style="justify-content: center;">Към Модул 5</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Професионално обучение по Графичен дизайн — Растерна графика (Adobe Photoshop). Всички права запазени.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('photoshop_theme', newTheme);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('photoshop_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+
+        const totalLessons = 13;
+        const completedLessons = 1;
+        const percent = Math.round((completedLessons / totalLessons) * 100);
+        document.getElementById("progressFill").style.width = percent + "%";
+        document.getElementById("progressText").textContent = percent + "% завършени";
+    </script>
+</body>
+</html>

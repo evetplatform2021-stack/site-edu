@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 1 — Урок 1.2: Файлови формати в растерната графика | Растерна графика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 1000; transition: width 0.1s ease-out; }
+        .top-header { position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.05rem; color: var(--text-heading); text-decoration: none; }
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
+        .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1400px; margin: 0 auto; gap: 2rem; padding: 2rem 1.5rem; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        .sidebar { position: sticky; top: 5rem; height: fit-content; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .nav-group-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.4rem; }
+        .nav-links a { color: var(--text-body); text-decoration: none; font-size: 0.85rem; display: block; padding: 0.35rem 0.5rem; border-radius: 6px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links li.active a { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+        .content { max-width: 900px; }
+        .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-block; margin-bottom: 1rem; }
+        .hero h1 { font-size: 2.1rem; color: var(--text-heading); margin: 0 0 0.75rem 0; font-weight: 800; }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); margin: 0 0 2rem 0; }
+        section { margin-bottom: 3rem; }
+        section h2 { font-size: 1.35rem; color: var(--text-heading); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+        .bullet-list { padding-left: 1.25rem; }
+        .bullet-list li { margin-bottom: 0.6rem; }
+        .case-study { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 1.5rem; margin-top: 1rem; }
+        .task-box { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        textarea { width: 100%; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.95rem; margin-top: 0.75rem; resize: vertical; min-height: 100px; }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        .quiz-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        .quiz-question { font-weight: 600; color: var(--text-heading); margin-bottom: 0.75rem; }
+        .quiz-options label { display: block; margin-bottom: 0.5rem; cursor: pointer; padding: 0.4rem 0.5rem; border-radius: 6px; transition: background 0.2s; }
+        .quiz-options label:hover { background: rgba(56, 189, 248, 0.08); }
+        .quiz-feedback { margin-top: 1rem; font-weight: 600; font-size: 0.9rem; }
+        .module-footer-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="photoshop_index.html" class="logo-title">📚 Растерна графика • Adobe Photoshop</a>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 1 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="photoshop_module1_lesson1_1.html">Урок 1.1: Същност и параметри</a></li>
+                <li class="active"><a href="#content">1. Работни и PSD формати</a></li>
+                <li><a href="#pubformats">2. Формати за публикация</a></li>
+                <li><a href="#compression">3. Компресия и метаданни</a></li>
+                <li><a href="#casestudy">4. Практически казус</a></li>
+                <li><a href="#task">5. Практическа задача</a></li>
+                <li><a href="#quiz">6. Мини тест</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 1 • Урок 1.2 (Теория: 3 ч. / Практика: 2 ч.)</span>
+                <h1>Файлови формати в растерната графика</h1>
+                <p>Класификация на работни, издателски и уеб формати, компресия без и със загуба (Lossless/Lossy), управление на метаданни.</p>
+            </div>
+
+            <!-- 1. Работни и PSD формати -->
+            <section id="content">
+                <h2>1. Работни формати (PSD и PSB)</h2>
+                <div class="card">
+                    <p>
+                        При работа по дизайн проект в Adobe Photoshop изходният файл трябва да съхранява всички слоеве, маски, текстови полета, интелигентни обекти и ефекти непроменени.
+                    </p>
+                    <ul class="bullet-list">
+                        <li><strong>PSD (Photoshop Document):</strong> Стандартният работен формат, поддържащ пълната структура на документа до 2 GB размер.</li>
+                        <li><strong>PSB (Photoshop Large Document):</strong> Специализиран формат за мащабни проекти (напр. билбордове, панорами), надхвърлящи 2 GB, поддържащ размери на платното до 300 000 пиксела.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 2. Формати за публикация -->
+            <section id="pubformats">
+                <h2>2. Формати за публикация и растерни изображения</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li><strong>JPEG (Joint Photographic Experts Group):</strong> Универсален формат за снимки и уеб. Поддържа милиони цветове, но използва компресия със загуба и не поддържа прозрачност.</li>
+                        <li><strong>PNG (Portable Network Graphics):</strong> Идеален за графики с прозрачен фон (PNG-24) и логотипи с остри ръбове. Използва компресия без загуба.</li>
+                        <li><strong>TIFF (Tagged Image File Format):</strong> Професионален файлов формат за висококачествен предпечат (пренася CMYK канали, слоеве по избор и пълна детайлност без компресия).</li>
+                        <li><strong>WEBP:</strong> Съвременен уеб формат, съчетаващ малък обем, високо качество, прозрачност и анимация.</li>
+                        <li><strong>GIF:</strong> Поддържа анимация и прозрачност, но е ограничен до 256 цвята.</li>
+                        <li><strong>RAW:</strong> Сурови данни директно от фотосензора на цифровия фотоапарат, обработвани през Adobe Camera Raw.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 3. Компресия и метаданни -->
+            <section id="compression">
+                <h2>3. Компресия (Lossless vs Lossy) и метаданни</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li><strong>Lossless (Без загуба):</strong> При архивиране и распакетиране пикселите се възстановяват на 100% (формати: PNG, TIFF, PSD).</li>
+                        <li><strong>Lossy (Със загуба):</strong> Премахва незабележими за човешкото око детайли с цел драстично свиване на файловия обем (формат: JPEG).</li>
+                        <li><strong>Метаданни (EXIF, IPTC):</strong> Вградена системна и авторска информация (дата на заснемане, камера, име на автор, GPS координати, авторски права).</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 4. Практически казус -->
+            <section id="casestudy">
+                <h2>4. Практически казус от практиката</h2>
+                <div class="case-study">
+                    <p><strong>Казус:</strong> Онлайн магазин изисква продуктови снимки с бял фон, които да се зареждат мигновено на мобилни устройства, но същевременно рекламната агенция се нуждае от същите снимки в максимално качество за луксозно списание.</p>
+                    <p><strong>Решение:</strong> За списанието файловете се експортират като несвити TIFF или PSD с висока разделителна способност в CMYK. За уеб сайта изображенията се конвертират в оптимизирани WEBP или JPEG (с компресия 80%) в RGB, което намалява теглото им под 150 KB без видима загуба на качество.</p>
+                </div>
+            </section>
+
+            <!-- 5. Практическа задача -->
+            <section id="task">
+                <h2>5. Практическа задача за обучаемите</h2>
+                <div class="task-box">
+                    <p><strong>Инструкция за изпълнение:</strong></p>
+                    <ol style="margin-top: 0.5rem; margin-bottom: 1rem; padding-left: 1.25rem;">
+                        <li>Отворете произволно растерно изображение в Photoshop.</li>
+                        <li>Използвайте функцията <em>Export As</em> и запишете файла в три различни формата: JPEG (с качество 60), PNG-24 и WEBP.</li>
+                        <li>Сравнете получените файлови размери (в килобайти) и запишете наблюдението си.</li>
+                    </ol>
+                    <label for="userResponse" style="font-weight: 600; font-size: 0.9rem; display: block; margin-top: 1rem;">Вашите изводи от сравнението:</label>
+                    <textarea id="userResponse" placeholder="Опишете разликата в обема и качеството на трите формата..."></textarea>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Отговорът е записан успешно!')">💾 Запази отговора</button>
+                </div>
+            </section>
+
+            <!-- 6. Мини тест -->
+            <section id="quiz">
+                <h2>6. Мини тест за проверка на знанията</h2>
+                <div class="quiz-box">
+                    <div id="quizContainer">
+                        <div style="margin-bottom: 1.5rem;">
+                            <div class="quiz-question">Въпрос 1: Кой формат е най-подходящ за запазване на растерно изображение с прозрачен фон за уеб?</div>
+                            <div class="quiz-options">
+                                <label><input type="radio" name="q1" value="a"> А) JPEG</label>
+                                <label><input type="radio" name="q1" value="b"> Б) PNG-24 или WEBP</label>
+                                <label><input type="radio" name="q1" value="c"> В) RAW</label>
+                            </div>
+                        </div>
+                        <div style="margin-bottom: 1.5rem;">
+                            <div class="quiz-question">Въпрос 2: Каква е основната характеристика на формата PSD?</div>
+                            <div class="quiz-options">
+                                <label><input type="radio" name="q2" value="a"> А) Запазва всички слоеве, маски и редактируеми структури на Photoshop.</label>
+                                <label><input type="radio" name="q2" value="b"> Б) Използва задължителна компресия със загуба.</label>
+                                <label><input type="radio" name="q2" value="c"> В) Ограничен е до 256 цвята.</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" onclick="checkQuiz()">Провери отговорите</button>
+                        <div id="quizFeedback" class="quiz-feedback"></div>
+                    </div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="photoshop_module1_lesson1_1.html" class="btn">⬅️ Към Урок 1.1</a>
+                <a href="#lesson1-3" class="btn btn-primary" onclick="alert('Продължаваме към Урок 1.3!')">Към Урок 1.3 ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2026 Професионално обучение по Графичен дизайн — Растерна графика. Всички права запазени.</p>
+    </footer>
+
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('photoshop_theme', newTheme);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('photoshop_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const feedback = document.getElementById('quizFeedback');
+            if (!q1 || !q2) {
+                feedback.style.color = 'var(--danger)';
+                feedback.textContent = 'Моля, отговорете на всички въпроси.';
+                return;
+            }
+            let score = 0;
+            if (q1.value === 'b') score++;
+            if (q2.value === 'a') score++;
+            if (score === 2) {
+                feedback.style.color = 'var(--success)';
+                feedback.textContent = 'Отлично! Всички отговори са верни (2/2).';
+            } else {
+                feedback.style.color = 'var(--danger)';
+                feedback.textContent = `Имате ${score} от 2 верни отговора. Опитайте отново.`;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 1: Теоретични основи на растерната графика | Растерна графика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --info-bg: rgba(56, 189, 248, 0.1);
+        }
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --info-bg: rgba(2, 132, 199, 0.05);
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        .top-header { position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.1rem; color: var(--text-heading); text-decoration: none; }
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.5rem 1rem; border-radius: 8px; cursor: pointer; font-size: 0.9rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s ease; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
+        .container { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .module-badge-top { font-size: 0.85rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; display: inline-block; }
+        h1 { font-size: 2.2rem; color: var(--text-heading); margin: 0 0 1.5rem 0; font-weight: 800; }
+        h2 { font-size: 1.35rem; color: var(--text-heading); margin: 2.5rem 0 1rem 0; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+        .intro-lead { font-size: 1.12rem; color: var(--text-body); margin-bottom: 2rem; }
+        .content-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 2rem; }
+        .info-panel { background: var(--info-bg); border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; padding: 1.25rem; margin: 1.5rem 0; }
+        ul { padding-left: 1.25rem; margin: 0; }
+        li { margin-bottom: 0.75rem; }
+        .lesson-nav-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-body);
+            transition: all 0.2s ease;
+        }
+        .lesson-nav-card:hover { border-color: var(--accent); transform: translateX(4px); }
+        .lesson-title-text { font-weight: 600; color: var(--text-heading); margin: 0 0 0.25rem 0; }
+        .lesson-desc-text { font-size: 0.9rem; color: var(--text-muted); margin: 0; }
+        .nav-footer-buttons { display: flex; justify-content: space-between; align-items: center; margin-top: 3.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <header class="top-header">
+        <a href="photoshop_index.html" class="logo-title">
+            📚 Растерна графика • Adobe Photoshop
+        </a>
+        <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+    </header>
+
+    <div class="container">
+        <!-- Общо въведение в курса (само тук, в Модул 1) -->
+        <span class="module-badge-top">Курс — Общо въведение</span>
+        <h1>Професионално обучение по модул/предмет „Растерна графика“</h1>
+        
+        <p class="intro-lead">Този наръчник и тематичен план е синхронизиран с нормативните изисквания за професия <strong>Код 021101 „Графичен дизайн“</strong>, Трета степен на професионална квалификация (III СПК). Обемът е <strong>56 часа теория и 64 часа учебна практика</strong> (общо 120 часа), обхващайки както класическите принципи на растерната графика, така и съвременните технологии с изкуствен интелект в Adobe Photoshop (2022 и по-нова).</p>
+        
+        <div class="content-box">
+            <ul>
+                <li><strong>Цел на обучението:</strong> Изграждане на задълбочени теоретични и практически умения за дигитална обработка на изображения, недеструктивна редакция, цвят, ретуш, типография и AI автоматизация.</li>
+                <li><strong>Технологичен стек:</strong> Adobe Photoshop (версии 2022–2026), Cloud Documents, Generative Fill, Neural Filters, Camera Raw.</li>
+            </ul>
+        </div>
+
+        <!-- Представяне на Модул 1 и неговите уроци -->
+        <span class="module-badge-top" style="margin-top: 1rem;">Модул 1</span>
+        <h2 style="margin-top: 0.2rem;">Теоретични основи на растерната графика и работна среда в Adobe Photoshop</h2>
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">Общ обем на модула: <strong>12 часа теория + 8 часа практика</strong>. Модулът изгражда фундаменталните знания за пиксели, разделителна способност, цветови модели, файлови формати, управление на работната среда и фотографската композиция.</p>
+
+        <a href="photoshop_module1_lesson1_1.html" class="lesson-nav-card">
+            <div>
+                <div class="lesson-title-text">Урок 1.1 — Същност на растерната графика и технически параметри</div>
+                <p class="lesson-desc-text">Пиксели, резолюция (PPI vs DPI), цветови пространства (RGB, CMYK) и създаване на нов документ.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <a href="photoshop_module1_lesson1_2.html" class="lesson-nav-card">
+            <div>
+                <div class="lesson-title-text">Урок 1.2 — Файлови формати в растерната графика</div>
+                <p class="lesson-desc-text">PSD, PSB, JPEG, PNG, TIFF, WEBP, компресия (Lossless/Lossy) и метаданни.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <a href="photoshop_module1_lesson1_3.html" class="lesson-nav-card">
+            <div>
+                <div class="lesson-title-text">Урок 1.3 — Интерфейс и работна среда в Adobe Photoshop (2022–по-нова)</div>
+                <p class="lesson-desc-text">Работни пространства, панели, Scratch Disks, History States и бързи клавиши.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <a href="photoshop_module1_lesson1_4.html" class="lesson-nav-card">
+            <div>
+                <div class="lesson-title-text">Урок 1.4 — Фотография и композиция в растерния дизайн</div>
+                <p class="lesson-desc-text">Правило на третините, златно сечение, баланс, перспектива и кадриране.</p>
+            </div>
+            <span style="color: var(--accent);">➡️</span>
+        </a>
+
+        <div class="info-panel">
+            <strong>💡 Препоръка:</strong> Започнете последователно с Урок 1.1 за овладяване на пикселната структура и техническите параметри.
+        </div>
+
+        <div class="nav-footer-buttons">
+            <a href="photoshop_index.html" class="btn">⬅️ Индекс на курса</a>
+            <a href="photoshop_module1_lesson1_1.html" class="btn btn-primary">Започни Урок 1.1 ➜</a>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2026 Професионално обучение по Графичен дизайн — Растерна графика. Всички права запазени.</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('photoshop_theme', newTheme);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('photoshop_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+    </script>
+</body>
+</html>

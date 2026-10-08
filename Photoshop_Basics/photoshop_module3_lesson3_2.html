@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="bg" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Модул 3 — Урок 3.2: Професионален ретуш и възстановяване | Растерна графика</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root[data-theme="dark"] {
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --border: #334155;
+            --text-heading: #f8fafc;
+            --text-body: #cbd5e1;
+            --text-muted: #94a3b8;
+            --accent: #38bdf8;
+            --accent-hover: #0284c7;
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+        :root[data-theme="light"] {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --accent: #0284c7;
+            --accent-hover: #0369a1;
+            --success: #059669;
+            --danger: #dc2626;
+        }
+        body { margin: 0; font-family: 'Inter', sans-serif; background-color: var(--bg-main); color: var(--text-body); line-height: 1.6; }
+        #progress-bar { position: fixed; top: 0; left: 0; height: 3px; background: var(--accent); width: 0%; z-index: 1000; transition: width 0.1s ease-out; }
+        .top-header { position: sticky; top: 0; background: var(--bg-card); border-bottom: 1px solid var(--border); padding: 0.75rem 1.5rem; display: flex; align-items: center; justify-content: space-between; z-index: 100; }
+        .logo-title { display: flex; align-items: center; gap: 0.5rem; font-weight: 800; font-size: 1.05rem; color: var(--text-heading); text-decoration: none; }
+        .btn { background: var(--bg-card); color: var(--text-heading); border: 1px solid var(--border); padding: 0.4rem 0.8rem; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; transition: all 0.2s ease; }
+        .btn:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-primary { background: var(--accent); color: #0f172a; border: none; }
+        .btn-primary:hover { background: var(--accent-hover); color: #ffffff; }
+        .layout { display: grid; grid-template-columns: 280px 1fr; max-width: 1400px; margin: 0 auto; gap: 2rem; padding: 2rem 1.5rem; }
+        @media (max-width: 900px) { .layout { grid-template-columns: 1fr; } .sidebar { display: none; } }
+        .sidebar { position: sticky; top: 5rem; height: fit-content; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.25rem; }
+        .nav-group-title { font-size: 0.85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
+        .nav-links { list-style: none; padding: 0; margin: 0; }
+        .nav-links li { margin-bottom: 0.4rem; }
+        .nav-links a { color: var(--text-body); text-decoration: none; font-size: 0.85rem; display: block; padding: 0.35rem 0.5rem; border-radius: 6px; transition: all 0.2s; }
+        .nav-links a:hover, .nav-links li.active a { background: rgba(56, 189, 248, 0.1); color: var(--accent); }
+        .content { max-width: 900px; }
+        .badge { background: rgba(56, 189, 248, 0.15); color: var(--accent); padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(56, 189, 248, 0.3); display: inline-block; margin-bottom: 1rem; }
+        .hero h1 { font-size: 2.1rem; color: var(--text-heading); margin: 0 0 0.75rem 0; font-weight: 800; }
+        .hero p { font-size: 1.1rem; color: var(--text-muted); margin: 0 0 2rem 0; }
+        section { margin-bottom: 3rem; }
+        section h2 { font-size: 1.35rem; color: var(--text-heading); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; margin-bottom: 1rem; }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-bottom: 1.5rem; }
+        .bullet-list { padding-left: 1.25rem; }
+        .bullet-list li { margin-bottom: 0.6rem; }
+        .case-study { background: rgba(56, 189, 248, 0.05); border: 1px solid rgba(56, 189, 248, 0.2); border-radius: 12px; padding: 1.5rem; margin-top: 1rem; }
+        .task-box { background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        textarea { width: 100%; background: var(--bg-main); color: var(--text-heading); border: 1px solid var(--border); border-radius: 8px; padding: 0.75rem; font-family: 'Inter', sans-serif; font-size: 0.95rem; margin-top: 0.75rem; resize: vertical; min-height: 100px; }
+        textarea:focus { outline: none; border-color: var(--accent); }
+        .quiz-box { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; margin-top: 1.5rem; }
+        .quiz-question { font-weight: 600; color: var(--text-heading); margin-bottom: 0.75rem; }
+        .quiz-options label { display: block; margin-bottom: 0.5rem; cursor: pointer; padding: 0.4rem 0.5rem; border-radius: 6px; transition: background 0.2s; }
+        .quiz-options label:hover { background: rgba(56, 189, 248, 0.08); }
+        .quiz-feedback { margin-top: 1rem; font-weight: 600; font-size: 0.9rem; }
+        .module-footer-nav { display: flex; justify-content: space-between; margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--border); }
+        footer { text-align: center; padding: 2rem 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.85rem; margin-top: 4rem; }
+    </style>
+</head>
+<body>
+    <div id="progress-bar"></div>
+
+    <header class="top-header">
+        <a href="photoshop_index.html" class="logo-title">📚 Растерна графика • Adobe Photoshop</a>
+        <div style="display:flex; gap:0.5rem;">
+            <button class="btn" onclick="toggleTheme()"><span id="theme-icon">🌙</span></button>
+            <button class="btn" onclick="window.print()">🖨️</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="nav-group-title">Модул 3 Уроци</div>
+            <ul class="nav-links">
+                <li><a href="photoshop_module3_intro.html">⬅️ Обзор на Модул 3</a></li>
+                <li><a href="photoshop_module3_lesson3_1.html">Урок 3.1: Цветови корекции</a></li>
+                <li class="active"><a href="#content">1. Инструменти за ретуш</a></li>
+                <li><a href="#frequency">2. Frequency Separation</a></li>
+                <li><a href="#casestudy">4. Практически казус</a></li>
+                <li><a href="#task">5. Практическа задача</a></li>
+                <li><a href="#quiz">6. Мини тест</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <div class="hero">
+                <span class="badge">Модул 3 • Урок 3.2 (Теория: 4 ч. / Практика: 5 ч.)</span>
+                <h1>Професионален ретуш и възстановяване на изображения</h1>
+                <p>Инструменти за корекция на дефекти (Spot Healing Brush, Healing Brush, Patch Tool), Clone Stamp и усъвършенствана техника Frequency Separation.</p>
+            </div>
+
+            <section id="content">
+                <h2>1. Инструменти за корекция и възстановяване</h2>
+                <div class="card">
+                    <ul class="bullet-list">
+                        <li><strong>Spot Healing Brush:</strong> Автоматично премахва пъпки, прашинки и малки дефекти, като взима текстура от околната среда.</li>
+                        <li><strong>Healing Brush:</strong> Изисква дефиниране на източник (Alt + клик) и съчетава текстурата с цвета на целевата зона.</li>
+                        <li><strong>Patch Tool:</strong> Позволява запълване на селектирана зона с пиксели от друга област с автоматично сливане.</li>
+                        <li><strong>Clone Stamp Tool:</strong> Пренася пиксели 1:1 от източник към цел без цветово смесване.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="frequency">
+                <h2>2. Frequency Separation (Разделяне на честотите)</h2>
+                <div class="card">
+                    <p>
+                        Професионална техника за ретуш на портрети, която разделя изображението на два слоя: <strong>High Frequency (текстура/пори)</strong> и <strong>Low Frequency (цвят/сенки/обем)</strong>. Това позволява почистване на кожата, без да се унищожава естествената текстура.
+                    </p>
+                </div>
+            </section>
+
+            <section id="casestudy">
+                <h2>4. Практически казус</h2>
+                <div class="case-study">
+                    <p><strong>Казус:</strong> Портретна снимка има нужда от изглаждане на кожата, но обикновеното замазване (Blur) унищожава кожните пори и прави лицето нереално.</p>
+                    <p><strong>Решение:</strong> Прилага се техниката <em>Frequency Separation</em>, при която текстурата се обработва отделно от цветовите преходи, запазвайки фотографския реализъм.</p>
+                </div>
+            </section>
+
+            <section id="task">
+                <h2>5. Практическа задача</h2>
+                <div class="task-box">
+                    <p><strong>Инструкция:</strong> Отворете портретна снимка. Използвайте <em>Spot Healing Brush</em> за премахване на временни дефекти по кожата на отделен празен слой с опция "Sample All Layers".</p>
+                    <textarea id="userResponse" placeholder="Опишете резултата от ретуша..."></textarea>
+                    <button class="btn btn-primary" style="margin-top: 1rem;" onclick="alert('Запазено!')">💾 Запази отговора</button>
+                </div>
+            </section>
+
+            <section id="quiz">
+                <h2>6. Мини тест</h2>
+                <div class="quiz-box">
+                    <div class="quiz-question">Въпрос 1: Кой инструмент пренася пиксели 1:1 от източник към цел без автоматично цветово смесване?</div>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q1" value="a"> А) Spot Healing Brush</label>
+                        <label><input type="radio" name="q1" value="b"> Б) Clone Stamp Tool</label>
+                        <label><input type="radio" name="q1" value="c"> В) Patch Tool</label>
+                    </div>
+                    <div class="quiz-question" style="margin-top:1rem;">Въпрос 2: Какво е предназначението на техниката Frequency Separation при ретуш?</div>
+                    <div class="quiz-options">
+                        <label><input type="radio" name="q2" value="a"> А) Разделя текстурата от цветовите тонове за независим ретуш.</label>
+                        <label><input type="radio" name="q2" value="b"> Б) Разделя изображението на CMYK канали за печат.</label>
+                        <label><input type="radio" name="q2" value="c"> В) Изтрива фона на снимката.</label>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top:1rem;" onclick="checkQuiz()">Провери отговорите</button>
+                    <div id="quizFeedback" class="quiz-feedback"></div>
+                </div>
+            </section>
+
+            <div class="module-footer-nav">
+                <a href="photoshop_module3_lesson3_1.html" class="btn">⬅️ Към Урок 3.1</a>
+                <a href="photoshop_module3_lesson3_3.html" class="btn btn-primary">Към Урок 3.3 ➜</a>
+            </div>
+        </main>
+    </div>
+
+    <footer><p>© 2026 Професионално обучение по Графичен дизайн — Растерна графика.</p></footer>
+    <script>
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("progress-bar").style.width = scrolled + "%";
+        };
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "dark" ? "light" : "dark";
+            html.setAttribute("data-theme", newTheme);
+            document.getElementById("theme-icon").textContent = newTheme === "dark" ? "🌙" : "☀️";
+            localStorage.setItem('photoshop_theme', newTheme);
+        }
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('photoshop_theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                document.getElementById('theme-icon').textContent = savedTheme === 'dark' ? "🌙" : "☀️";
+            }
+        });
+        function checkQuiz() {
+            const q1 = document.querySelector('input[name="q1"]:checked');
+            const q2 = document.querySelector('input[name="q2"]:checked');
+            const feedback = document.getElementById('quizFeedback');
+            if (!q1 || !q2) { feedback.style.color = 'var(--danger)'; feedback.textContent = 'Моля, отговорете на всички въпроси.'; return; }
+            let score = (q1.value === 'b' ? 1 : 0) + (q2.value === 'a' ? 1 : 0);
+            if (score === 2) { feedback.style.color = 'var(--success)'; feedback.textContent = 'Отлично! (2/2)'; }
+            else { feedback.style.color = 'var(--danger)'; feedback.textContent = `Имате ${score}/2 верни отговора. Опитайте пак.`; }
+        }
+    </script>
+</body>
+</html>
